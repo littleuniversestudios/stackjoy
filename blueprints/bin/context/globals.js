@@ -13,7 +13,7 @@ exports.LOG_FILE_ROW_LIMIT = 500;
 exports.CURRENT_WORKING_DIR = process.cwd();
 exports.TESTS_DIRECTORY = 'tests';
 exports.TESTS_OUTPUT_DIRECTORY = 'generated';
-exports.TESTS_MASTER_DIRECTORY = 'master';
+exports.TESTS_MASTER_DIRECTORY = 'expected';
 exports.initGlobals = (projectRootPath) => {
     exports.ROOT_PATH = text_transform_1.TextTransform.trimTrailingSlash(projectRootPath);
     exports.RELATIVE_WORKING_DIR = path_1.relative(exports.ROOT_PATH, exports.CURRENT_WORKING_DIR);

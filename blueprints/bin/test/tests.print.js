@@ -46,11 +46,11 @@ function showTestErrors(testResult) {
         });
         fileErrors += text_transform_1.TextTransform.makeTable([
             ['Generated File Path', `file://${file.generatedFilePath}`],
-            ['Master File Path', `file://${file.masterFilePath}`],
+            ['Expected File Path', `file://${file.masterFilePath}`],
         ]);
         errorData.push([`${file.filename}`, fileErrors]);
     });
-    console.log(print_1.Print.printTable(errorData));
+    console.log(print_1.Print.printTable(errorData, [20, 150]));
     console.log('');
 }
 //# sourceMappingURL=tests.print.js.map

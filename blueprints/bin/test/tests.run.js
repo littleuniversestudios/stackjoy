@@ -21,10 +21,11 @@ const testOutputPath = path_1.join(projectRootPath, globals_1.TESTS_DIRECTORY, g
 const testMasterPath = path_1.join(projectRootPath, globals_1.TESTS_DIRECTORY, globals_1.TESTS_MASTER_DIRECTORY);
 const allTests = tests_config_1.testConfig;
 const allTestResults = [];
-exports.runTests = () => {
+exports.runTests = (bluExecPath) => {
     allTests.forEach((test, index) => {
         console.log('', chalk_1.default.green(`Running test ${index + 1}`));
-        child_process_1.execSync(test.command);
+        const fullCommand = `node ${bluExecPath} ${test.command}`;
+        child_process_1.execSync(fullCommand);
         const testResult = test.outputDir ? checkOutputDir(test) : compareTestFiles(test);
         testResult.passed ? console.log(chalk_1.default.green('...passed')) : console.log(chalk_1.default.red('...failed'));
         allTestResults.push(testResult);
@@ -37,7 +38,7 @@ function checkOutputDir(test) {
     let testErrors = [];
     let testFiles = [];
     testErrors.push(dirExists(outputPath, `Output directory '${outputPath}' does not exist`));
-    testErrors.push(dirExists(masterPath, `Master directory '${masterPath}' does not exist`));
+    testErrors.push(dirExists(masterPath, `Expected directory '${masterPath}' does not exist`));
     testErrors = pruneErrors(testErrors);
     if (testErrors.length === 0) {
         const generatedFiles = file_system_1.FileSystem.listAllFiles(outputPath);
@@ -59,7 +60,7 @@ function checkOutputDir(test) {
 }
 function checkFiles(masterFilePath, generatedFilePath) {
     let fileErrors = [];
-    fileErrors.push(fileExists(masterFilePath, `Master file '${masterFilePath}' does not exist`));
+    fileErrors.push(fileExists(masterFilePath, `Expected file '${masterFilePath}' does not exist`));
     fileErrors.push(fileExists(generatedFilePath, `Generated file '${generatedFilePath}' does not exist'`));
     fileErrors = pruneErrors(fileErrors);
     if (fileErrors.length === 0) {
@@ -75,7 +76,7 @@ function checkFiles(masterFilePath, generatedFilePath) {
                 text += color(part.value);
             });
             text = `${os_1.EOL}${text}${os_1.EOL}`;
-            fileErrors.push({ message: `Generated file contents DO NOT match Master file contents:`, text });
+            fileErrors.push({ message: `Generated file contents DO NOT match Expected file contents:`, text });
         }
     }
     return fileErrors;
