@@ -1,0 +1,1 @@
+{"version":3,"file":"collection.service.js","sourceRoot":"","sources":["../../../../src/blueprints/api/collection/collection.service.ts"],"names":[],"mappings":";;;AAAA,8CAAmD;AAGnD,MAAa,iBAAiB;IAEnB,OAAO;QACV,MAAM,UAAU,GAAG,yBAAe,CAAC,aAAa,EAAE,CAAC;QACnD,OAAO,EAAE,KAAK,EAAE,IAAI,EAAE,IAAI,EAAE,UAAU,CAAC,cAAc,EAAE,EAAE,CAAA;IAC7D,CAAC;CA4CJ;AAjDD,8CAiDC"}

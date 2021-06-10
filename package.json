@@ -2,9 +2,9 @@
   "name": "stackjoy",
   "version": "0.0.6",
   "description": "Rapid Development Platform",
-  "main": "./bin/src/index.js",
+  "main": "./npm-app/dist/index.js",
   "bin": {
-    "stackjoy": "./bin/src/index.js"
+    "sj": "./npm-app/dist/index.js"
   },
   "scripts": {},
   "repository": {
@@ -18,34 +18,26 @@
   "author": "Little Universe Studios Inc.",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.0",
-    "chalk": "^2.4.2",
-    "enquirer": "^2.3.5",
-    "fs-extra": "^7.0.1",
-    "minimist": "^1.2.5",
+    "chalk": "^3.0.0",
     "open": "^7.1.0",
-    "ora": "^4.0.3",
+    "axios": "^0.21.1",
     "body-parser": "^1.18.3",
+    "change-case": "^2.3.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "directory-tree": "^2.2.4",
-    "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.1",
-    "firebase": "^6.6.2",
+    "firebase": "^8.3.2",
+    "fs-extra": "^8.1.0",
     "helmet": "^3.21.2",
-    "lodash": "^4.17.15",
-    "node-dir": "^0.1.17",
-    "node-machine-id": "^1.1.12",
-    "ws": "^7.1.2",
-    "xhr2": "^0.2.0",
-    "app-root-path": "^2.2.1",
-    "change-case": "^3.1.0",
-    "diff": "^4.0.2",
-    "htmlparser2": "^3.10.1",
-    "table": "^5.4.6"
+    "jsonpath": "^1.0.2",
+    "lodash": "^4.17.20",
+    "moo": "^0.5.1",
+    "nearley": "^2.19.7",
+    "simple-git": "^2.38.0"
   },
   "bugs": {
     "url": "https://github.com/littleuniversestudios/stackjoy/issues"

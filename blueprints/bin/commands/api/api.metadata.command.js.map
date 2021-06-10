@@ -1,1 +1,0 @@
-{"version":3,"file":"api.metadata.command.js","sourceRoot":"","sources":["../../../src/commands/api/api.metadata.command.ts"],"names":[],"mappings":";;;AAAA,mDAAuG;AAGvG,MAAa,WAAW;IACb,MAAM,CAAC,GAAG,CAAC,UAAgC;QAC9C,OAAO;YACH,OAAO,EAAE,8BAAoB;YAC7B,MAAM,EAAE,6BAAmB;YAC3B,GAAG,EAAE,6BAAmB;SAC3B,CAAC;IACN,CAAC;CACJ;AARD,kCAQC"}
