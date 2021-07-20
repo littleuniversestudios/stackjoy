@@ -36,6 +36,10 @@ exports.appEnvironmentRouter.put('/install', route_validation_1.validateRequest(
     const result = await appEnvironmentService.installEnvironment(req.body, req.header('Firebase-Auth-Token'));
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.appEnvironmentRouter.post('/sync', route_validation_1.validateRequest(appEnvironmentRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await appEnvironmentService.syncEnvironment(req.body, req.header('Firebase-Auth-Token'));
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.appEnvironmentRouter.get('/:appEnvironmentid', route_validation_1.validateRequest(appEnvironmentRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
     const result = appEnvironmentService.findById(req.params.appEnvironmentId);
     result.error ? next(result.error) : res.json(result.data);

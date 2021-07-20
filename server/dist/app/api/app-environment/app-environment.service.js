@@ -46,7 +46,7 @@ class AppEnvironmentService {
                 id,
                 version: 1
             };
-            await globals_1.APP.installRemoteStack(stack, id, token);
+            await globals_1.APP.downloadRemoteStack(stack.blueprintsPath, id, token);
             await globals_1.APP.updateEnvironmentMetadata(stack);
         }
         catch (e) {
@@ -72,10 +72,30 @@ class AppEnvironmentService {
         try {
             if (!token)
                 return { error: { message: 'No auth token provided!' }, data: null };
-            if (stack.metadata.isLocal)
+            if (stack.metadata.isLocal) {
                 await globals_1.APP.createRemoteStack(stack, token);
+            }
+            else {
+                await globals_1.APP.publishRemoteStack(stack, token);
+            }
+        }
+        catch (e) {
+            console.log(e.message);
+            throw e;
+        }
+        globals_1.APP.updateEnvironmentMetadata(stack);
+        return { error: null, data: stack.metadata };
+    }
+    async syncEnvironment(values, token) {
+        const stackId = values.id;
+        const stack = globals_1.APP.getEnvironmentById(stackId);
+        try {
+            if (!token)
+                return { error: { message: 'No auth token provided!' }, data: null };
+            if (stack.metadata.isLocal)
+                return { error: 'Not a remote stack!', data: null };
             else
-                await globals_1.APP.updateRemoteStack(stack, token);
+                await globals_1.APP.syncRemoteStack(stack, token);
         }
         catch (e) {
             console.log(e.message);

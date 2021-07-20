@@ -36,6 +36,8 @@ class InternalAPI {
     getItem(type, collection, name) {
         const filter = collection ? t => t.collectionName === collection && t.name === name : t => t.name === name;
         switch (type) {
+            case blu_interface_1.BLU.Item.Type.Collection:
+                return [this.getCollection(name)];
             case blu_interface_1.BLU.Item.Type.Template:
                 return this.getTemplates().filter(filter);
             case blu_interface_1.BLU.Item.Type.Chain:

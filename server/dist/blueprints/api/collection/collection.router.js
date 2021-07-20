@@ -27,7 +27,8 @@ exports.collectionRouter.get('/', route_validation_1.validateRequest(collectionR
 //     return template ? res.json(template) : next({ status: 400, message: "Entity does not exist" });
 // }));
 //
-// collectionRouter.delete('/:templateId', validateRequest(collectionRules.forDELETE), handleRoute(async (req, res, next) => {
-//     return res.json({ success: true });
-// }));
+exports.collectionRouter.delete('/:collectionId', route_validation_1.validateRequest(collectionRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = collectionService.deleteCollection(req.params.collectionId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 //# sourceMappingURL=collection.router.js.map

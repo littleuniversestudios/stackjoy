@@ -12,6 +12,7 @@ class AppModel {
     constructor() {
         this.workspacesPath = path_1.join(globals_1.SYSTEM.path.data, 'workspaces');
         this.stacksPath = path_1.join(globals_1.SYSTEM.path.data, 'stacks');
+        this.cachePath = path_1.join(globals_1.SYSTEM.path.data, 'cache');
         this.workspaceList = [];
         this.stackList = [];
         this.init();
@@ -19,11 +20,15 @@ class AppModel {
     init() {
         fs_extra_1.ensureDirSync(this.workspacesPath);
         fs_extra_1.ensureDirSync(this.stacksPath);
+        fs_extra_1.ensureDirSync(this.cachePath);
         this.createLists();
     }
     createLists() {
         this.workspaceList = this.getListOfEnvironments(this.workspacesPath);
         this.stackList = this.getListOfEnvironments(this.stacksPath);
+    }
+    refresh() {
+        this.createLists();
     }
     get list() {
         return { workspaces: this.workspaceList, stacks: this.stackList };
@@ -47,6 +52,7 @@ class AppModel {
             if (util_1.isDirectorySync(path)) {
                 const environmentMetadata = fs_extra_1.readJsonSync(path_1.join(path, 'metadata.json'), { throws: false });
                 if (environmentMetadata) {
+                    environmentMetadata.blueprintsPath = path_1.join(environmentMetadata.environmentPath, 'blueprints');
                     environments.push(Object.assign({}, this.defaultMetadata(), environmentMetadata));
                 }
             }
@@ -58,6 +64,7 @@ class AppModel {
             id: null,
             name: null,
             codebasePath: null,
+            blueprintsPath: null,
             associatedCodebasePaths: [],
             environmentPath: null,
             isLocal: true,
@@ -109,11 +116,13 @@ class AppModel {
     }
     createEnvironment(codebasePath, name, type, isLocal, id = util_1.UUIDShort()) {
         const environmentPath = path_1.join(type === app_interface_1.App.Environment.Type.Workspace ? this.workspacesPath : this.stacksPath, id);
+        const blueprintsPath = path_1.join(environmentPath, 'blueprints');
         const metadata = {
             id,
             name,
             codebasePath,
             environmentPath,
+            blueprintsPath,
             associatedCodebasePaths: [codebasePath],
             isLocal,
             created: Date.now(),
@@ -126,13 +135,13 @@ class AppModel {
          * create "example" collection
          * create "hello-world" starter template
          */
-        const blueprintsPath = path_1.join(environmentPath, 'blueprints', 'example', 'hello-world');
-        fs_extra_1.ensureDirSync(blueprintsPath);
+        const exampleCollectionPath = path_1.join(blueprintsPath, 'example', 'hello-world');
+        fs_extra_1.ensureDirSync(exampleCollectionPath);
         /**
          * store the hello-world template contents
          * todo: create a whole slew of example files that the user can use as a reference
          */
-        fs_1.writeFileSync(path_1.join(blueprintsPath, 'hello-world.txt'), 'Hello Stackjoy! \n\nMy name is ^^name^^.');
+        fs_1.writeFileSync(path_1.join(exampleCollectionPath, 'hello-world.txt'), 'Hello Stackjoy! \n\nMy name is ^^name^^.');
         /**
          * store the supporting workspace files
          */
@@ -149,18 +158,27 @@ class AppModel {
         this.createLists();
     }
     async createRemoteStack(stack, token) {
-        const stackId = await globals_1.GIT.createRepo(stack.blueprintsPath, token);
+        const stackId = await globals_1.GIT.createRepo(stack.blueprintsPath, token, stack.metadata.name);
         stack.metadata.isLocal = false;
         stack.metadata.remote = {
             id: stackId,
             version: 1
         };
     }
-    async updateRemoteStack(stack, token) {
-        stack.metadata.remote.version = await globals_1.GIT.updateRepo(stack.blueprintsPath, stack.metadata.remote.version, token);
+    async syncRemoteStack(stack, token) {
+        const { requiresMerge } = await globals_1.GIT.syncRepo(stack.blueprintsPath, token);
+        if (requiresMerge != null)
+            stack.metadata.remote.requiresMerge = requiresMerge;
     }
-    async installRemoteStack(stack, remoteId, token) {
-        await globals_1.GIT.installRepo(stack.blueprintsPath, remoteId, token);
+    async publishRemoteStack(stack, token) {
+        const { newVersion, requiresMerge } = await globals_1.GIT.publishRepo(stack.blueprintsPath, stack.metadata.remote.version, token);
+        if (newVersion != null)
+            stack.metadata.remote.version = newVersion;
+        if (requiresMerge != null)
+            stack.metadata.remote.requiresMerge = requiresMerge;
+    }
+    async downloadRemoteStack(destinationPath, remoteId, token) {
+        return await globals_1.GIT.downloadRepo(destinationPath, remoteId, token);
     }
 }
 exports.AppModel = AppModel;
