@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteItemModel = void 0;
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const utils_1 = require("../../lib/utils");
-const workspace_model_1 = require("../item/workspace.model");
+const workspace_model_1 = require("../item/environment/workspace.model");
 const path = require("path");
 class ExecuteItemModel {
     constructor(item, parent, inputs = {}, ROOT_DESTINATION) {
@@ -40,7 +40,7 @@ class ExecuteItemModel {
             CODEBASE_PATH: this.inputs.CODEBASE_PATH,
             ROOT_DESTINATION: this.inputs.ROOT_DESTINATION,
         };
-        const systemFunctions = workspace_model_1.WorkspaceModel.defaultFunctions(fnContext).map(f => Object.assign({}, f, { origin: { name: 'Readonly System Function', type: blu_interface_1.BLU.Origin.Type.System } }));
+        const systemFunctions = workspace_model_1.WorkspaceModel.defaultFunctions(fnContext).map(f => Object.assign({}, f, { origin: { name: 'Readonly System Function', type: blu_interface_1.BLU.Origin.Types.System } }));
         renderContext.functions = ExecuteItemModel.mergeFunctions(renderContext.functions, systemFunctions);
         return renderContext;
     }
@@ -128,9 +128,9 @@ class ExecuteItemModel {
         }
     }
     static combineHierarchicalSettings(item) {
-        const settings = Object.assign({}, item.config.settings);
+        const settings = Object.assign({}, item.settings);
         Object.keys(settings).forEach(key => settings[key] === '' ? delete settings[key] : null);
-        return !item.parent ? item.config.settings : Object.assign({}, ExecuteItemModel.combineHierarchicalSettings(item.parent), settings);
+        return !item.parent ? item.settings : Object.assign({}, ExecuteItemModel.combineHierarchicalSettings(item.parent), settings);
     }
     static combineHierarchicalContexts(item, context) {
         const mergedContext = context ? ExecuteItemModel.mergeContext(context, item.context) : item.context;
@@ -183,7 +183,7 @@ class ExecuteItemModel {
         return { variables: [], functions: [] };
     }
     static inputsToVariables(inputs) {
-        return Object.keys(inputs !== null && inputs !== void 0 ? inputs : {}).map(key => ({ name: key, value: inputs[key], origin: { name: 'user-input', type: blu_interface_1.BLU.Origin.Type.User } }));
+        return Object.keys(inputs !== null && inputs !== void 0 ? inputs : {}).map(key => ({ name: key, value: inputs[key], origin: { name: 'user-input', type: blu_interface_1.BLU.Origin.Types.User } }));
     }
     static itemToRenderContext(itemContext) {
         const inputs = {};

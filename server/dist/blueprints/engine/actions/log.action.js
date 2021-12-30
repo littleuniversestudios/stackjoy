@@ -2,37 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogAction = void 0;
 const fs_1 = require("fs");
-const path_1 = require("path");
 const globals_1 = require("../../../globals");
-const LOG_FILE_ROW_LIMIT = 100;
+const fs_extra_1 = require("fs-extra");
+const LOG_FILE_ROW_LIMIT = 25;
 class LogAction {
-    static run(numLogEntries = 20) {
-        const logEntriesToShow = Math.min(numLogEntries, LOG_FILE_ROW_LIMIT);
-        const logFileRows = LogAction.getLogCommands(logEntriesToShow);
-        console.log(logFileRows.join('\n'));
-    }
-    static getLogCommands(numLogEntries = 20) {
-        const logEntriesToShow = Math.min(numLogEntries, LOG_FILE_ROW_LIMIT);
-        return getLastCommands(logEntriesToShow);
-    }
     static getLogEntries(numLogEntries = 20) {
         const logEntriesToShow = Math.min(numLogEntries, LOG_FILE_ROW_LIMIT);
         return getLastEntries(logEntriesToShow);
     }
-    static storeCommands(command, itemId, inputs, rootDestination) {
-        const logContents = getLogContents();
-        const logEntry = { command, itemId, inputs, rootDestination };
-        if (!this.sameEntryAsLast(logEntry, logContents)) {
-            logContents.push(logEntry);
-            storeLogContents(logContents);
+    static saveLogEntry({ sessionData }) {
+        console.log('', sessionData);
+        const logEntries = getLogContents();
+        if (!this.sameEntryAsLast(sessionData, logEntries[0])) {
+            logEntries.push(sessionData);
+            storeLogContents(logEntries);
         }
+        return { error: null, data: { success: true } };
     }
-    static sameEntryAsLast(logEntry, logContents) {
+    static sameEntryAsLast(newLogEntry, lastLogEntry) {
         let isSame = false;
-        if (logContents.length > 0) {
-            const lastLogEntry = logContents[logContents.length - 1];
+        if (lastLogEntry) {
             try {
-                isSame = JSON.stringify(logEntry) === JSON.stringify(lastLogEntry);
+                isSame = JSON.stringify(newLogEntry) === JSON.stringify(lastLogEntry);
             }
             catch (e) {
                 /*
@@ -44,32 +35,23 @@ class LogAction {
         }
         return isSame;
     }
-    static init() {
-        const logPath = getLogFilename();
-        if (!fs_1.existsSync(logPath)) {
-            fs_1.writeFileSync(logPath, `[]`);
-        }
-    }
 }
 exports.LogAction = LogAction;
-const getLogFilename = () => {
-    return path_1.join(globals_1.APP_ENVIRONMENT.logPath);
-};
 const getLogContents = () => {
-    const logPath = getLogFilename();
-    const logFileContents = fs_1.readFileSync(logPath, 'utf-8');
-    let logFileEntries = [];
+    var _a;
+    if (!fs_1.existsSync(globals_1.APP_ENVIRONMENT.logPath)) {
+        fs_extra_1.writeJSONSync(globals_1.APP_ENVIRONMENT.logPath, []);
+    }
     try {
-        logFileEntries = JSON.parse(logFileContents);
+        return (_a = fs_extra_1.readJSONSync(globals_1.APP_ENVIRONMENT.logPath)) !== null && _a !== void 0 ? _a : [];
     }
-    catch (e) {
-        console.log('Error trying to retrieve log contents');
+    catch (error) {
+        return [];
     }
-    return logFileEntries;
 };
 const storeLogContents = (logContents) => {
-    logContents = logContents.slice(Math.max(0, logContents.length - 100)); // only store 100 entries max
-    const logPath = getLogFilename();
+    logContents = logContents.slice(Math.max(0, logContents.length - LOG_FILE_ROW_LIMIT));
+    const logPath = globals_1.APP_ENVIRONMENT.logPath;
     try {
         const contents = JSON.stringify(logContents);
         fs_1.writeFileSync(logPath, contents);
@@ -78,12 +60,8 @@ const storeLogContents = (logContents) => {
         console.log('Error trying to store log contents.');
     }
 };
-const getLastEntries = (numRows = 20) => {
+const getLastEntries = (numRows = 25) => {
     const logContents = getLogContents();
     return logContents.slice(Math.max(0, logContents.length - numRows)).reverse();
-};
-const getLastCommands = (numRows = 20) => {
-    const logContents = getLastEntries(numRows);
-    return logContents.slice(Math.max(0, logContents.length - numRows));
 };
 //# sourceMappingURL=log.action.js.map

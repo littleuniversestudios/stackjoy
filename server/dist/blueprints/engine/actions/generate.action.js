@@ -4,7 +4,6 @@ exports.GenerateAction = void 0;
 const fs_1 = require("fs");
 const preview_action_1 = require("./preview.action");
 const fs_extra_1 = require("fs-extra");
-const log_action_1 = require("./log.action");
 class GenerateAction {
     constructor(api) {
         this.api = api;
@@ -17,7 +16,6 @@ class GenerateAction {
         }
         else {
             this.writeGeneratedFilesToCodebase(result.executeContext);
-            log_action_1.LogAction.storeCommands('generate', itemId, inputs, rootDestination);
             return result;
         }
     }

@@ -13,6 +13,7 @@ const macos = (name) => {
         name: 'macos',
         platform: process.platform,
         path: {
+            homedir,
             data: (_a = process.env.STACKJOY_DATA_DIR) !== null && _a !== void 0 ? _a : path.join(library, 'Application Support', name),
             temp: path.join(tmpdir, name)
         }
@@ -25,6 +26,7 @@ const windows = (name) => {
         name: 'windows',
         platform: process.platform,
         path: {
+            homedir,
             data: (_a = process.env.STACKJOY_DATA_DIR) !== null && _a !== void 0 ? _a : path.join(localAppData, name),
             temp: path.join(tmpdir, name)
         }
@@ -37,6 +39,7 @@ const linux = (name) => {
         name: 'linux',
         platform: process.platform,
         path: {
+            homedir,
             data: (_a = process.env.STACKJOY_DATA_DIR) !== null && _a !== void 0 ? _a : path.join(env.XDG_DATA_HOME || path.join(homedir, '.local', 'share'), name),
             temp: path.join(tmpdir, username, name)
         }

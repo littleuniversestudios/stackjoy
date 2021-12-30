@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UUIDv4 = exports.UUIDShort = exports.UUID = exports.getLastDirectoryName = exports.isDirectorySync = void 0;
+exports.UUIDv4 = exports.UUIDLong = exports.UUIDMedium = exports.UUIDShort = exports.UUID = exports.getLastDirectoryName = exports.isDirectorySync = void 0;
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
 exports.isDirectorySync = path => fs_extra_1.lstatSync(path).isDirectory();
@@ -10,6 +10,12 @@ exports.UUID = () => {
 };
 exports.UUIDShort = () => {
     return exports.UUIDv4('xxxxxxxx');
+};
+exports.UUIDMedium = () => {
+    return exports.UUIDv4('xxxxxxxxxxxx');
+};
+exports.UUIDLong = () => {
+    return exports.UUIDv4('xxxxxxxxxxxxxxxx');
 };
 exports.UUIDv4 = (format) => {
     return format.replace(/[xy]/g, function (c) {

@@ -5,17 +5,12 @@ var BLU;
 (function (BLU) {
     let Origin;
     (function (Origin) {
-        let Type;
-        (function (Type) {
-            Type["Collection"] = "collection";
-            Type["Template"] = "template";
-            Type["Chain"] = "chain";
-            Type["Snippet"] = "snippet";
-            Type["Workspace"] = "workspace";
-            Type["User"] = "user";
-            Type["CMD"] = "command";
-            Type["System"] = "system";
-        })(Type = Origin.Type || (Origin.Type = {}));
+        let Types;
+        (function (Types) {
+            Types["User"] = "user";
+            Types["CMD"] = "command";
+            Types["System"] = "system";
+        })(Types = Origin.Types || (Origin.Types = {}));
     })(Origin = BLU.Origin || (BLU.Origin = {}));
     let Item;
     (function (Item) {
@@ -24,20 +19,19 @@ var BLU;
             Type["Collection"] = "collection";
             Type["Template"] = "template";
             Type["Chain"] = "chain";
-            Type["Snippet"] = "snippet";
             Type["Workspace"] = "workspace";
+            Type["Stack"] = "stack";
         })(Type = Item.Type || (Item.Type = {}));
     })(Item = BLU.Item || (BLU.Item = {}));
-    let Config;
-    (function (Config) {
-        let ErrorType;
-        (function (ErrorType) {
-            ErrorType["Parse"] = "onParse";
-            ErrorType["Stringify"] = "onStringify";
-            ErrorType["Load"] = "onLoad";
-            ErrorType["Store"] = "onStore";
-        })(ErrorType = Config.ErrorType || (Config.ErrorType = {}));
-    })(Config = BLU.Config || (BLU.Config = {}));
+    let Data;
+    (function (Data) {
+        let Type;
+        (function (Type) {
+            Type["input"] = "input";
+            Type["model"] = "model";
+            Type["schema"] = "schema";
+        })(Type = Data.Type || (Data.Type = {}));
+    })(Data = BLU.Data || (BLU.Data = {}));
     let Execute;
     (function (Execute) {
         let ErrorType;
@@ -46,10 +40,13 @@ var BLU;
             ErrorType["fileExists"] = "fileExists";
             ErrorType["parseError"] = "parseError";
             ErrorType["missingInput"] = "missingInput";
+            ErrorType["itemNotFound"] = "itemNotFound";
+            ErrorType["multipleItemsFound"] = "multipleItemsFound";
         })(ErrorType = Execute.ErrorType || (Execute.ErrorType = {}));
         let ErrorLocation;
         (function (ErrorLocation) {
             ErrorLocation["item"] = "item";
+            ErrorLocation["chain"] = "chain";
             ErrorLocation["file"] = "file";
             ErrorLocation["onSuccess"] = "onSuccess";
             ErrorLocation["config"] = "config";
@@ -63,7 +60,6 @@ var BLU;
             ErrorSection["variables"] = "variables";
             ErrorSection["readme"] = "readme";
             ErrorSection["functions"] = "functions";
-            ErrorSection["snippets"] = "snippets";
         })(ErrorSection = Execute.ErrorSection || (Execute.ErrorSection = {}));
     })(Execute = BLU.Execute || (BLU.Execute = {}));
     let Parser;
@@ -73,6 +69,7 @@ var BLU;
             ErrorType["Tokenizer"] = "tokenizerError";
             ErrorType["Parser"] = "parserError";
             ErrorType["Context"] = "contextError";
+            ErrorType["MergeConflict"] = "mergeError";
         })(ErrorType = Parser.ErrorType || (Parser.ErrorType = {}));
     })(Parser = BLU.Parser || (BLU.Parser = {}));
 })(BLU = exports.BLU || (exports.BLU = {}));

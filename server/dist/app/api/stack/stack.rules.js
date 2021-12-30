@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forPUT = exports.forDELETE = exports.forPOST = exports.forGET = exports.forLIST = void 0;
+exports.forInstallStack = exports.forPUT = exports.forDELETE = exports.forPOST = exports.forGET = exports.forLIST = void 0;
 /**
  * Rules for validating requests for Tree model
  * Based on express-validator which extends validator.js:
@@ -11,4 +11,7 @@ exports.forGET = [];
 exports.forPOST = [];
 exports.forDELETE = [];
 exports.forPUT = [];
+exports.forInstallStack = [
+// body('id').exists().withMessage(`Missing value`),
+];
 //# sourceMappingURL=stack.rules.js.map

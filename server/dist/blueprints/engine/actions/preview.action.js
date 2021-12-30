@@ -12,10 +12,49 @@ class PreviewAction {
     constructor(api) {
         this.api = api;
     }
-    execute(itemName, inputs, rootDestination) {
+    executeUsingNamespace(namespace, inputs, rootDestination) {
         this.ROOT_DESTINATION = rootDestination !== null && rootDestination !== void 0 ? rootDestination : './';
-        const executeItem = this.prepareItem(itemName, Object.assign({}, inputs !== null && inputs !== void 0 ? inputs : {}, this.defaultInputs()));
-        return this.getExecuteContext(executeItem);
+        const items = this.api.getItemByNamespace(namespace);
+        if (items.length !== 1) {
+            const errorType = items.length === 0 ? blu_interface_1.BLU.Execute.ErrorType.itemNotFound : blu_interface_1.BLU.Execute.ErrorType.multipleItemsFound;
+            const errorMessage = items.length === 0 ? `Item '${namespace}' not found` : `Multiple '${namespace}' items found, unsure which to use`;
+            const errors = [{
+                    type: errorType,
+                    message: errorMessage,
+                    data: { itemId: namespace },
+                    executeContextId: null,
+                    origin: {
+                        location: blu_interface_1.BLU.Execute.ErrorLocation.item,
+                    }
+                }];
+            return { errors: errors, onSuccess: '', executeContext: null };
+        }
+        else {
+            const executeItem = this.prepareItem(items[0], Object.assign({}, inputs !== null && inputs !== void 0 ? inputs : {}, this.defaultInputs()));
+            return this.getExecuteContext(executeItem);
+        }
+    }
+    execute(itemId, inputs, rootDestination) {
+        this.ROOT_DESTINATION = rootDestination !== null && rootDestination !== void 0 ? rootDestination : './';
+        const item = this.api.getItemById(itemId);
+        if (!item) {
+            const errorType = blu_interface_1.BLU.Execute.ErrorType.itemNotFound;
+            const errorMessage = `Item '${itemId}' not found`;
+            const errors = [{
+                    type: errorType,
+                    message: errorMessage,
+                    data: { itemId: itemId },
+                    executeContextId: null,
+                    origin: {
+                        location: blu_interface_1.BLU.Execute.ErrorLocation.item,
+                    }
+                }];
+            return { errors: errors, onSuccess: '', executeContext: null };
+        }
+        else {
+            const executeItem = this.prepareItem(item, Object.assign({}, inputs !== null && inputs !== void 0 ? inputs : {}, this.defaultInputs()));
+            return this.getExecuteContext(executeItem);
+        }
     }
     defaultInputs() {
         return {
@@ -46,9 +85,8 @@ class PreviewAction {
         });
         return { errors: allErrors, onSuccess, executeContext: ctx };
     }
-    prepareItem(itemName, inputs, parent = null) {
-        const item = this.api.getItemById(itemName);
-        return this.generate(item[0], inputs, parent);
+    prepareItem(item, inputs, parent = null) {
+        return this.generate(item, inputs, parent);
     }
     /**
      * context is the final context after the hierarchical context and execution contexts have been combined
@@ -118,17 +156,35 @@ class PreviewAction {
         const executeList = executeItem.executeList;
         if (!executeList.includes(executeItem.item.info.id)) {
             chain.commands.forEach(command => {
-                executeItem.children.push(this.prepareItem(command.command, command.inputs, executeItem));
+                const items = this.api.getItemByNamespace(command.command);
+                if (items.length !== 1) {
+                    const errorType = items.length === 0 ? blu_interface_1.BLU.Execute.ErrorType.itemNotFound : blu_interface_1.BLU.Execute.ErrorType.multipleItemsFound;
+                    const errorMessage = items.length === 0 ? `Item '${command.command}' not found` : `Multiple '${command.command}' items found, unsure which to use`;
+                    executeItem.errors.push({
+                        type: errorType,
+                        message: errorMessage,
+                        data: { itemId: executeItem.item.info.id, command: command.command },
+                        executeContextId: executeItem.execId,
+                        origin: {
+                            location: blu_interface_1.BLU.Execute.ErrorLocation.chain,
+                            section: blu_interface_1.BLU.Execute.ErrorSection.commands,
+                        }
+                    });
+                }
+                else {
+                    executeItem.children.push(this.prepareItem(items[0], command.inputs, executeItem));
+                }
             });
         }
         else {
             executeItem.errors.push({
                 type: blu_interface_1.BLU.Execute.ErrorType.circularChain,
                 message: 'Circular chain detected',
-                data: [...executeList, executeItem.item.info.id],
+                data: { chainOrder: [...executeList, executeItem.item.info.id], itemId: executeItem.item.info.id, command: executeItem.item.info.id },
                 executeContextId: executeItem.execId,
                 origin: {
-                    location: blu_interface_1.BLU.Execute.ErrorLocation.item
+                    location: blu_interface_1.BLU.Execute.ErrorLocation.chain,
+                    section: blu_interface_1.BLU.Execute.ErrorSection.commands,
                 }
             });
         }
@@ -248,4 +304,5 @@ class PreviewAction {
     }
 }
 exports.PreviewAction = PreviewAction;
+0;
 //# sourceMappingURL=preview.action.js.map

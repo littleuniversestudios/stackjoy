@@ -11,6 +11,7 @@ class EnvironmentModel {
     }
     init() {
         this.blueprintsPath = path_1.join(this.metadata.environmentPath, 'blueprints');
+        this.collectionsPath = this.blueprintsPath;
         this.logPath = path_1.join(this.metadata.environmentPath, 'log.json');
     }
     get codebasePath() {
@@ -21,11 +22,11 @@ class EnvironmentModel {
     }
     switchCodebase(codebasePath) {
         this.metadata.codebasePath = codebasePath;
-        this.metadata.associatedCodebasePaths.unshift(codebasePath);
         this.updateLastUsed(false);
-        // only store unique codebase paths
-        this.metadata.associatedCodebasePaths = [...new Set(this.metadata.associatedCodebasePaths)];
-        // save the metadata
+        this.saveMetadata();
+    }
+    updateSeed(url) {
+        this.metadata.seed = url;
         this.saveMetadata();
     }
     updateLastUsed(save = true) {
@@ -33,16 +34,6 @@ class EnvironmentModel {
         if (save) {
             this.saveMetadata();
         }
-    }
-    removeCodebase(codebasePath) {
-        const index = this.metadata.associatedCodebasePaths.findIndex(path => path === codebasePath);
-        if (index >= 0) {
-            this.metadata.associatedCodebasePaths.splice(index, 1);
-        }
-        // only store unique codebase paths
-        this.metadata.associatedCodebasePaths = [...new Set(this.metadata.associatedCodebasePaths)];
-        // save the metadata
-        this.saveMetadata();
     }
     saveMetadata() {
         fs_extra_1.writeJSONSync(path_1.join(this.metadata.environmentPath, 'metadata.json'), this.metadata);

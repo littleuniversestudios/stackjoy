@@ -2,107 +2,39 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppEnvironmentService = void 0;
 const globals_1 = require("../../../globals");
-const app_interface_1 = require("../../../shared/interfaces/app.interface");
-const app_environment_model_1 = require("../../models/app.environment.model");
+const path = require("path");
+const blu_utils_model_1 = require("../../../blueprints/engine/models/blu-utils.model");
 class AppEnvironmentService {
-    findAll() {
+    async findAll() {
         return { error: null, data: globals_1.APP.list };
     }
-    findById(id) {
-        return { error: null, data: globals_1.APP.getEnvironmentInfoById(id) };
-    }
     getCurrentEnvironment() {
-        return { error: null, data: globals_1.APP_ENVIRONMENT.metadata };
-    }
-    create(values) {
-        let newEnvironment;
-        const isLocal = values.isLocal === true || values.isLocal === 'true';
-        if (values.type === app_interface_1.App.Environment.Type.Workspace) {
-            newEnvironment = globals_1.APP.createWorkspace(values.codebasePath, values.name, isLocal);
+        var _a, _b, _c;
+        if (globals_1.APP_ENVIRONMENT) {
+            return { error: null, data: (_a = globals_1.APP_ENVIRONMENT === null || globals_1.APP_ENVIRONMENT === void 0 ? void 0 : globals_1.APP_ENVIRONMENT.metadata) !== null && _a !== void 0 ? _a : null };
         }
-        if (values.type === app_interface_1.App.Environment.Type.Stack) {
-            newEnvironment = globals_1.APP.createStack(values.name, isLocal);
+        else {
+            const data = {
+                INITIAL_CODEBASE_PATH: globals_1.INITIAL_CODEBASE_PATH,
+                suggestedName: (_c = (_b = path.parse(globals_1.INITIAL_CODEBASE_PATH !== null && globals_1.INITIAL_CODEBASE_PATH !== void 0 ? globals_1.INITIAL_CODEBASE_PATH : '')) === null || _b === void 0 ? void 0 : _b.name) !== null && _c !== void 0 ? _c : ''
+            };
+            return { error: { status: 404, message: 'No environment available', code: 'NO_ENV_AVAILABLE', data }, data: null };
         }
-        return { error: null, data: newEnvironment };
     }
-    update(id, values) {
-        return { error: null, data: null };
-    }
-    delete(id) {
-        return { error: null, data: null };
+    async rename(id, { name }) {
+        const envMetadata = globals_1.APP.getEnvironmentInfoById(id);
+        if (envMetadata) {
+            envMetadata.name = name;
+            globals_1.APP.updateEnvironmentMetadata(envMetadata);
+            return { error: null, data: { success: true } };
+        }
+        else {
+            return { error: { message: `Environment with id: ${id} not found` }, data: { success: false } };
+        }
     }
     switchEnvironment(values) {
         globals_1.switchEnvironment(values.id);
         return { error: null, data: globals_1.APP_ENVIRONMENT.metadata };
-    }
-    async installEnvironment({ id, name }, token) {
-        if (!id || !name)
-            return { error: 'Bad request!', data: null };
-        console.log(new Date(), 'Installing stack: ', id);
-        let stack;
-        try {
-            stack = new app_environment_model_1.EnvironmentModel(globals_1.APP.createStack(name, false));
-            stack.metadata.remote = {
-                id,
-                version: 1
-            };
-            await globals_1.APP.downloadRemoteStack(stack.blueprintsPath, id, token);
-            await globals_1.APP.updateEnvironmentMetadata(stack);
-        }
-        catch (e) {
-            // TODO Delete stack if clone fails
-            console.log(new Date(), e);
-            throw e;
-        }
-        return { error: null, data: null };
-    }
-    /**
-     * For now assume that we can only publish stacks (workspaces cannot be "published" but "shared")
-     *  - Publishing a stack means taking everything from the stack's /blueprints directory and creating a git repo for it.
-     *  - In return we get the repo ID back (or something else) to tie the local files to the repo files
-     *  - The published stack can be found on stackjoy.com
-     *  - the published stack can then be installed in another workspace [ stackjoy i xa5h6kdh2]
-     *
-     * @param values
-     * @param token
-     */
-    async publishEnvironment(values, token) {
-        const stackId = values.id;
-        const stack = globals_1.APP.getEnvironmentById(stackId);
-        try {
-            if (!token)
-                return { error: { message: 'No auth token provided!' }, data: null };
-            if (stack.metadata.isLocal) {
-                await globals_1.APP.createRemoteStack(stack, token);
-            }
-            else {
-                await globals_1.APP.publishRemoteStack(stack, token);
-            }
-        }
-        catch (e) {
-            console.log(e.message);
-            throw e;
-        }
-        globals_1.APP.updateEnvironmentMetadata(stack);
-        return { error: null, data: stack.metadata };
-    }
-    async syncEnvironment(values, token) {
-        const stackId = values.id;
-        const stack = globals_1.APP.getEnvironmentById(stackId);
-        try {
-            if (!token)
-                return { error: { message: 'No auth token provided!' }, data: null };
-            if (stack.metadata.isLocal)
-                return { error: 'Not a remote stack!', data: null };
-            else
-                await globals_1.APP.syncRemoteStack(stack, token);
-        }
-        catch (e) {
-            console.log(e.message);
-            throw e;
-        }
-        globals_1.APP.updateEnvironmentMetadata(stack);
-        return { error: null, data: stack.metadata };
     }
     switchCodebase(values) {
         const env = globals_1.APP_ENVIRONMENT.metadata.id === values.id ? globals_1.APP_ENVIRONMENT : globals_1.APP.getEnvironmentById(values.id);
@@ -114,15 +46,26 @@ class AppEnvironmentService {
             return { error: { message: `Environment with id: ${values.id} not found` }, data: null };
         }
     }
-    removeCodebase(values) {
-        const env = globals_1.APP_ENVIRONMENT.metadata.id === values.id ? globals_1.APP_ENVIRONMENT : globals_1.APP.getEnvironmentById(values.id);
+    updateSeed(id, { url }) {
+        const env = globals_1.APP_ENVIRONMENT.metadata.id === id ? globals_1.APP_ENVIRONMENT : globals_1.APP.getEnvironmentById(id);
         if (env) {
-            env.removeCodebase(values.codebasePath);
+            env.updateSeed(url);
             return { error: null, data: globals_1.APP_ENVIRONMENT.metadata };
         }
         else {
-            return { error: { message: `Environment with id: ${values.id} not found` }, data: null };
+            return { error: { message: `Environment with id: ${id} not found` }, data: null };
         }
+    }
+    getEnvironmentState(id) {
+        var _a;
+        const envMetadata = globals_1.APP.getEnvironmentInfoById(id);
+        const state = (_a = blu_utils_model_1.BLUUtils.loadJSONFile(path.join(envMetadata.environmentPath, 'state.json'))) !== null && _a !== void 0 ? _a : {};
+        return { error: null, data: state };
+    }
+    saveEnvironmentState(id, { state }) {
+        const envMetadata = globals_1.APP.getEnvironmentInfoById(id);
+        blu_utils_model_1.BLUUtils.saveJSONFile(path.join(envMetadata.environmentPath, 'state.json'), state);
+        return { error: null, data: { success: true } };
     }
 }
 exports.AppEnvironmentService = AppEnvironmentService;

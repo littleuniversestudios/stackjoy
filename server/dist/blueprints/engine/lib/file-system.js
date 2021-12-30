@@ -43,6 +43,7 @@ BLUFileSystem.fileTree = (folderPath, ignoreFiles = []) => {
     const treeStruct = (rootPath) => {
         const tree = {
             folderName: BLUFileSystem.getLastDirectoryName(rootPath),
+            absolutePath: rootPath,
             files: [],
             subFolders: [],
         };
