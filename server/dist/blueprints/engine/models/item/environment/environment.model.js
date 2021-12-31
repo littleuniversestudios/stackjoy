@@ -69,7 +69,6 @@ class EnvironmentModel extends base_model_1.BaseModel {
      */
     deleteStack(id) {
         const stack = this.getStack(id);
-        console.log('', stack);
         if (stack) {
             try {
                 // path.self refers to the 'blueprints' of the folder

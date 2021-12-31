@@ -38,7 +38,8 @@
     "lodash": "^4.17.20",
     "moo": "^0.5.1",
     "nearley": "^2.19.7",
-    "simple-git": "^2.38.0"
+    "simple-git": "^2.38.0",
+    "winston": "^3.3.3"
   },
   "bugs": {
     "url": "https://github.com/littleuniversestudios/stackjoy/issues"

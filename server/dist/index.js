@@ -28,10 +28,7 @@ app.all('*', (req, res) => res.status(200).sendFile(`/`, { root: _app_folder }))
 app.use(error_handler_1.serverErrorHandler);
 app.listen(port, () => {
     const codebasePath = process.cwd();
-    // const codebasePath = '/Users/nvitas/lus/git/stackjoy/stackjoy-git'
     globals_1.initApp(codebasePath);
-    // console.log(`http://127.0.0.1:${port}`);
-    // console.log('operating from: ', APP_ENVIRONMENT.codebasePath)
     if (process.send)
         process.send({ event: 'started', data: { url: `http://127.0.0.1:${port}`, root: codebasePath } });
 });

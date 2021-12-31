@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseBLU = void 0;
 const nearley = require("nearley");
 const parser_interface_1 = require("./parser.interface");
+const globals_1 = require("../../globals");
 const grammar = require('./grammar/grammar.js');
 function parseBLU(text) {
     let result = { outcome: parser_interface_1.BLUParser.Parser.Outcome.success, ast: [], error: null };
@@ -11,7 +12,7 @@ function parseBLU(text) {
         parser.feed(text);
         if (parser.results.length > 1) {
             console.warn("AMBIGUOUS GRAMMAR!");
-            console.log(parser.results);
+            globals_1.logger.error(parser.results);
         }
         result.ast = parser.results[0];
     }

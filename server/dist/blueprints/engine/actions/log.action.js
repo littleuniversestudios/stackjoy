@@ -11,7 +11,6 @@ class LogAction {
         return getLastEntries(logEntriesToShow);
     }
     static saveLogEntry({ sessionData }) {
-        console.log('', sessionData);
         const logEntries = getLogContents();
         if (!this.sameEntryAsLast(sessionData, logEntries[0])) {
             logEntries.push(sessionData);
@@ -57,7 +56,7 @@ const storeLogContents = (logContents) => {
         fs_1.writeFileSync(logPath, contents);
     }
     catch (e) {
-        console.log('Error trying to store log contents.');
+        globals_1.logger.error('Error trying to store log contents.');
     }
 };
 const getLastEntries = (numRows = 25) => {

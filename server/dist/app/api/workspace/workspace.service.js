@@ -28,7 +28,6 @@ class WorkspaceService extends base_environment_service_1.BaseEnvironmentService
     async installWorkspace({ id, name, version, codebasePath }, token) {
         if (!id || !name || !version || !codebasePath)
             return { error: { status: 400, code: 'parameters-missing', message: `Stack 'id' or 'name' or 'version' or 'codebasePath' missing in parameters` }, data: null };
-        console.log(new Date(), 'Installing workspace: ', id);
         let stack = new app_environment_model_1.EnvironmentModel(globals_1.APP.createWorkspace(codebasePath, name, false));
         stack.metadata.localVersion = version;
         stack.metadata.remote = {

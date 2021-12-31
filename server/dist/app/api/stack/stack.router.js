@@ -58,7 +58,6 @@ exports.stackRouter.put('/:stackId/add-collection', route_validation_1.validateR
  */
 exports.stackRouter.delete('/:stackId', route_validation_1.validateRequest(stackRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.deleteStack(`${req.params.stackId}`);
-    console.log('res=>', result);
     result.error ? next(result.error) : res.json(result.data);
 }));
 //# sourceMappingURL=stack.router.js.map

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.serverErrorHandler = void 0;
+const globals_1 = require("../../globals");
 exports.serverErrorHandler = (err, req, res, next) => {
     var _a, _b, _c, _d;
     let status = (_a = err.status) !== null && _a !== void 0 ? _a : 500;
@@ -9,10 +10,7 @@ exports.serverErrorHandler = (err, req, res, next) => {
         code: (_c = err.code) !== null && _c !== void 0 ? _c : null,
         data: (_d = err.data) !== null && _d !== void 0 ? _d : null
     };
-    console.log('========== ERROR =============');
-    console.log('', err);
-    console.log(errorBody);
-    console.log('========== /ERROR =============');
+    globals_1.logger.error(errorBody);
     res.status(status).json(errorBody);
 };
 //# sourceMappingURL=error-handler.js.map

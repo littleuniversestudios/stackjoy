@@ -15,6 +15,7 @@ class AppModel {
         this.stacksPath = path_1.join(globals_1.SYSTEM.path.data, 'stacks');
         this.cachePath = path_1.join(globals_1.SYSTEM.path.data, 'cache');
         this.statePath = path_1.join(globals_1.SYSTEM.path.data, 'state');
+        this.logPath = path_1.join(globals_1.SYSTEM.path.data, 'logs');
         this.workspaceList = [];
         this.stackList = [];
         this.init();
@@ -24,6 +25,7 @@ class AppModel {
         fs_extra_1.ensureDirSync(this.stacksPath);
         fs_extra_1.ensureDirSync(this.cachePath);
         fs_extra_1.ensureDirSync(this.statePath);
+        fs_extra_1.ensureDirSync(this.logPath);
         this.createLists();
     }
     createLists() {
@@ -32,6 +34,10 @@ class AppModel {
     }
     refresh() {
         this.createLists();
+    }
+    get logFile() {
+        const logFilename = `${new Date().toISOString().split('T')[0]}.error.log`;
+        return process.env.LOGGING_MODE === 'development' ? path_1.join('logs', logFilename) : path_1.join(globals_1.SYSTEM.path.data, 'logs', logFilename);
     }
     get list() {
         return { workspaces: this.workspaceList, stacks: this.stackList };

@@ -65,7 +65,6 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
     async downloadStack({ id, name, version }, token) {
         if (!id || !name || !version)
             return { error: { status: 400, code: 'parameters-missing', message: `Stack 'id' or 'name' or 'version' missing in parameters` }, data: null };
-        console.log(new Date(), 'Installing stack: ', id);
         let stack = new app_environment_model_1.EnvironmentModel(globals_1.APP.createStack(name, false));
         stack.metadata.localVersion = version;
         stack.metadata.remote = {
@@ -144,7 +143,6 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
                 return { error: null, data: { success: true } };
             }
             catch (e) {
-                console.log('error=>', e.message);
                 return { error: { status: 400, code: 'overwrite-error', message: 'Files would be overwritten with install.', data: e }, data: { success: true } };
             }
         }

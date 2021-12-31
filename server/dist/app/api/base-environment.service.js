@@ -49,7 +49,6 @@ class BaseEnvironmentService {
         }
         catch (e) {
             // TODO Delete stack if clone fails
-            console.log(new Date(), e);
             return { error: { message: 'Failed to download environment', data: e }, data: null };
         }
     }
@@ -75,7 +74,7 @@ class BaseEnvironmentService {
                 await globals_1.APP.publishRemoteEnvironment(env, token, commitMessage);
         }
         catch (e) {
-            console.log(e.message);
+            globals_1.logger.error(e.message);
             throw e;
         }
         globals_1.APP.updateEnvironmentModel(env);
@@ -100,7 +99,7 @@ class BaseEnvironmentService {
             stack.metadata.remote.version = newVersion;
         }
         catch (e) {
-            console.log(e.message);
+            globals_1.logger.error(e.message);
             throw e;
         }
         globals_1.APP.updateEnvironmentModel(stack);

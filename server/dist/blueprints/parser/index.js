@@ -7,11 +7,11 @@ const text = test_cases_1.simpleCase;
 const context = test_context_1.testContext;
 const { errors, renderedText } = start_parse_1.renderText(text, context);
 if (errors) {
-    console.log(errors);
+    // console.log(errors)
 }
 else {
-    console.log('=============');
-    console.log(renderedText);
-    console.log('=============');
+    // console.log('=============');
+    // console.log(renderedText)
+    // console.log('=============');
 }
 //# sourceMappingURL=index.js.map
