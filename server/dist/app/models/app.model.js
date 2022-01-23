@@ -49,6 +49,9 @@ class AppModel {
         }
         return env;
     }
+    async purgeEnvironment(id) {
+        return false;
+    }
     async deleteEnvironment(id) {
         const metadata = this.getEnvironmentInfoById(id);
         if (!metadata)
@@ -192,7 +195,7 @@ class AppModel {
         this.updateEnvironmentMetadata(environment.metadata, batchUpdate);
     }
     async createRemoteEnvironment(env, token) {
-        const envId = await globals_1.GIT.createRepo(env.blueprintsPath, token, env.metadata.name, env.metadata.type);
+        const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, token, env.metadata.name, env.metadata.type);
         env.metadata.isLocal = false;
         env.metadata.remote = {
             id: envId,
@@ -201,22 +204,22 @@ class AppModel {
         };
     }
     async syncRemoteEnvironment(stack, token) {
-        return await globals_1.GIT.syncRepo(stack.blueprintsPath, token);
+        return await globals_1.SJ_SERVER.syncRepo(stack.blueprintsPath, token);
     }
-    async publishRemoteEnvironment(stack, token, id, commitMessage) {
-        const { newVersion, requiresMerge } = await globals_1.GIT.publishRepo(stack.blueprintsPath, stack.metadata.remote.id, token, commitMessage || `Automated commit message for version ${stack.metadata.remote.version}`);
+    async publishRemoteEnvironment(env, token, id, commitMessage) {
+        const { newVersion, requiresMerge } = await globals_1.SJ_SERVER.publishRepo(env.blueprintsPath, env.metadata.remote.id, token, commitMessage || `Automated commit message for version ${env.metadata.remote.version}`);
         if (newVersion != null) {
-            stack.metadata.localVersion = newVersion;
-            stack.metadata.remote.version = newVersion;
+            env.metadata.localVersion = newVersion;
+            env.metadata.remote.version = newVersion;
         }
         if (requiresMerge != null)
-            stack.metadata.remote.requiresMerge = requiresMerge;
+            env.metadata.remote.requiresMerge = requiresMerge;
     }
     async downloadRemoteEnvironment(destinationPath, remoteId, token) {
-        return await globals_1.GIT.downloadRepo(destinationPath, remoteId, token);
+        return await globals_1.SJ_SERVER.downloadRepo(destinationPath, remoteId, token);
     }
     async downloadSeed(destinationPath, url) {
-        return await globals_1.GIT.downloadSeed(destinationPath, url);
+        return await globals_1.SJ_SERVER.downloadSeed(destinationPath, url);
     }
 }
 exports.AppModel = AppModel;

@@ -78,9 +78,10 @@ class ExecuteItemModel {
      *    1.2) otherwise it's a single file so just put it in the current working directory
      */
     mergeDestination(parentDestination, itemDestination, allVariables) {
-        var _a, _b;
+        var _a, _b, _c, _d;
         const name = (_a = ExecuteItemModel.getVariable(allVariables, 'name')) === null || _a === void 0 ? void 0 : _a.value;
         const wrapInFolder = (_b = ExecuteItemModel.getVariable(allVariables, 'wrapInFolder')) === null || _b === void 0 ? void 0 : _b.value;
+        const folderName = (_c = ExecuteItemModel.getVariable(allVariables, 'folderName')) === null || _c === void 0 ? void 0 : _c.value;
         parentDestination = !!parentDestination ? parentDestination : this.ROOT_DESTINATION;
         if (itemDestination) {
             /**
@@ -102,7 +103,7 @@ class ExecuteItemModel {
             if (wrapInFolder === false) {
                 return parentDestination;
             }
-            else if (this.numFiles > 1 || wrapInFolder === true) {
+            else if (this.numFiles > 1 || wrapInFolder === true || !!folderName) {
                 // if there are more than 1 files or 'wrapInFolder' is set to true
                 // add a subfolder with the value of the name to the destination
                 if (!name) {
@@ -117,7 +118,7 @@ class ExecuteItemModel {
                         type: blu_interface_1.BLU.Execute.ErrorType.missingInput
                     });
                 }
-                return path.join(parentDestination, name !== null && name !== void 0 ? name : '');
+                return path.join(parentDestination, (_d = (folderName !== null && folderName !== void 0 ? folderName : name)) !== null && _d !== void 0 ? _d : '');
             }
             else {
                 return parentDestination;

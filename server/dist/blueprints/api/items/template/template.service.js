@@ -26,6 +26,9 @@ class TemplateService {
     duplicate(id) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().duplicateTemplate(id);
     }
+    copy(id, { collectionId }) {
+        return globals_1.APP_ENVIRONMENT.getBlueprints().copyTemplate(id, collectionId);
+    }
     createFile(id, { newFileName, path }) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().createNewFile(id, newFileName, path);
     }

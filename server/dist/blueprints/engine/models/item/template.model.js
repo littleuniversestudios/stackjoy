@@ -125,7 +125,7 @@ class TemplateModel extends base_model_1.BaseModel {
         try {
             const newTemplateId = TemplateModel.newId();
             fs_extra_1.copySync(template.paths.self, path_1.join(destination, `./${newTemplateId}`));
-            const newTemplate = new TemplateModel(newTemplateId, template.parent);
+            const newTemplate = new TemplateModel(newTemplateId, parent);
             if (newName) {
                 newTemplate.renameTemplate(newName);
             }

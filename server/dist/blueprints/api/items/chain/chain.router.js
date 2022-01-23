@@ -24,6 +24,10 @@ exports.chainRouter.post('/duplicate/:chainId', route_validation_1.validateReque
     const result = chainService.duplicate(req.params.chainId);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.chainRouter.post('/copy/:chainId', route_validation_1.validateRequest(chainRules.forDUPLICATE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = chainService.copy(req.params.chainId, req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.chainRouter.put('/:chainId/rename', route_validation_1.validateRequest(chainRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await chainService.rename(req.params.chainId, req.body);
     result.error ? next(result.error) : res.json(result.data);

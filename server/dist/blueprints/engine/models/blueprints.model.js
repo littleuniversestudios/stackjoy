@@ -161,11 +161,33 @@ class BlueprintsModel {
                 return { error: null, data: { success: true } };
             }
             catch (error) {
-                return { error: { status: 400, code: 'template-duplicate-error', message: `Error occurred trying to duplicate template with id: '${chainId}'`, error }, data: { success: false } };
+                return { error: { status: 400, code: 'chain-duplicate-error', message: `Error occurred trying to duplicate chain with id: '${chainId}'`, error }, data: { success: false } };
             }
         }
         else {
-            return { error: { status: 400, code: 'template-not-found', message: `Template with id '${chainId}' not found` }, data: { success: false } };
+            return { error: { status: 400, code: 'chain-not-found', message: `Chain with id '${chainId}' not found` }, data: { success: false } };
+        }
+    }
+    copyChain(chainId, collectionId) {
+        const chain = this.getChain(chainId);
+        const collection = this.getCollection(collectionId);
+        if (!chain) {
+            return { error: { status: 400, code: 'chain-not-found', message: `Template with id '${chainId}' not found` }, data: { success: false } };
+        }
+        else if (!collection) {
+            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id '${collectionId}' not found` }, data: { success: false } };
+        }
+        else {
+            try {
+                const newChainId = chain_model_1.ChainModel.newId();
+                fs_extra_1.copySync(chain.paths.self, path_1.join(collection.paths.chains, newChainId));
+                const newChain = new chain_model_1.ChainModel(newChainId, collection);
+                newChain.renameChain(chain.name);
+                return { error: null, data: { success: true } };
+            }
+            catch (error) {
+                return { error: { status: 400, code: 'chain-copy-error', message: `Error occurred trying to copy chain with id: '${chainId}'`, error }, data: { success: false } };
+            }
         }
     }
     /**
@@ -219,6 +241,20 @@ class BlueprintsModel {
         }
         else {
             return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
+        }
+    }
+    copyTemplate(templateId, collectionId) {
+        const template = this.getTemplate(templateId);
+        const collection = this.getCollection(collectionId);
+        if (!template) {
+            return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
+        }
+        else if (!collection) {
+            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id '${collectionId}' not found` }, data: { success: false } };
+        }
+        else {
+            const destination = collection.paths.templates;
+            return template_model_1.TemplateModel.copyTemplate(template, destination, collection);
         }
     }
     createNewFile(templateId, newFileName, path) {

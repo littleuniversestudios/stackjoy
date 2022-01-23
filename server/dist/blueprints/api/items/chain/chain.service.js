@@ -21,6 +21,9 @@ class ChainService {
     duplicate(id) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().duplicateChain(id);
     }
+    copy(id, { collectionId }) {
+        return globals_1.APP_ENVIRONMENT.getBlueprints().copyChain(id, collectionId);
+    }
     delete(id) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().deleteChain(id);
     }

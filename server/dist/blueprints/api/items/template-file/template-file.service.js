@@ -108,7 +108,7 @@ class TemplateFileService {
      * @private
      */
     isFileUpdateAllowed(absolutePath) {
-        if (absolutePath.indexOf(globals_1.SYSTEM.path.data) !== 0) {
+        if (path_1.resolve(absolutePath).indexOf(path_1.resolve(globals_1.SYSTEM.path.data)) !== 0) {
             return {
                 error: {
                     status: 401, code: 'unauthorized-file-update',

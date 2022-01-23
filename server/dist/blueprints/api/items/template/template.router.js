@@ -24,6 +24,10 @@ exports.templateRouter.post('/duplicate/:templateId', route_validation_1.validat
     const result = templateService.duplicate(req.params.templateId);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.templateRouter.post('/copy/:templateId', route_validation_1.validateRequest(templateRules.forDUPLICATE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = templateService.copy(req.params.templateId, req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.templateRouter.post('/file/:templateId', route_validation_1.validateRequest(templateRules.forDUPLICATE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = templateService.createFile(req.params.templateId, req.body);
     result.error ? next(result.error) : res.json(result.data);

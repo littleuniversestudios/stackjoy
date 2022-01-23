@@ -10,6 +10,19 @@ class BaseEnvironmentService {
             }, data: { success: false }
         };
     }
+    async shareEnvironment({ envId, email, permission }, token) {
+        const resp = await globals_1.SJ_SERVER.shareEnvironment(envId, email, permission, token);
+        if (resp.status !== 200)
+            return { error: 'Unknown error occurred', data: { success: false } };
+        return { error: null, data: { success: true, userId: resp.data['userId'] } };
+    }
+    async purge(remoteId, token) {
+        return (await globals_1.SJ_SERVER.purgeRepo(remoteId, token)) ? { error: null, data: { success: true } } : {
+            error: {
+                status: 500, code: 'internal-error', message: 'Something went wrong. Please try again later.'
+            }, data: { success: false }
+        };
+    }
     async findById(id) {
         const env = globals_1.APP.getEnvironmentInfoById(id);
         const error = !env ? { status: 400, code: 'env-not-found', message: `Environment with id ${id} was not found.` } : null;
@@ -26,7 +39,7 @@ class BaseEnvironmentService {
         if (env.isLocal)
             return;
         try {
-            const status = await globals_1.GIT.repoStatus(env.blueprintsPath);
+            const status = await globals_1.SJ_SERVER.repoStatus(env.blueprintsPath);
             env.remote.isClean = status.isClean() && status.ahead == 0;
             globals_1.APP.updateEnvironmentMetadata(env, batchUpdate);
         }

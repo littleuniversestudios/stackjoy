@@ -26,8 +26,12 @@ exports.workspaceRouter.post('/', route_validation_1.validateRequest(workspaceRu
     const result = await workspaceService.create(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.workspaceRouter.post('/sync', route_validation_1.validateRequest(workspaceRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
+exports.workspaceRouter.post('/sync', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await workspaceService.syncEnvironment(req.body, req.header('Firebase-Auth-Token'));
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.workspaceRouter.post('/share', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await workspaceService.shareEnvironment(req.body, req.header('Firebase-Auth-Token'));
     result.error ? next(result.error) : res.json(result.data);
 }));
 /*
@@ -46,6 +50,10 @@ exports.workspaceRouter.put('/install', route_validation_1.validateRequest(works
  */
 exports.workspaceRouter.delete('/:appEnvironmentId', route_validation_1.validateRequest(workspaceRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await workspaceService.delete(req.params.appEnvironmentId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.workspaceRouter.delete('/purge/:remoteId', route_validation_1.validateRequest(workspaceRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await workspaceService.purge(req.params.remoteId, req.header('Firebase-Auth-Token'));
     result.error ? next(result.error) : res.json(result.data);
 }));
 //# sourceMappingURL=workspace.router.js.map
