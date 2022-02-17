@@ -85,25 +85,18 @@ class PreviewAction {
         });
         return { errors: allErrors, onSuccess, executeContext: ctx };
     }
-    prepareItem(item, inputs, parent = null) {
-        return this.generate(item, inputs, parent);
+    prepareItem(item, inputs, parent = null, extraInfo) {
+        return this.generate(item, inputs, parent, extraInfo);
     }
     /**
      * context is the final context after the hierarchical context and execution contexts have been combined
-     * @param item
-     * @param inputs
-     * @param parent
      */
-    generate(item, inputs, parent = null) {
-        const executeItem = new execute_item_model_1.ExecuteItemModel(item, parent, inputs, this.ROOT_DESTINATION);
+    generate(item, inputs, parent = null, extraInfo) {
+        const executeItem = new execute_item_model_1.ExecuteItemModel(item, parent, inputs, this.ROOT_DESTINATION, extraInfo);
         switch (item.type) {
             case blu_interface_1.BLU.Item.Type.Template:
                 this.evaluateVariables(executeItem);
                 this.generateTemplate(executeItem);
-                this.generateOnSuccess(executeItem);
-                break;
-            case blu_interface_1.BLU.Item.Type.Chain:
-                this.evaluateVariables(executeItem);
                 this.generateChain(item, executeItem);
                 this.generateOnSuccess(executeItem);
                 break;
@@ -116,18 +109,59 @@ class PreviewAction {
                 const renderResult = start_parse_1.renderText(variable.value, executeItem.renderContext);
                 variable.value = renderResult.renderedText;
                 if (renderResult.errors) {
-                    executeItem.errors.push(...renderResult.errors.map(e => ({
+                    this.setVariableErrors(executeItem, variable, renderResult.errors);
+                }
+            }
+        });
+    }
+    setVariableErrors(executeItem, variable, errors) {
+        errors.forEach(error => {
+            switch (variable.origin.type) {
+                case blu_interface_1.BLU.Origin.Types.Chain:
+                    // inputs that come from a chain originate in the parent, so we set this error in the parent
+                    executeItem.parent.errors.push({
+                        executeContextId: executeItem.parent.execId,
+                        type: blu_interface_1.BLU.Execute.ErrorType.parseError,
+                        message: `Error parsing input "${variable.name}" in Chained Template: '${executeItem.item.name}'`,
+                        data: Object.assign({}, error, { templateId: executeItem.item.id, templateName: executeItem.item.name }),
+                        origin: {
+                            location: blu_interface_1.BLU.Execute.ErrorLocation.config,
+                            section: blu_interface_1.BLU.Execute.ErrorSection.chainedTemplates,
+                            property: variable.name
+                        },
+                    });
+                    break;
+                case blu_interface_1.BLU.Origin.Types.User:
+                    // this error occurred in the main input that the user submitted
+                    // so we get the top most execute item...or, the patriarch and put the error there
+                    const patriarch = executeItem.patriarch;
+                    const sameError = patriarch.errors.find(e => { var _a; return ((_a = e.origin) === null || _a === void 0 ? void 0 : _a.property) === variable.name; });
+                    if (!sameError) {
+                        patriarch.errors.push({
+                            executeContextId: executeItem.execId,
+                            type: blu_interface_1.BLU.Execute.ErrorType.parseError,
+                            message: `Error parsing input "${variable.name}"'`,
+                            data: error,
+                            origin: {
+                                location: blu_interface_1.BLU.Execute.ErrorLocation.userInput,
+                                property: variable.name
+                            },
+                        });
+                    }
+                    break;
+                default:
+                    executeItem.errors.push({
                         executeContextId: executeItem.execId,
                         type: blu_interface_1.BLU.Execute.ErrorType.parseError,
-                        message: `Error while parsing variable "${variable.name}" found in config -> variables of ${variable.origin.type}:${variable.origin.name}`,
-                        data: e,
+                        message: `Error parsing variable "${variable.name}" in Config > variables`,
+                        data: error,
                         origin: {
                             location: blu_interface_1.BLU.Execute.ErrorLocation.config,
                             section: blu_interface_1.BLU.Execute.ErrorSection.variables,
                             property: variable.name
                         },
-                    })));
-                }
+                    });
+                    break;
             }
         });
     }
@@ -142,49 +176,54 @@ class PreviewAction {
             executeItem.errors.push(...renderResult.errors.map(e => ({
                 executeContextId: executeItem.execId,
                 type: blu_interface_1.BLU.Execute.ErrorType.parseError,
-                message: 'Error while parsing onSuccess text',
+                message: 'Error while parsing Config > onSuccess',
                 data: e,
                 origin: {
                     location: blu_interface_1.BLU.Execute.ErrorLocation.config,
-                    section: blu_interface_1.BLU.Execute.ErrorSection.settings,
-                    property: blu_interface_1.BLU.Execute.ErrorLocation.onSuccess
+                    section: blu_interface_1.BLU.Execute.ErrorSection.onSuccess,
+                    property: null
                 }
             })));
         }
     }
-    generateChain(chain, executeItem) {
+    generateChain(template, executeItem) {
         const executeList = executeItem.executeList;
-        if (!executeList.includes(executeItem.item.info.id)) {
-            chain.commands.forEach(command => {
-                const items = this.api.getItemByNamespace(command.command);
-                if (items.length !== 1) {
-                    const errorType = items.length === 0 ? blu_interface_1.BLU.Execute.ErrorType.itemNotFound : blu_interface_1.BLU.Execute.ErrorType.multipleItemsFound;
-                    const errorMessage = items.length === 0 ? `Item '${command.command}' not found` : `Multiple '${command.command}' items found, unsure which to use`;
+        if (!executeList.map(i => i.id).includes(executeItem.item.info.id)) {
+            template.chainedTemplates.forEach(chainedTemplate => {
+                const item = this.api.getItemById(chainedTemplate.templateId);
+                if (!item) {
+                    const errorType = blu_interface_1.BLU.Execute.ErrorType.itemNotFound;
+                    const errorMessage = `Item '${chainedTemplate.templateId}' not found`;
                     executeItem.errors.push({
                         type: errorType,
                         message: errorMessage,
-                        data: { itemId: executeItem.item.info.id, command: command.command },
+                        data: { itemId: executeItem.item.info.id, command: chainedTemplate.templateId },
                         executeContextId: executeItem.execId,
                         origin: {
                             location: blu_interface_1.BLU.Execute.ErrorLocation.chain,
-                            section: blu_interface_1.BLU.Execute.ErrorSection.commands,
+                            section: blu_interface_1.BLU.Execute.ErrorSection.chainedTemplates,
                         }
                     });
                 }
                 else {
-                    executeItem.children.push(this.prepareItem(items[0], command.inputs, executeItem));
+                    executeItem.children.push(this.prepareItem(item, chainedTemplate.inputs, executeItem, { inputsOrigin: blu_interface_1.BLU.Origin.Types.Chain }));
                 }
             });
         }
         else {
-            executeItem.errors.push({
+            executeItem.parent.errors.push({
                 type: blu_interface_1.BLU.Execute.ErrorType.circularChain,
                 message: 'Circular chain detected',
-                data: { chainOrder: [...executeList, executeItem.item.info.id], itemId: executeItem.item.info.id, command: executeItem.item.info.id },
-                executeContextId: executeItem.execId,
+                data: {
+                    chainOrder: [{ id: executeItem.item.info.id, name: executeItem.item.info.name }, ...executeList,].reverse(),
+                    itemId: executeItem.parent.item.info.id,
+                    templateId: executeItem.item.info.id,
+                    templateName: executeItem.item.info.name
+                },
+                executeContextId: executeItem.parent.execId,
                 origin: {
-                    location: blu_interface_1.BLU.Execute.ErrorLocation.chain,
-                    section: blu_interface_1.BLU.Execute.ErrorSection.commands,
+                    location: blu_interface_1.BLU.Execute.ErrorLocation.config,
+                    section: blu_interface_1.BLU.Execute.ErrorSection.chainedTemplates,
                 }
             });
         }
@@ -194,7 +233,7 @@ class PreviewAction {
         folder.files.forEach((file, index) => {
             const allFileErrors = [];
             let { filename, basename, extname, filenameErrors } = this.getFilename(executeItem, file);
-            allFileErrors.push(...filenameErrors);
+            executeItem.errors.push(...filenameErrors);
             let { destination, destinationFolder, destinationErrors, fileExists } = this.getDestination(executeItem, file, filename);
             allFileErrors.push(...destinationErrors);
             const fileContextInputs = {
@@ -265,11 +304,11 @@ class PreviewAction {
                 executeContextId: executeItem.execId,
                 fileId: file.id,
                 type: blu_interface_1.BLU.Execute.ErrorType.parseError,
-                message: 'Error while parsing Config > Settings > filenames',
+                message: 'Error while parsing Config > filenames',
                 origin: {
                     location: blu_interface_1.BLU.Execute.ErrorLocation.config,
-                    section: blu_interface_1.BLU.Execute.ErrorSection.settings,
-                    property: 'filenames'
+                    section: blu_interface_1.BLU.Execute.ErrorSection.filenames,
+                    property: null
                 },
                 data: e
             })));
@@ -304,5 +343,4 @@ class PreviewAction {
     }
 }
 exports.PreviewAction = PreviewAction;
-0;
 //# sourceMappingURL=preview.action.js.map

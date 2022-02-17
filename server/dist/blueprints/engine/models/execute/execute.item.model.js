@@ -6,10 +6,11 @@ const utils_1 = require("../../lib/utils");
 const workspace_model_1 = require("../item/environment/workspace.model");
 const path = require("path");
 class ExecuteItemModel {
-    constructor(item, parent, inputs = {}, ROOT_DESTINATION) {
+    constructor(item, parent, inputs = {}, ROOT_DESTINATION, extraInfo) {
         this.item = item;
         this.parent = parent;
         this.ROOT_DESTINATION = ROOT_DESTINATION;
+        this.extraInfo = extraInfo;
         this.errors = [];
         this.children = [];
         this.inputs = {};
@@ -22,16 +23,16 @@ class ExecuteItemModel {
         this.itemSettings = this.getItemSettings();
     }
     getItemContext() {
-        var _a;
+        var _a, _b;
         const hierarchicalContext = this.getHierarchicalContext();
         const executionContext = this.parent ? this.parent.itemContext : ExecuteItemModel.blankContext();
         const parentContext = ExecuteItemModel.mergeContext(executionContext, hierarchicalContext);
         let renderContext = ExecuteItemModel.mergeContext(this.item.context, parentContext);
         renderContext = this.mergeSystemFunctions(renderContext);
-        const inputsAsVariables = ExecuteItemModel.inputsToVariables(this.inputs);
+        const inputsAsVariables = ExecuteItemModel.inputsToVariables(this.inputs, (_a = this.extraInfo) === null || _a === void 0 ? void 0 : _a.inputsOrigin);
         const mergedVariables = ExecuteItemModel.mergeVariables(inputsAsVariables, renderContext.variables);
         /** destination must be done after everything is merged because it needs the name **/
-        this.destination = this.mergeDestination((_a = this.parent) === null || _a === void 0 ? void 0 : _a.destination, this.inputs.destination, mergedVariables);
+        this.destination = this.mergeDestination((_b = this.parent) === null || _b === void 0 ? void 0 : _b.destination, this.inputs.destination, mergedVariables);
         renderContext.variables = ExecuteItemModel.overrideVariables(ExecuteItemModel.inputsToVariables({ destination: this.destination }), mergedVariables);
         return renderContext;
     }
@@ -50,13 +51,16 @@ class ExecuteItemModel {
     // raw onSuccess str that hasn't been evaluated
     get onSuccessStr() {
         var _a;
-        return this.isOfType(blu_interface_1.BLU.Item.Type.Template) || this.isOfType(blu_interface_1.BLU.Item.Type.Chain) ? (_a = this.itemSettings.onSuccess) !== null && _a !== void 0 ? _a : '' : '';
+        return this.isOfType(blu_interface_1.BLU.Item.Type.Template) ? (_a = this.itemSettings.onSuccess) !== null && _a !== void 0 ? _a : '' : '';
     }
     isOfType(type) {
         return this.item.type === type;
     }
     get parentId() {
         return this.parent ? this.parent.item.info.id : null;
+    }
+    get patriarch() {
+        return this.parent ? this.parent.patriarch : this;
     }
     get renderContext() {
         return ExecuteItemModel.itemToRenderContext(this.itemContext);
@@ -183,8 +187,8 @@ class ExecuteItemModel {
     static blankContext() {
         return { variables: [], functions: [] };
     }
-    static inputsToVariables(inputs) {
-        return Object.keys(inputs !== null && inputs !== void 0 ? inputs : {}).map(key => ({ name: key, value: inputs[key], origin: { name: 'user-input', type: blu_interface_1.BLU.Origin.Types.User } }));
+    static inputsToVariables(inputs, originType = blu_interface_1.BLU.Origin.Types.User) {
+        return Object.keys(inputs !== null && inputs !== void 0 ? inputs : {}).map(key => ({ name: key, value: inputs[key], origin: { name: 'user-input', type: originType } }));
     }
     static itemToRenderContext(itemContext) {
         const inputs = {};
@@ -201,7 +205,7 @@ class ExecuteItemModel {
         return this.getExecItemIdList(this);
     }
     getExecItemIdList(executeItem) {
-        return executeItem.parent ? [executeItem.parent.item.info.id, ...this.getExecItemIdList(executeItem.parent)] : [];
+        return executeItem.parent ? [{ id: executeItem.parent.item.info.id, name: executeItem.parent.item.info.name }, ...this.getExecItemIdList(executeItem.parent)] : [];
     }
     getTree() {
         return this.item.getFileTree(['.config.json']);

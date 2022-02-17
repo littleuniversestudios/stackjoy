@@ -71,7 +71,7 @@ class AST {
             // do nothing here, if json path craps out because of a syntax error not much we can do,
             // a bad input identifier is a bad input identifier no matter how you slice it
         }
-        const error = result !== undefined ? null : { message: `'${identifier}' not found`, context };
+        const error = result !== undefined ? null : { message: `'${identifier}' not found`, context, type: 'identifierNotFound', suggestedName: identifier };
         return { error, result: AST.handleNegation(result, node.negate, node.doubleNegate) };
     }
     static evaluateString(node, context) {
@@ -94,8 +94,8 @@ class AST {
         const allFunctions = (_a = context === null || context === void 0 ? void 0 : context.functions) !== null && _a !== void 0 ? _a : [];
         const funcObj = allFunctions.find(f => f.name === name);
         const result = (_b = funcObj === null || funcObj === void 0 ? void 0 : funcObj.execFunc) !== null && _b !== void 0 ? _b : null;
-        const error = !!result ? null : { message: `function '${name}' not found`, context };
-        return { error, result };
+        const error = !!result ? null : { message: `function '${name}' not found`, context, type: 'functionNotFound', suggestedName: name };
+        return { error, result, funcObj };
     }
     static evaluateTransformation(node, context) {
         const functionName = node.function.name;
@@ -107,7 +107,7 @@ class AST {
         if (getFuncResponse.error) {
             return { error: getFuncResponse.error, result: getFuncResponse.result };
         }
-        let execFuncResponse = AST.executeFunction(getFuncResponse.result, [nodeResponse.result], functionName, context);
+        let execFuncResponse = AST.executeFunction(getFuncResponse.result, [nodeResponse.result], getFuncResponse.funcObj, context);
         if (execFuncResponse.error) {
             return { error: execFuncResponse.error, result: execFuncResponse.result };
         }
@@ -134,7 +134,7 @@ class AST {
         if (argError) {
             return argError;
         }
-        let execFuncResponse = AST.executeFunction(getFuncResponse.result, args, functionName, context);
+        let execFuncResponse = AST.executeFunction(getFuncResponse.result, args, getFuncResponse.funcObj, context);
         if (execFuncResponse.error) {
             return { error: execFuncResponse.error, result: execFuncResponse.result };
         }
@@ -226,10 +226,10 @@ class AST {
     static evaluateSwitchDefaultStatement(node, context) {
         return { error: null, result: true };
     }
-    static executeFunction(funcString, args, name, context) {
+    static executeFunction(funcString, args, funcObj, context) {
         const executableFunction = new function_model_1.ExecutableFunction(funcString);
         if (executableFunction.error) {
-            const error = { message: `Error executing function: '${name}'. ${executableFunction.errorMessage}`, error: executableFunction.error, context, args };
+            const error = { message: `Error executing function: '${funcObj.name}'. ${executableFunction.errorMessage}`, error: executableFunction.error, context, args, type: 'functionError' };
             return { error, result: null };
         }
         else {
@@ -238,7 +238,7 @@ class AST {
                 return { error: null, result };
             }
             catch (e) {
-                const error = { message: `Error executing function: '${name}'`, error: e, context, args };
+                const error = { message: `Error executing function: '${funcObj.name}'`, error: e.toString(), context, args, funcObj, type: 'functionError' };
                 return { error, result: null };
             }
         }

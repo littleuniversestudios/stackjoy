@@ -19,6 +19,9 @@ class TemplateModel extends base_model_1.BaseModel {
     get metadata() {
         return Object.assign({}, this.info, { fileTree: this.getFileTree() });
     }
+    get info() {
+        return Object.assign({}, super.info, { chainedTemplates: this.chainedTemplates });
+    }
     get collectionName() {
         return this.parent.name;
     }
@@ -58,13 +61,18 @@ class TemplateModel extends base_model_1.BaseModel {
             return { error: { status: 400, code: 'create-folder-error', message: `Could not create folder ${newFolderName}`, data: error }, data: { success: false } };
         }
     }
+    updateChainedTemplates(chainedTemplates) {
+        this.chainedTemplates = chainedTemplates;
+        return this.saveChainedTemplates();
+    }
     /**
      * PRIVATE MEMBERS
      */
     init() {
-        var _a;
+        var _a, _b;
         this.setPaths();
         this.config = Object.assign({}, TemplateModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
+        this.chainedTemplates = (_b = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.chainedTemplates)) !== null && _b !== void 0 ? _b : [];
         this.loadSupportingFiles();
     }
     setPaths() {
@@ -79,8 +87,12 @@ class TemplateModel extends base_model_1.BaseModel {
             links: path_1.join(selfPath, 'links.json'),
             variables: path_1.join(selfPath, 'variables.json'),
             readme: path_1.join(selfPath, 'readme.md'),
+            chainedTemplates: path_1.join(selfPath, 'chainedTemplates.json'),
         };
         this.assertPaths();
+    }
+    saveChainedTemplates() {
+        return this.saveJSONFile(this.paths.chainedTemplates, this.chainedTemplates);
     }
     /**
      * STATIC MEMBERS
@@ -102,10 +114,11 @@ class TemplateModel extends base_model_1.BaseModel {
         try {
             // ensure the directory is created
             fs_extra_1.ensureDirSync(path_1.join(templatePath));
-            // create workspace files [config.json, readme.md, variables.json]
+            // create template files [config.json, readme.md, variables.json]
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'config.json'), Object.assign({}, TemplateModel.defaultConfig, { name }));
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'links.json'), {});
+            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'chainedTemplates.json'), {});
             fs_1.writeFileSync(path_1.join(templatePath, 'readme.md'), '');
             // create the other sub directories
             fs_extra_1.ensureDirSync(path_1.join(templatePath, 'functions'));

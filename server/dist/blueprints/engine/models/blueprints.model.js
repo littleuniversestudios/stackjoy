@@ -8,7 +8,7 @@ const blueprints_api_1 = require("../api/blueprints.api");
 const fs_extra_1 = require("fs-extra");
 const template_model_1 = require("./item/template.model");
 const path_1 = require("path");
-const chain_model_1 = require("./item/chain.model");
+const function_model_1 = require("./item/parts/function.model");
 class BlueprintsModel {
     constructor(path, workspaceName) {
         this.path = path;
@@ -100,97 +100,6 @@ class BlueprintsModel {
         }
     }
     /**
-     * CHAINS
-     */
-    getChain(id) {
-        return this.api.allItems.find(i => i.type === blu_interface_1.BLU.Item.Type.Chain && i.id === id);
-    }
-    getChains() {
-        return this.api.allItems.filter(i => i.type === blu_interface_1.BLU.Item.Type.Chain);
-    }
-    createChain(name, collectionId) {
-        const collection = this.getCollection(collectionId);
-        if (collection) {
-            return collection.createChain(name);
-        }
-        else {
-            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id '${collectionId}' not found` }, data: { success: false } };
-        }
-    }
-    renameChain(name, chainId) {
-        const chain = this.getChain(chainId);
-        if (chain) {
-            return chain.renameChain(name);
-        }
-        else {
-            return { error: { status: 400, code: 'chain-not-found', message: `Chain with id '${chainId}' not found` }, data: { success: false } };
-        }
-    }
-    deleteChain(chainId) {
-        const chain = this.getChain(chainId);
-        if (chain) {
-            try {
-                fs_extra_1.removeSync(chain.paths.self);
-                return { error: null, data: { success: true } };
-            }
-            catch (error) {
-                return { error: { status: 400, code: 'chain-delete-error', message: `Error occurred trying to delete chain with id: '${chainId}'`, error }, data: { success: false } };
-            }
-        }
-        else {
-            return { error: { status: 400, code: 'chain-not-found', message: `Chain with id '${chainId}' not found` }, data: { success: false } };
-        }
-    }
-    updateChainCommands(chainId, commands) {
-        const chain = this.getChain(chainId);
-        if (chain) {
-            return chain.updateCommands(commands);
-        }
-        else {
-            return { error: { status: 400, code: 'chain-not-found', message: `Chain with id '${chainId}' not found` }, data: { success: false } };
-        }
-    }
-    duplicateChain(chainId) {
-        const chain = this.getChain(chainId);
-        if (chain) {
-            try {
-                const newChainId = chain_model_1.ChainModel.newId();
-                fs_extra_1.copySync(chain.paths.self, path_1.join(chain.paths.self, `../${newChainId}`));
-                const newChain = new chain_model_1.ChainModel(newChainId, chain.parent);
-                newChain.renameChain(`${chain.name}_copy`);
-                return { error: null, data: { success: true } };
-            }
-            catch (error) {
-                return { error: { status: 400, code: 'chain-duplicate-error', message: `Error occurred trying to duplicate chain with id: '${chainId}'`, error }, data: { success: false } };
-            }
-        }
-        else {
-            return { error: { status: 400, code: 'chain-not-found', message: `Chain with id '${chainId}' not found` }, data: { success: false } };
-        }
-    }
-    copyChain(chainId, collectionId) {
-        const chain = this.getChain(chainId);
-        const collection = this.getCollection(collectionId);
-        if (!chain) {
-            return { error: { status: 400, code: 'chain-not-found', message: `Template with id '${chainId}' not found` }, data: { success: false } };
-        }
-        else if (!collection) {
-            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id '${collectionId}' not found` }, data: { success: false } };
-        }
-        else {
-            try {
-                const newChainId = chain_model_1.ChainModel.newId();
-                fs_extra_1.copySync(chain.paths.self, path_1.join(collection.paths.chains, newChainId));
-                const newChain = new chain_model_1.ChainModel(newChainId, collection);
-                newChain.renameChain(chain.name);
-                return { error: null, data: { success: true } };
-            }
-            catch (error) {
-                return { error: { status: 400, code: 'chain-copy-error', message: `Error occurred trying to copy chain with id: '${chainId}'`, error }, data: { success: false } };
-            }
-        }
-    }
-    /**
      * TEMPLATES
      */
     getTemplate(id) {
@@ -275,6 +184,15 @@ class BlueprintsModel {
             return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
         }
     }
+    updateChainedTemplates(templateId, chainedTemplates) {
+        const template = this.getTemplate(templateId);
+        if (template) {
+            return template.updateChainedTemplates(chainedTemplates);
+        }
+        else {
+            return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
+        }
+    }
     /**
      * FUNCTIONS
      */
@@ -312,6 +230,22 @@ class BlueprintsModel {
         const bluFunction = this.getFunction(functionId);
         if (bluFunction) {
             const result = bluFunction.update(name, description, contents);
+            if (result.error) {
+                return { error: result.error, data: { success: false, function: null } };
+            }
+            else {
+                return { error: result.error, data: { success: true, function: result.data.function.info } };
+            }
+        }
+        else {
+            return { error: { status: 400, code: 'function-not-found', message: `Function with id '${functionId}' not found` }, data: { success: false, function: null } };
+        }
+    }
+    duplicateFunction(functionId) {
+        const bluFunction = this.getFunction(functionId);
+        if (bluFunction) {
+            const newName = `${bluFunction.name}_copy`;
+            const result = function_model_1.FunctionModel.createFunction(bluFunction.paths.parent, newName, bluFunction.contents, bluFunction.description, bluFunction.parent);
             if (result.error) {
                 return { error: result.error, data: { success: false, function: null } };
             }

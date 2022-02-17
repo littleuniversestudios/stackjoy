@@ -15,6 +15,12 @@ class FunctionModel {
     get id() {
         return `${this.parent.id}.${this.baseId}`;
     }
+    get name() {
+        return this.config.name;
+    }
+    get description() {
+        return this.config.description;
+    }
     get info() {
         return {
             id: this.id,

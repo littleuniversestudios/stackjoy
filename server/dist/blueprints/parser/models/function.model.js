@@ -3,23 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecutableFunction = void 0;
 const changeCase = require("change-case");
 const path = require("path");
-EvalScope.prototype.changeCase = changeCase;
-EvalScope.prototype.path = path;
-function EvalScope() {
-    "use strict";
-    this.eval = function (s) {
-        return eval(s);
-    };
-}
+const safeEval = require("safe-eval");
 class ExecutableFunction {
     constructor(funcString) {
         this.funcString = funcString;
         this.evaluateFunc();
     }
     evaluateFunc() {
-        const scope = new EvalScope();
         try {
-            const func = scope.eval(this.funcString);
+            const func = safeEval(this.funcString, { changeCase, path });
             if (typeof func === 'function') {
                 this.func = func;
             }
@@ -30,7 +22,7 @@ class ExecutableFunction {
         }
         catch (e) {
             this.errorMessage = 'Invalid syntax';
-            this.error = e;
+            this.error = e.toString() + e.stack.toString().substr(0, e.stack.toString().indexOf('^^'));
         }
     }
 }

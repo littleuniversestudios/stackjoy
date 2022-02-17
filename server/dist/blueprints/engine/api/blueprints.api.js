@@ -28,9 +28,6 @@ class BlueprintsApi {
     getTemplates() {
         return this.allItems.filter(i => i.type === blu_interface_1.BLU.Item.Type.Template);
     }
-    getChains() {
-        return this.allItems.filter(i => i.type === blu_interface_1.BLU.Item.Type.Chain);
-    }
     getItemById(id) {
         return this.allItems.find(i => i.id === id);
     }
@@ -45,8 +42,6 @@ class BlueprintsApi {
                 return [this.getCollection(name)];
             case blu_interface_1.BLU.Item.Type.Template:
                 return this.getTemplates().filter(filter);
-            case blu_interface_1.BLU.Item.Type.Chain:
-                return this.getChains().filter(filter);
             default:
                 return [];
         }
@@ -80,14 +75,11 @@ class BlueprintsApi {
     }
     createCollection(treeItem) {
         let folder;
-        folder = { item: treeItem.item, templates: [], chains: [] };
+        folder = { item: treeItem.item, templates: [] };
         treeItem.children.forEach(childItem => {
             switch (childItem.item.type) {
                 case blu_interface_1.BLU.Item.Type.Template:
                     folder.templates.push(childItem.item);
-                    break;
-                case blu_interface_1.BLU.Item.Type.Chain:
-                    folder.chains.push(childItem.item);
                     break;
             }
         });

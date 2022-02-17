@@ -18,6 +18,9 @@ class FunctionService {
     deleteFunction(id) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().deleteFunction(id);
     }
+    duplicate(id) {
+        return globals_1.APP_ENVIRONMENT.getBlueprints().duplicateFunction(id);
+    }
 }
 exports.FunctionService = FunctionService;
 //# sourceMappingURL=function.service.js.map

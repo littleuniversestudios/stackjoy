@@ -5,6 +5,8 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const globals_1 = require("../../../../globals");
+const fs = require("fs");
+const path = require("path");
 class TemplateFileService {
     findByPath(filePath) {
         let contents;
@@ -96,6 +98,35 @@ class TemplateFileService {
             }
             catch (error) {
                 return { error: { status: 400, code: 'delete-error', message: `Could not delete ${absolutePath}`, data: error }, data: { success: false } };
+            }
+        }
+    }
+    duplicate({ absolutePath }) {
+        const result = this.isFileUpdateAllowed(absolutePath);
+        if (result.error) {
+            return result;
+        }
+        else {
+            try {
+                if (fs.lstatSync(absolutePath).isFile()) {
+                    const extension = path.extname(absolutePath);
+                    const oldFilename = path.basename(absolutePath, extension);
+                    let newFileName = `${oldFilename}_copy${extension}`;
+                    let newFilePath = path_1.join(absolutePath, '..', newFileName);
+                    if (fs.existsSync(newFilePath)) {
+                        const rndNum = Math.floor(Math.random() * 10000) + 1;
+                        newFileName = `${oldFilename}_${rndNum}${extension}`;
+                    }
+                    newFilePath = path_1.join(absolutePath, '..', newFileName);
+                    fs_1.copyFileSync(absolutePath, newFilePath);
+                    return { error: null, data: { success: true } };
+                }
+                else {
+                    return { error: { status: 400, code: 'duplicate-error', message: `Not a file: ${absolutePath}` }, data: { success: false } };
+                }
+            }
+            catch (error) {
+                return { error: { status: 400, code: 'duplicate-error', message: `Could not duplicate ${absolutePath}`, data: error }, data: { success: false } };
             }
         }
     }

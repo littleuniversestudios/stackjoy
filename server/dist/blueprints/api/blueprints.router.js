@@ -9,7 +9,6 @@ const item_router_1 = require("./items/item/item.router");
 const generate_router_1 = require("./actions/generate/generate.router");
 const log_router_1 = require("./actions/log/log.router");
 const collection_router_1 = require("./items/collection/collection.router");
-const chain_router_1 = require("./items/chain/chain.router");
 const function_router_1 = require("./items/function/function.router");
 const data_router_1 = require("./items/data/data.router");
 const stack_router_1 = require("./items/stack/stack.router");
@@ -21,7 +20,6 @@ exports.blueprintsRouter.use('/log', log_router_1.logRouter);
 /** items */
 exports.blueprintsRouter.use('/item', item_router_1.itemRouter);
 exports.blueprintsRouter.use('/collection', collection_router_1.collectionRouter);
-exports.blueprintsRouter.use('/chain', chain_router_1.chainRouter);
 exports.blueprintsRouter.use('/template', template_router_1.templateRouter);
 exports.blueprintsRouter.use('/template-file', template_file_router_1.templateFileRouter);
 exports.blueprintsRouter.use('/function', function_router_1.functionRouter);

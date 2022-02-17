@@ -6,7 +6,6 @@ const path_1 = require("path");
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const template_model_1 = require("./template.model");
 const base_model_1 = require("./base.model");
-const chain_model_1 = require("./chain.model");
 const fs_extra_1 = require("fs-extra");
 const fs_1 = require("fs");
 const util_1 = require("../../../../shared/lib/util");
@@ -17,7 +16,6 @@ class CollectionModel extends base_model_1.BaseModel {
         this.baseId = baseId;
         this.parent = parent;
         this.templates = [];
-        this.chains = [];
         this.init();
     }
     get name() {
@@ -32,7 +30,6 @@ class CollectionModel extends base_model_1.BaseModel {
         this.config = Object.assign({}, CollectionModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
         this.loadSupportingFiles();
         this.loadTemplates();
-        this.loadChains();
     }
     setPaths() {
         const parentPath = this.parent.paths.collections;
@@ -41,7 +38,6 @@ class CollectionModel extends base_model_1.BaseModel {
             parent: parentPath,
             self: selfPath,
             templates: path_1.join(selfPath, 'templates'),
-            chains: path_1.join(selfPath, 'chains'),
             functions: path_1.join(selfPath, 'functions'),
             config: path_1.join(selfPath, 'config.json'),
             links: path_1.join(selfPath, 'links.json'),
@@ -73,24 +69,6 @@ class CollectionModel extends base_model_1.BaseModel {
         }
     }
     /**
-     * CHAINS
-     */
-    loadChains() {
-        const chainIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.chains);
-        this.chains = chainIDs.map(chainID => new chain_model_1.ChainModel(chainID, this));
-        this.children.push(...this.chains);
-    }
-    createChain(name) {
-        const result = chain_model_1.ChainModel.createChain(this.paths.chains, name, this);
-        if (!result.error) {
-            const chain = result.data;
-            return { error: result.error, data: { success: true } };
-        }
-        else {
-            return { error: result.error, data: { success: false } };
-        }
-    }
-    /**
      * Utils
      */
     /**
@@ -100,7 +78,7 @@ class CollectionModel extends base_model_1.BaseModel {
      */
     renameIds(oldCollectionId, newCollectionId) {
         // todo: go through each chain and update the renamed ids in the chains
-        this.chains.forEach(chain => chain.renameIds(oldCollectionId, newCollectionId));
+        // this.chains.forEach(chain => chain.renameIds(oldCollectionId, newCollectionId))
     }
     /**
      * STATIC METHODS

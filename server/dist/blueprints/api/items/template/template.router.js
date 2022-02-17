@@ -37,7 +37,11 @@ exports.templateRouter.post('/folder/:templateId', route_validation_1.validateRe
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.templateRouter.put('/rename', route_validation_1.validateRequest(templateRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await templateService.rename(req.body);
+    const result = templateService.rename(req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.templateRouter.put('/:templateId/chainedTemplates', route_validation_1.validateRequest(templateRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = templateService.updateChainedTemplates(req.params.templateId, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.templateRouter.delete('/:templateId', route_validation_1.validateRequest(templateRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {

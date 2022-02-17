@@ -28,6 +28,10 @@ exports.templateFileRouter.put('/rename', route_validation_1.validateRequest(tem
     const result = templateFileService.rename(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.templateFileRouter.put('/duplicate', route_validation_1.validateRequest(templateFileRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = templateFileService.duplicate(req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.templateFileRouter.delete('/', route_validation_1.validateRequest(templateFileRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = templateFileService.delete(req.query.absolutePath);
     result.error ? next(result.error) : res.json(result.data);

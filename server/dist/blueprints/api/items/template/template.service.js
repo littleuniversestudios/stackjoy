@@ -35,6 +35,9 @@ class TemplateService {
     createFolder(id, { newFolderName, path }) {
         return globals_1.APP_ENVIRONMENT.getBlueprints().createNewFolder(id, newFolderName, path);
     }
+    updateChainedTemplates(templateId, { chainedTemplates }) {
+        return globals_1.APP_ENVIRONMENT.getBlueprints().updateChainedTemplates(templateId, chainedTemplates);
+    }
 }
 exports.TemplateService = TemplateService;
 //# sourceMappingURL=template.service.js.map
