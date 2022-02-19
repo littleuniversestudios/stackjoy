@@ -280,12 +280,13 @@ class PreviewAction {
                 executeContextId: executeItem.execId,
                 fileId: file.id,
                 type: blu_interface_1.BLU.Execute.ErrorType.fileExists,
-                message: 'Destination exists and will be overwritten.',
+                message: 'Destination file exists and will be overwritten.',
                 origin: {
                     location: blu_interface_1.BLU.Execute.ErrorLocation.file,
                 },
                 data: {
-                    destination
+                    destination,
+                    message: 'Destination file exists and will be overwritten.',
                 }
             });
         }
