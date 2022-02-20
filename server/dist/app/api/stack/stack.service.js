@@ -168,6 +168,9 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
         const newStackPath = path_1.join(blueprints.workspace.paths.stacks, newStackId);
         const newStackBlueprintsPath = path_1.join(newStackPath, 'blueprints');
         fs_extra_1.copySync(fromBlueprintsPath, newStackBlueprintsPath);
+        // if the .git folder gets copied as well remove it
+        fs_extra_1.removeSync(path_1.join(newStackBlueprintsPath, '.git'));
+        // todo: in the future do not copy all hidden files (windows/mac treat them differently tough so adjust accordingly)
         fs_extra_1.writeJSONSync(path_1.join(newStackPath, 'metadata.json'), metadata);
         return { error: null, data: { success: true } };
     }
