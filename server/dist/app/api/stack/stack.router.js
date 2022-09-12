@@ -15,6 +15,14 @@ exports.stackRouter.get('/', route_validation_1.validateRequest(stackRules.forLI
     const result = await stackService.findAll();
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.stackRouter.get('/remote', route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.getRemoteEnvironments();
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.get('/public', route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.getPublicStacks();
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.stackRouter.get('/:stackId', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.findById(req.params.stackId);
     result.error ? next(result.error) : res.json(result.data);
@@ -27,22 +35,22 @@ exports.stackRouter.post('/', route_validation_1.validateRequest(stackRules.forP
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.post('/sync', route_validation_1.validateRequest(stackRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await stackService.syncEnvironment(req.body, req.header('Firebase-Auth-Token'));
+    const result = await stackService.syncEnvironment(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 /*
  * PUT
  */
 exports.stackRouter.put('/publish', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await stackService.publishEnvironment(req.body, req.header('Firebase-Auth-Token'));
+    const result = await stackService.publishEnvironment(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.put('/download', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await stackService.downloadStack(req.body, req.header('Firebase-Auth-Token'));
+    const result = await stackService.downloadStack(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.put('/install', route_validation_1.validateRequest(stackRules.forInstallStack), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await stackService.installStackIntoCurrentEnvironment(req.body, req.header('Firebase-Auth-Token'));
+    const result = await stackService.installStackIntoCurrentEnvironment(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.put('/install-seed', route_validation_1.validateRequest(stackRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {

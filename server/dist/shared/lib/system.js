@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.system = void 0;
+exports.initSystem = void 0;
 const path = require('path');
 const os = require('os');
 const { env } = process;
@@ -45,7 +45,7 @@ const linux = (name) => {
         }
     };
 };
-exports.system = (name) => {
+exports.initSystem = (name = 'stackjoy') => {
     if (process.platform === 'darwin') {
         return macos(name);
     }

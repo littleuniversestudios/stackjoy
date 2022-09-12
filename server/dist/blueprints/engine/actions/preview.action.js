@@ -58,7 +58,7 @@ class PreviewAction {
     }
     defaultInputs() {
         return {
-            CODEBASE_PATH: globals_1.APP_ENVIRONMENT.metadata.codebasePath,
+            CODEBASE_PATH: globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.metadata.codebasePath,
             ROOT_DESTINATION: this.ROOT_DESTINATION,
         };
     }
@@ -66,7 +66,7 @@ class PreviewAction {
         const allErrors = [...executeItem.errors];
         let onSuccess = executeItem.onSuccess;
         const ctx = {
-            ROOT_DIR: globals_1.APP_ENVIRONMENT.metadata.codebasePath,
+            ROOT_DIR: globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.metadata.codebasePath,
             ROOT_DESTINATION: this.ROOT_DESTINATION,
             item: executeItem.item.info,
             errors: executeItem.errors,

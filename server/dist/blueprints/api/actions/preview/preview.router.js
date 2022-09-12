@@ -11,7 +11,7 @@ exports.previewRouter.post('/', route_validation_1.validateRequest(itemRules.for
     const inputs = req.body.inputs;
     const itemId = req.body.itemId;
     const rootDestination = req.body.rootDestination;
-    const blueprints = globals_1.APP_ENVIRONMENT.getBlueprints();
+    const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
     const response = blueprints.preview(itemId, inputs, rootDestination);
     const result = {
         error: null,

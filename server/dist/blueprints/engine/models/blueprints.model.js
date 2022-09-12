@@ -51,7 +51,7 @@ class BlueprintsModel {
      * COLLECTIONS
      */
     getCollection(id) {
-        return this.workspace.getCollection(id);
+        return this.api.getCollection(id);
     }
     createCollection(name) {
         return this.workspace.createCollection(name);

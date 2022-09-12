@@ -10,7 +10,7 @@ const globals_1 = require("../../../../globals");
 exports.itemRouter = express_1.Router();
 const itemService = new item_service_1.ItemService();
 exports.itemRouter.get('/', route_validation_1.validateRequest(itemRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
-    const blueprints = globals_1.APP_ENVIRONMENT.getBlueprints();
+    const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
     const response = blueprints.allItems();
     const result = {
         error: null,
@@ -19,7 +19,7 @@ exports.itemRouter.get('/', route_validation_1.validateRequest(itemRules.forLIST
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.itemRouter.get('/tree', route_validation_1.validateRequest(itemRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
-    const blueprints = globals_1.APP_ENVIRONMENT.getBlueprints();
+    const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
     const response = blueprints.tree();
     const result = {
         error: null,

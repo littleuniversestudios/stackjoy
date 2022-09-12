@@ -38,11 +38,11 @@ class LogAction {
 exports.LogAction = LogAction;
 const getLogContents = () => {
     var _a;
-    if (!fs_1.existsSync(globals_1.APP_ENVIRONMENT.logPath)) {
-        fs_extra_1.writeJSONSync(globals_1.APP_ENVIRONMENT.logPath, []);
+    if (!fs_1.existsSync(globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.logPath)) {
+        fs_extra_1.writeJSONSync(globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.logPath, []);
     }
     try {
-        return (_a = fs_extra_1.readJSONSync(globals_1.APP_ENVIRONMENT.logPath)) !== null && _a !== void 0 ? _a : [];
+        return (_a = fs_extra_1.readJSONSync(globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.logPath)) !== null && _a !== void 0 ? _a : [];
     }
     catch (error) {
         return [];
@@ -50,7 +50,7 @@ const getLogContents = () => {
 };
 const storeLogContents = (logContents) => {
     logContents = logContents.slice(Math.max(0, logContents.length - LOG_FILE_ROW_LIMIT));
-    const logPath = globals_1.APP_ENVIRONMENT.logPath;
+    const logPath = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.logPath;
     try {
         const contents = JSON.stringify(logContents);
         fs_1.writeFileSync(logPath, contents);

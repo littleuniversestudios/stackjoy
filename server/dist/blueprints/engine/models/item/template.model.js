@@ -72,7 +72,11 @@ class TemplateModel extends base_model_1.BaseModel {
         var _a, _b;
         this.setPaths();
         this.config = Object.assign({}, TemplateModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
-        this.chainedTemplates = (_b = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.chainedTemplates)) !== null && _b !== void 0 ? _b : [];
+        let chainedTemplates = (_b = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.chainedTemplates)) !== null && _b !== void 0 ? _b : [];
+        if (!Array.isArray(chainedTemplates)) {
+            chainedTemplates = [];
+        }
+        this.chainedTemplates = chainedTemplates;
         this.loadSupportingFiles();
     }
     setPaths() {
@@ -118,7 +122,7 @@ class TemplateModel extends base_model_1.BaseModel {
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'config.json'), Object.assign({}, TemplateModel.defaultConfig, { name }));
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'links.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'chainedTemplates.json'), {});
+            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'chainedTemplates.json'), []);
             fs_1.writeFileSync(path_1.join(templatePath, 'readme.md'), '');
             // create the other sub directories
             fs_extra_1.ensureDirSync(path_1.join(templatePath, 'functions'));

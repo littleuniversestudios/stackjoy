@@ -4,15 +4,14 @@ exports.AppModel = void 0;
 const globals_1 = require("../../globals");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
-const fs_1 = require("fs");
 const util_1 = require("../../shared/lib/util");
 const app_interface_1 = require("../../shared/interfaces/app.interface");
 const app_environment_model_1 = require("./app.environment.model");
-const blueprints_model_1 = require("../../blueprints/engine/models/blueprints.model");
+const app_user_model_1 = require("./app.user.model");
 class AppModel {
     constructor() {
-        this.workspacesPath = path_1.join(globals_1.SYSTEM.path.data, 'workspaces');
-        this.stacksPath = path_1.join(globals_1.SYSTEM.path.data, 'stacks');
+        this.usersPath = path_1.join(globals_1.SYSTEM.path.data, 'users');
+        this.systemWorkspacePath = path_1.join(globals_1.SYSTEM.path.data, 'SYSTEM_WORKSPACE');
         this.cachePath = path_1.join(globals_1.SYSTEM.path.data, 'cache');
         this.statePath = path_1.join(globals_1.SYSTEM.path.data, 'state');
         this.logPath = path_1.join(globals_1.SYSTEM.path.data, 'logs');
@@ -21,21 +20,41 @@ class AppModel {
         this.init();
     }
     init() {
-        fs_extra_1.ensureDirSync(this.workspacesPath);
-        fs_extra_1.ensureDirSync(this.stacksPath);
+        fs_extra_1.ensureDirSync(this.usersPath);
+        fs_extra_1.ensureDirSync(this.systemWorkspacePath);
         fs_extra_1.ensureDirSync(this.cachePath);
         fs_extra_1.ensureDirSync(this.statePath);
         fs_extra_1.ensureDirSync(this.logPath);
-        this.createLists();
+        this.ensureSystemWorkspace();
+    }
+    ensureSystemWorkspace() {
+        if (!fs_extra_1.existsSync(path_1.join(this.systemWorkspacePath, 'metadata.json'))) {
+            const systemEnvironment = this.createSystemEnvironment();
+            app_environment_model_1.EnvironmentModel.createDefaultCollection(new app_environment_model_1.EnvironmentModel(systemEnvironment));
+        }
+        this.systemWorkspace = app_environment_model_1.EnvironmentModel.getEnvironmentMetadata(this.systemWorkspacePath);
+        this.workspaceList = [this.systemWorkspace];
     }
     createLists() {
-        this.workspaceList = this.getListOfEnvironments(this.workspacesPath);
-        this.stackList = this.getListOfEnvironments(this.stacksPath);
+        this.workspaceList = [this.systemWorkspace, ...this.userModel.workspaceList];
+        this.stackList = this.userModel.stackList;
+    }
+    initUser(user) {
+        this.userModel = new app_user_model_1.AppUserModel(user);
+        this.refresh();
+    }
+    logOutUser() {
+        this.userModel = new app_user_model_1.AppUserModel(null);
+        this.refresh();
+    }
+    get isUserLoggedIn() {
+        return !!this.userModel.user;
     }
     refresh() {
+        this.userModel.refresh();
         this.createLists();
     }
-    get logFile() {
+    static get logFile() {
         const logFilename = `${new Date().toISOString().split('T')[0]}.error.log`;
         return process.env.LOGGING_MODE === 'development' ? path_1.join('logs', logFilename) : path_1.join(globals_1.SYSTEM.path.data, 'logs', logFilename);
     }
@@ -43,56 +62,14 @@ class AppModel {
         return { workspaces: this.workspaceList, stacks: this.stackList };
     }
     getEnvironmentInfoById(id) {
-        let env = this.list.workspaces.find(w => w.id === id);
-        if (!env) {
-            env = this.list.stacks.find(w => w.id === id);
-        }
-        return env;
+        return [...this.list.workspaces, ...this.list.stacks].find(w => w.id === id);
     }
     async purgeEnvironment(id) {
         return false;
     }
-    async deleteEnvironment(id) {
-        const metadata = this.getEnvironmentInfoById(id);
-        if (!metadata)
-            return false;
-        fs_extra_1.removeSync(metadata.environmentPath);
-        this.createLists();
-        return true;
-    }
     getEnvironmentById(id) {
         const metadata = this.getEnvironmentInfoById(id);
         return metadata ? new app_environment_model_1.EnvironmentModel(metadata) : null;
-    }
-    getListOfEnvironments(environmentPath) {
-        const environments = [];
-        const environmentDirs = fs_1.readdirSync(environmentPath);
-        environmentDirs.forEach(dir => {
-            const path = path_1.join(environmentPath, dir);
-            if (util_1.isDirectorySync(path)) {
-                const environmentMetadata = fs_extra_1.readJsonSync(path_1.join(path, 'metadata.json'), { throws: false });
-                if (environmentMetadata) {
-                    environmentMetadata.blueprintsPath = path_1.join(environmentMetadata.environmentPath, 'blueprints');
-                    environments.push(Object.assign({}, this.defaultMetadata(), environmentMetadata));
-                }
-            }
-        });
-        return environments;
-    }
-    defaultMetadata() {
-        return {
-            id: null,
-            name: null,
-            codebasePath: null,
-            blueprintsPath: null,
-            environmentPath: null,
-            isLocal: true,
-            localVersion: 1,
-            created: null,
-            lastUsed: null,
-            deletedOn: null,
-            type: null
-        };
     }
     /**
      * Walk up the codebase path [f1/f2/f3, f1/f2, f1] until a workspace is found
@@ -122,57 +99,50 @@ class AppModel {
         return environments.map(env => ({ env: env, codebasePath: env.codebasePath, lastUsed: env.lastUsed }));
     }
     createWorkspace(codebasePath, name, isLocal = true) {
-        name = name !== null && name !== void 0 ? name : `${util_1.getLastDirectoryName(codebasePath)}`;
-        return this.createEnvironment(codebasePath, name, app_interface_1.App.Environment.Type.Workspace, isLocal);
+        const response = this.userModel.createWorkspace(codebasePath, name, isLocal);
+        if (!response.error && isLocal) {
+            this.refresh();
+            // Only create a default collection on brand-new workspace, not remote ones
+            this.createDefaultCollection(response.workspace.id);
+        }
+        return response;
     }
     createStack(name, isLocal = true) {
-        const codebasePath = path_1.join(globals_1.SYSTEM.path.temp, name);
-        return this.createEnvironment(codebasePath, name, app_interface_1.App.Environment.Type.Stack, isLocal);
+        const stack = this.userModel.createStack(name, isLocal);
+        this.refresh();
+        this.createDefaultCollection(stack.id);
+        return stack;
     }
-    createEnvironment(codebasePath, name, type, isLocal, id = util_1.UUIDShort()) {
-        const environmentPath = path_1.join(type === app_interface_1.App.Environment.Type.Workspace ? this.workspacesPath : this.stacksPath, id);
-        const metadata = {
-            id,
-            name,
-            codebasePath,
-            environmentPath,
-            blueprintsPath: path_1.join(environmentPath, 'blueprints'),
-            isLocal,
-            created: Date.now(),
-            lastUsed: Date.now(),
-            deletedOn: null,
-            type
-        };
-        /**
-         * create the blueprints folder structure
-         */
-        const result = blueprints_model_1.BlueprintsModel.crateBlueprintsFolder(environmentPath);
-        if (result.error) {
-            // return the error here
+    createSystemEnvironment() {
+        return app_environment_model_1.EnvironmentModel.createEnvironment({
+            id: util_1.UUIDShort(),
+            codebasePath: null,
+            name: 'SYSTEM WORKSPACE',
+            type: app_interface_1.App.Environment.Type.Workspace,
+            isLocal: true,
+            isSystemWorkspace: true,
+            environmentPath: this.systemWorkspacePath
+        });
+    }
+    async deleteEnvironment(id) {
+        const metadata = this.getEnvironmentInfoById(id);
+        if (metadata.isSystemWorkspace) {
+            return { error: { status: 405, message: `Cannot delete System Environment.`, code: 'SYS_ENV_OP_NOT_ALLOWED' }, data: { success: false } };
         }
         else {
-            /**
-             * store the supporting workspace files
-             */
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'metadata.json'), metadata);
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'log.json'), []);
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'state.json'), {});
-            this.createLists();
-            // create main collection with example template
-            const newEnvironment = this.getEnvironmentById(metadata.id);
-            const newEnvironmentBlueprints = newEnvironment.getBlueprints();
-            const result = newEnvironmentBlueprints.createCollection('main');
-            if (!result.error) {
-                const collection = result.data.collection;
-                const templateResult = collection.createTemplate('example');
-                if (!templateResult.error) {
-                    const pathToTemplateFiles = templateResult.data.template.paths.files;
-                    fs_1.writeFileSync(path_1.join(pathToTemplateFiles, 'hello-world.txt'), 'Hello Stackjoy! \n\nMy name is ^^name^^.');
-                    // todo: create a whole slew of example files that the user can use as a reference
-                }
-            }
-            return metadata;
+            const response = this.userModel.deleteEnvironment(id);
+            this.refresh();
+            return response;
         }
+    }
+    /**
+     * Create the main (default) collection for a new environment
+     * @param environmentId
+     * @private
+     */
+    createDefaultCollection(environmentId) {
+        const environment = this.getEnvironmentById(environmentId);
+        app_environment_model_1.EnvironmentModel.createDefaultCollection(environment);
     }
     /**
      * Update the actual metadata file of a local stack
@@ -183,7 +153,7 @@ class AppModel {
         const environmentPath = metadata.environmentPath;
         fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'metadata.json'), metadata);
         if (!batchUpdate)
-            this.createLists();
+            this.refresh();
     }
     /**
      * Wrapper to support writing a model directly, calls the underlying metadata write method
@@ -194,8 +164,12 @@ class AppModel {
     updateEnvironmentModel(environment, batchUpdate = false) {
         this.updateEnvironmentMetadata(environment.metadata, batchUpdate);
     }
-    async createRemoteEnvironment(env, token) {
-        const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, token, env.metadata.name, env.metadata.type);
+    /**
+     * Create a new remote environment
+     * @param env
+     */
+    async createRemoteEnvironment(env) {
+        const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, env.metadata.name, env.metadata.type);
         env.metadata.isLocal = false;
         env.metadata.remote = {
             id: envId,
@@ -203,11 +177,17 @@ class AppModel {
             isClean: true
         };
     }
-    async syncRemoteEnvironment(stack, token) {
-        return await globals_1.SJ_SERVER.syncRepo(stack.blueprintsPath, token);
+    async syncRemoteEnvironment(stack) {
+        return await globals_1.SJ_SERVER.syncRepo(stack.blueprintsPath);
     }
-    async publishRemoteEnvironment(env, token, id, commitMessage) {
-        const { newVersion, requiresMerge } = await globals_1.SJ_SERVER.publishRepo(env.blueprintsPath, env.metadata.remote.id, token, commitMessage || `Automated commit message for version ${env.metadata.remote.version}`);
+    /**
+     * Publish changes to a remote environment
+     * @param env
+     * @param id
+     * @param commitMessage
+     */
+    async publishRemoteEnvironment(env, id, commitMessage) {
+        const { newVersion, requiresMerge } = await globals_1.SJ_SERVER.publishRepo(env.blueprintsPath, env.metadata.remote.id, commitMessage || `Automated commit message for version ${env.metadata.remote.version}`);
         if (newVersion != null) {
             env.metadata.localVersion = newVersion;
             env.metadata.remote.version = newVersion;
@@ -215,8 +195,8 @@ class AppModel {
         if (requiresMerge != null)
             env.metadata.remote.requiresMerge = requiresMerge;
     }
-    async downloadRemoteEnvironment(destinationPath, remoteId, token) {
-        return await globals_1.SJ_SERVER.downloadRepo(destinationPath, remoteId, token);
+    async downloadRemoteEnvironment(destinationPath, remoteId) {
+        return await globals_1.SJ_SERVER.downloadRepo(destinationPath, remoteId);
     }
     async downloadSeed(destinationPath, url) {
         return await globals_1.SJ_SERVER.downloadSeed(destinationPath, url);

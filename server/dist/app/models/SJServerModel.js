@@ -4,6 +4,7 @@ exports.SJServerModel = void 0;
 const simple_git_1 = require("simple-git");
 const axios_1 = require("axios");
 const fs_extra_1 = require("fs-extra");
+const firebase_1 = require("../../shared/lib/firebase");
 class SJServerModel {
     constructor(url) {
         this.SJ_SERVER = url;
@@ -40,28 +41,27 @@ class SJServerModel {
     }
     /**
      *
-     * @param token
      * @private
      */
-    static firebaseTokenRequestConfig(token) {
+    static async firebaseTokenRequestConfig() {
         return {
             headers: {
-                'Firebase-Auth-Token': token
+                'Firebase-Auth-Token': await firebase_1.FirebaseService.getAuthToken()
             }
         };
     }
     /**
      * Create a repo at {baseDir}
      * @param baseDir
-     * @param token
      * @param displayName
      * @param type
      */
-    async createRepo(baseDir, token, displayName, type) {
-        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/create`, { displayName, type }, SJServerModel.firebaseTokenRequestConfig(token));
+    async createRepo(baseDir, displayName, type) {
+        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/create`, { displayName, type }, await SJServerModel.firebaseTokenRequestConfig());
+        const token = await firebase_1.FirebaseService.getAuthToken();
         if (resp.status !== 200)
             return null;
-        const { envId } = resp.data.data;
+        const { envId } = resp.data;
         // Clear any old or failed attempts to publish this stack
         if (fs_extra_1.existsSync(`${baseDir}/.git`))
             fs_extra_1.removeSync(`${baseDir}/.git`);
@@ -78,16 +78,15 @@ class SJServerModel {
      * Install repo {repoId} at {baseDir}
      * @param baseDir
      * @param repoId
-     * @param token
      */
-    async downloadRepo(baseDir, repoId, token) {
+    async downloadRepo(baseDir, repoId) {
         if (fs_extra_1.existsSync(baseDir)) {
             fs_extra_1.removeSync(baseDir);
         }
         fs_extra_1.mkdirpSync(baseDir);
         const git = SJServerModel.createGit(baseDir);
         try {
-            await git.raw(...SJServerModel.addHTTPHeader(token, 'clone', this.repoUrl(repoId), '.'));
+            await git.raw(...SJServerModel.addHTTPHeader(await firebase_1.FirebaseService.getAuthToken(), 'clone', this.repoUrl(repoId), '.'));
             return { error: null, data: { success: true } };
         }
         catch (err) {
@@ -118,10 +117,10 @@ class SJServerModel {
     /**
      * Sync a repo
      * @param baseDir
-     * @param token
      */
-    async syncRepo(baseDir, token) {
+    async syncRepo(baseDir) {
         const git = SJServerModel.createGit(baseDir);
+        const token = await firebase_1.FirebaseService.getAuthToken();
         const status = await git.status();
         if (!status.isClean())
             return { success: false, message: 'Uncommitted Changes in environment! Push your changes and resolve the merge conflicts to get the latest version.' };
@@ -132,11 +131,11 @@ class SJServerModel {
      * Publish a repo
      * @param baseDir: Git base directory
      * @param id: Environment ID (Firebase version)
-     * @param token: User authentication token
      * @param commitMessage: Commit message
      */
-    async publishRepo(baseDir, id, token, commitMessage) {
+    async publishRepo(baseDir, id, commitMessage) {
         const git = SJServerModel.createGit(baseDir);
+        const token = await firebase_1.FirebaseService.getAuthToken();
         // Commit the current changes
         await git.add('.').commit(commitMessage);
         // Get the latest changes, potentially handle a merge conflict
@@ -146,10 +145,10 @@ class SJServerModel {
             return { requiresMerge: true };
         // Try and upVersion the firebase repo first. This can be processed first since up-versioning here and failing to push below
         // would not cause any sync issues, where-as pushing and failing to up version would
-        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/${id}/upVersion`, {}, SJServerModel.firebaseTokenRequestConfig(token));
+        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/${id}/upVersion`, {}, await SJServerModel.firebaseTokenRequestConfig());
         if (resp.status !== 200)
             throw Error(`Unknown error occurred when up-versioning - error code ${resp.status}`);
-        const { newVersion } = resp.data.data;
+        const { newVersion } = resp.data;
         // TODO add git tags here
         await SJServerModel.push(git, token);
         return { newVersion: newVersion, requiresMerge: false };
@@ -157,26 +156,119 @@ class SJServerModel {
     /**
      * Get the repo status
      * @param baseDir
-     * @param token [optional] firebase authentication token
      */
-    async repoStatus(baseDir, token) {
+    async repoStatus(baseDir) {
         const git = SJServerModel.createGit(baseDir);
-        if (token)
-            await SJServerModel.fetch(git, token);
         return git.status();
     }
     /**
      * Completely purge a repository from our systems
      * Will delete the git repo, and then if successful remove the firebase reference
      * @param remoteId
-     * @param token
      */
-    async purgeRepo(remoteId, token) {
-        const resp = await axios_1.default.delete(`${this.SJ_SERVER}/repo/${remoteId}/purge`, SJServerModel.firebaseTokenRequestConfig(token));
+    async purgeRepo(remoteId) {
+        const resp = await axios_1.default.delete(`${this.SJ_SERVER}/repo/${remoteId}/purge`, await SJServerModel.firebaseTokenRequestConfig());
         return resp.status === 200;
     }
-    async shareEnvironment(envId, email, permission, token) {
-        return await axios_1.default.post(`${this.SJ_SERVER}/repo/${envId}/share`, { email, permission }, SJServerModel.firebaseTokenRequestConfig(token));
+    /**
+     * Share an environment
+     * @param envId Env Id to share
+     * @param email Email of user to share with
+     * @param permission Permission value of new user
+     */
+    async shareEnvironment(envId, email, permission) {
+        return await axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/share`, { email, permission }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Cancel an invitation for a user on a specific environment
+     * @param envId
+     * @param uid
+     */
+    async cancelShare(envId, uid) {
+        return await axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/cancelShare`, { uid }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Accept an invitation (to join stackjoy)
+     * @param inviteId
+     * @param displayName
+     * @param password
+     */
+    async activateUser(inviteId, displayName, password) {
+        return await axios_1.default.post(`${this.SJ_SERVER}/users/activateUser`, { inviteId, displayName, password });
+    }
+    /**
+     * Get remote environments for the user
+     * @param type Env type (either stack or workspace)
+     */
+    async getRemoteEnvironments(type) {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/${type}/forUser`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Get public stacks
+     */
+    async getPublicStacks() {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/stacks/public`);
+    }
+    /**
+     * Get pending invites for the user
+     * @param type Environment type
+     */
+    async getInvites(type) {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/${type}/invites`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Get a list of user profiles for a specific environment
+     * @param envId
+     */
+    async getUserProfilesForEnv(envId) {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/${envId}/userProfiles`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Accept an invite to join an environment
+     * @param eid
+     */
+    async acceptInvite(eid) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/acceptInvite`, {}, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Decline an invite to join an environment
+     * @param eid
+     */
+    async declineInvite(eid) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/declineInvite`, {}, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Update the permission of a user
+     * @param eid Environment ID
+     * @param targetId User ID to update
+     * @param permission Permission to update to
+     */
+    async updateUserPermission(eid, targetId, permission) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/updateUserPermission`, { targetId, permission }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Revoke the permissions of a user from a workspace
+     * @param eid Environment ID
+     * @param targetId User ID to revoke
+     */
+    async revokeUserPermission(eid, targetId) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/revokeUserPermission`, { targetId }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Revoke the permissions of a user from a workspace
+     * @param uid UID of user to get
+     */
+    async getUserProfile(uid) {
+        return axios_1.default.get(`${this.SJ_SERVER}/users/profile/${uid}`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Create (or update if exists) a user profile
+     * @param uid
+     * @param username
+     * @param email
+     */
+    async crudProfile(uid, username, email) {
+        return axios_1.default.put(`${this.SJ_SERVER}/users/profile/${uid}`, { username, email }, await SJServerModel.firebaseTokenRequestConfig());
     }
 }
 exports.SJServerModel = SJServerModel;

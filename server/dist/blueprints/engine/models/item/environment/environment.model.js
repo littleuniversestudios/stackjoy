@@ -168,13 +168,12 @@ class EnvironmentModel extends base_model_1.BaseModel {
             fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'config.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'links.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'data.models.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'data.inputs.json'), {});
             fs_1.writeFileSync(path_1.join(blueprintsPath, 'readme.md'), '');
             // create the other sub directories
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'collections'));
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'functions'));
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'installed'));
+            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'stacks'));
+            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'data'));
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'snippets'));
             return { error: null, success: true };
         }

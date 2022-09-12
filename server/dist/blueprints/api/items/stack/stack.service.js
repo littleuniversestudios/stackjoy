@@ -16,7 +16,7 @@ class StackService {
         return { error: null, data: null };
     }
     remove(id) {
-        return globals_1.APP_ENVIRONMENT.getBlueprints().deleteStack(id);
+        return globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints().deleteStack(id);
     }
 }
 exports.StackService = StackService;

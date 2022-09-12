@@ -15,7 +15,7 @@ exports.appStateRouter.get('/main', route_validation_1.validateRequest(appStateR
     const result = appStateService.getMainState();
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.appStateRouter.put('/:main', route_validation_1.validateRequest(appStateRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
+exports.appStateRouter.put('/main', route_validation_1.validateRequest(appStateRules.forPUT), route_handler_1.handleRoute(async (req, res, next) => {
     const result = appStateService.updateMainState(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));

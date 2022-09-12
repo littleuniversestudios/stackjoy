@@ -17,13 +17,14 @@ class BlueprintsApi {
         return this.blueprints;
     }
     getCollections() {
+        // console.log('all items: ',this.allItems.map(i=>console.log('---> ',i.type, i.id)))
         return this.allItems.filter(i => i.type === blu_interface_1.BLU.Item.Type.Collection);
     }
     getCollectionsInfo() {
         return this.getCollections().map(c => c.info);
     }
-    getCollection(name) {
-        return this.getCollections().find(c => c.name.toLowerCase() === name.toLowerCase());
+    getCollection(id) {
+        return this.getCollections().find(c => c.id === id);
     }
     getTemplates() {
         return this.allItems.filter(i => i.type === blu_interface_1.BLU.Item.Type.Template);
