@@ -1,16 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initStackjoy = exports.logger = exports.APP_SERVICE = exports.SJ_SERVER = exports.SYSTEM = void 0;
+exports.initStackjoy = exports.logger = exports.FIREBASE_SERVICE = exports.AUTH_SERVICE = exports.APP_SERVICE = exports.SJ_SERVER = exports.SYSTEM = void 0;
 const system_1 = require("./shared/lib/system");
-const app_model_1 = require("./app/models/app.model");
-const SJServerModel_1 = require("./app/models/SJServerModel");
-const app_service_1 = require("./app/app.service");
+const app_model_1 = require("./models/app/app.model");
+const sj_server_model_1 = require("./models/SJServer/sj.server.model");
+const app_service_1 = require("./services/app.service");
+const firebase_1 = require("./shared/lib/firebase");
+const auth_service_1 = require("./api/app/auth/auth.service");
 const winston = require('winston');
 function initStackjoy() {
     var _a;
     exports.SYSTEM = system_1.initSystem('stackjoy');
     // console.log('SHOW SYSTEM DATA (STACKJOY_DATA_DIR):', SYSTEM)
-    exports.SJ_SERVER = new SJServerModel_1.SJServerModel((_a = process.env.STACKJOY_SERVER) !== null && _a !== void 0 ? _a : 'https://api.stackjoy.com');
+    exports.FIREBASE_SERVICE = new firebase_1.FirebaseService();
+    exports.AUTH_SERVICE = new auth_service_1.AuthService();
+    exports.SJ_SERVER = new sj_server_model_1.SJServerModel((_a = process.env.STACKJOY_SERVER) !== null && _a !== void 0 ? _a : 'https://api.stackjoy.com');
     exports.APP_SERVICE = new app_service_1.AppService();
     initLogger();
 }

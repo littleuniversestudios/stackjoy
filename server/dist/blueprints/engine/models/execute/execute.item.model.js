@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteItemModel = void 0;
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const utils_1 = require("../../lib/utils");
-const workspace_model_1 = require("../item/environment/workspace.model");
+const blu_workspace_model_1 = require("../item/environment/blu.workspace.model");
 const path = require("path");
 class ExecuteItemModel {
     constructor(item, parent, inputs = {}, ROOT_DESTINATION, extraInfo) {
@@ -41,7 +41,7 @@ class ExecuteItemModel {
             CODEBASE_PATH: this.inputs.CODEBASE_PATH,
             ROOT_DESTINATION: this.inputs.ROOT_DESTINATION,
         };
-        const systemFunctions = workspace_model_1.WorkspaceModel.defaultFunctions(fnContext).map(f => Object.assign({}, f, { origin: { name: 'Readonly System Function', type: blu_interface_1.BLU.Origin.Types.System } }));
+        const systemFunctions = blu_workspace_model_1.BLUWorkspaceModel.defaultFunctions(fnContext).map(f => Object.assign({}, f, { origin: { name: 'Readonly System Function', type: blu_interface_1.BLU.Origin.Types.System } }));
         renderContext.functions = ExecuteItemModel.mergeFunctions(renderContext.functions, systemFunctions);
         return renderContext;
     }

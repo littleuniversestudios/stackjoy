@@ -5,7 +5,7 @@ const util_1 = require("../../../../../shared/lib/util");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
 const fs_1 = require("fs");
-const blu_utils_model_1 = require("../../blu-utils.model");
+const blu_utils_model_1 = require("../../blu.utils.model");
 class FunctionModel {
     constructor(baseId, parent) {
         this.baseId = baseId;

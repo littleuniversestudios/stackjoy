@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackModel = void 0;
+exports.BLUStackModel = void 0;
 const blu_interface_1 = require("../../../../../shared/interfaces/blu.interface");
-const environment_model_1 = require("./environment.model");
+const blu_environment_model_1 = require("./blu.environment.model");
 const file_system_1 = require("../../../lib/file-system");
 const path_1 = require("path");
 const blu_utils_model_1 = require("../../blu-utils.model");
 const environment_data_1 = require("./environment.data");
-class StackModel extends environment_model_1.EnvironmentModel {
+class BLUStackModel extends blu_environment_model_1.BLUEnvironmentModel {
     constructor(path, id, parent = null) {
         super(path, 'stack', id, blu_interface_1.BLU.Item.Type.Stack, parent);
         this.loadMetadata();
@@ -31,11 +31,11 @@ class StackModel extends environment_model_1.EnvironmentModel {
     loadStacks() {
         const excludeFolders = [".git"];
         const stackIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.stacks, excludeFolders);
-        this.stacks.push(...stackIDs.map(id => new StackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
+        this.stacks.push(...stackIDs.map(id => new BLUStackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
         this.children.push(...this.stacks);
     }
     loadDataMembers() {
-        environment_data_1.EnvironmentData.dataTypes.forEach(dataType => {
+        environment_data_1.BLUEnvironmentData.dataTypes.forEach(dataType => {
             this.stacks.forEach(stack => this.addDataMembers(stack.environmentData.getDataMembersByType(dataType), dataType));
             this.addDataMembers(this.environmentData.getDataMembersByType(dataType), dataType);
         });
@@ -54,5 +54,5 @@ class StackModel extends environment_model_1.EnvironmentModel {
         }
     }
 }
-exports.StackModel = StackModel;
+exports.BLUStackModel = BLUStackModel;
 //# sourceMappingURL=stack.model.js.map

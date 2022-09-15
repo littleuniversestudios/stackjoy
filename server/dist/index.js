@@ -1,16 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// This needs to be first to all the other imports have it loaded.
-const auth_service_1 = require("./app/api/auth/auth.service");
 require('dotenv').config();
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const main_router_1 = require("./main.router");
 const error_handler_1 = require("./shared/middlewares/error-handler");
 const globals_1 = require("./globals");
-const upload_router_1 = require("./blueprints/upload/upload.router");
+const upload_router_1 = require("./upload/upload.router");
+const api_router_1 = require("./api/api.router");
 const compression = require("compression");
 const app = express();
 const clientFolder = path.join(__dirname, '../../client/dist');
@@ -24,7 +22,7 @@ app.use(compression());
 app.use(helmet());
 app.use(cors());
 app.get('*.*', express.static(clientFolder, { maxAge: '1y' })); // serve client files
-app.use('/api', main_router_1.mainRouter); // serve API Routes
+app.use('/api', api_router_1.apiRouter); // serve API Routes
 app.use('/upload', upload_router_1.uploadRouter); // upload files
 app.all('*', (req, res) => res.status(200).sendFile(`/`, { root: clientFolder })); // SERVE APPLICATION PATHS
 app.use(error_handler_1.serverErrorHandler);
@@ -53,7 +51,7 @@ async function autoLogin() {
         console.log('! PASSWORD: ', password);
         console.log('!                                                            !');
         console.log('!!!!!!!!!!!!!!!!!!!!!!!!! /WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
-        await auth_service_1.AuthService.login({ email, password });
+        await globals_1.AUTH_SERVICE.login({ email, password });
     }
 }
 //# sourceMappingURL=index.js.map

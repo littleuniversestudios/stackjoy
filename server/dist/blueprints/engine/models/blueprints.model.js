@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlueprintsModel = void 0;
-const workspace_model_1 = require("./item/environment/workspace.model");
+const blu_workspace_model_1 = require("./item/environment/blu.workspace.model");
 const blu_interface_1 = require("../../../shared/interfaces/blu.interface");
 const actions_model_1 = require("../actions/actions.model");
 const blueprints_api_1 = require("../api/blueprints.api");
 const fs_extra_1 = require("fs-extra");
-const template_model_1 = require("./item/template.model");
+const blu_template_model_1 = require("./item/blu.template.model");
 const path_1 = require("path");
-const function_model_1 = require("./item/parts/function.model");
+const blu_function_model_1 = require("./item/parts/blu.function.model");
 class BlueprintsModel {
     constructor(path, workspaceName) {
         this.path = path;
-        this.workspace = new workspace_model_1.WorkspaceModel(path, workspaceName);
+        this.workspace = new blu_workspace_model_1.BLUWorkspaceModel(path, workspaceName);
         this.api = new blueprints_api_1.BlueprintsApi(this.workspace);
         this.actions = new actions_model_1.ActionsModel(this.api);
     }
@@ -146,7 +146,7 @@ class BlueprintsModel {
         if (template) {
             const destination = path_1.join(template.parent.paths.templates);
             const newName = `${template.name}_copy`;
-            return template_model_1.TemplateModel.copyTemplate(template, destination, template.parent, newName);
+            return blu_template_model_1.BLUTemplateModel.copyTemplate(template, destination, template.parent, newName);
         }
         else {
             return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
@@ -163,7 +163,7 @@ class BlueprintsModel {
         }
         else {
             const destination = collection.paths.templates;
-            return template_model_1.TemplateModel.copyTemplate(template, destination, collection);
+            return blu_template_model_1.BLUTemplateModel.copyTemplate(template, destination, collection);
         }
     }
     createNewFile(templateId, newFileName, path) {
@@ -245,7 +245,7 @@ class BlueprintsModel {
         const bluFunction = this.getFunction(functionId);
         if (bluFunction) {
             const newName = `${bluFunction.name}_copy`;
-            const result = function_model_1.FunctionModel.createFunction(bluFunction.paths.parent, newName, bluFunction.contents, bluFunction.description, bluFunction.parent);
+            const result = blu_function_model_1.BLUFunctionModel.createFunction(bluFunction.paths.parent, newName, bluFunction.contents, bluFunction.description, bluFunction.parent);
             if (result.error) {
                 return { error: result.error, data: { success: false, function: null } };
             }
@@ -283,7 +283,7 @@ class BlueprintsModel {
      * STATIC MEMBERS
      */
     static crateBlueprintsFolder(path) {
-        return workspace_model_1.WorkspaceModel.createWorkspace(path);
+        return blu_workspace_model_1.BLUWorkspaceModel.createWorkspace(path);
     }
 }
 exports.BlueprintsModel = BlueprintsModel;

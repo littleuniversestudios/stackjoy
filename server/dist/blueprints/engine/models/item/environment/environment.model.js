@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnvironmentModel = void 0;
+exports.BLUEnvironmentModel = void 0;
 const collection_model_1 = require("../collection.model");
 const path_1 = require("path");
 const file_system_1 = require("../../../lib/file-system");
@@ -11,7 +11,7 @@ const fs_1 = require("fs");
 const blu_utils_model_1 = require("../../blu-utils.model");
 const system_functions_1 = require("../../support/system.functions");
 const environment_data_1 = require("./environment.data");
-class EnvironmentModel extends base_model_1.BaseModel {
+class BLUEnvironmentModel extends base_model_1.BaseModel {
     constructor(path, name, baseId, type = blu_interface_1.BLU.Item.Type.Workspace, parent = null) {
         super(type);
         this.path = path;
@@ -154,7 +154,7 @@ class EnvironmentModel extends base_model_1.BaseModel {
      * ENVIRONMENT DATA
      */
     loadEnvironmentData() {
-        this.environmentData = new environment_data_1.EnvironmentData(this);
+        this.environmentData = new environment_data_1.BLUEnvironmentData(this);
     }
     /**
      * STATIC MEMBERS
@@ -169,7 +169,7 @@ class EnvironmentModel extends base_model_1.BaseModel {
             fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'links.json'), {});
             fs_1.writeFileSync(path_1.join(blueprintsPath, 'readme.md'), '');
-            // create the other sub directories
+            // create the other subdirectories
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'collections'));
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'functions'));
             fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'stacks'));
@@ -182,5 +182,5 @@ class EnvironmentModel extends base_model_1.BaseModel {
         }
     }
 }
-exports.EnvironmentModel = EnvironmentModel;
+exports.BLUEnvironmentModel = BLUEnvironmentModel;
 //# sourceMappingURL=environment.model.js.map

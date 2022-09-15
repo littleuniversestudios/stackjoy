@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TemplateModel = void 0;
+exports.BLUTemplateModel = void 0;
 const file_system_1 = require("../../lib/file-system");
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const path_1 = require("path");
-const base_model_1 = require("./base.model");
+const blu_base_model_1 = require("./blu.base.model");
 const util_1 = require("../../../../shared/lib/util");
 const fs_extra_1 = require("fs-extra");
 const fs_1 = require("fs");
-const blu_utils_model_1 = require("../blu-utils.model");
-class TemplateModel extends base_model_1.BaseModel {
+const blu_utils_model_1 = require("../blu.utils.model");
+class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
     constructor(baseId, parent) {
         super(blu_interface_1.BLU.Item.Type.Template);
         this.baseId = baseId;
@@ -71,7 +71,7 @@ class TemplateModel extends base_model_1.BaseModel {
     init() {
         var _a, _b;
         this.setPaths();
-        this.config = Object.assign({}, TemplateModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
+        this.config = Object.assign({}, BLUTemplateModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
         let chainedTemplates = (_b = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.chainedTemplates)) !== null && _b !== void 0 ? _b : [];
         if (!Array.isArray(chainedTemplates)) {
             chainedTemplates = [];
@@ -113,13 +113,13 @@ class TemplateModel extends base_model_1.BaseModel {
         return util_1.UUIDLong();
     }
     static createTemplate(path, name, parent, files) {
-        const templateId = TemplateModel.newId();
+        const templateId = BLUTemplateModel.newId();
         const templatePath = path_1.join(path, templateId);
         try {
             // ensure the directory is created
             fs_extra_1.ensureDirSync(path_1.join(templatePath));
             // create template files [config.json, readme.md, variables.json]
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'config.json'), Object.assign({}, TemplateModel.defaultConfig, { name }));
+            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'config.json'), Object.assign({}, BLUTemplateModel.defaultConfig, { name }));
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'links.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(templatePath, 'chainedTemplates.json'), []);
@@ -132,7 +132,7 @@ class TemplateModel extends base_model_1.BaseModel {
                 const fileDestination = path_1.join(templatePath, 'files', file.destination);
                 fs_extra_1.copySync(file.origin, fileDestination);
             });
-            return { error: null, data: new TemplateModel(templateId, parent) };
+            return { error: null, data: new BLUTemplateModel(templateId, parent) };
         }
         catch (error) {
             return { error, data: null };
@@ -140,9 +140,9 @@ class TemplateModel extends base_model_1.BaseModel {
     }
     static copyTemplate(template, destination, parent, newName) {
         try {
-            const newTemplateId = TemplateModel.newId();
+            const newTemplateId = BLUTemplateModel.newId();
             fs_extra_1.copySync(template.paths.self, path_1.join(destination, `./${newTemplateId}`));
-            const newTemplate = new TemplateModel(newTemplateId, parent);
+            const newTemplate = new BLUTemplateModel(newTemplateId, parent);
             if (newName) {
                 newTemplate.renameTemplate(newName);
             }
@@ -153,5 +153,5 @@ class TemplateModel extends base_model_1.BaseModel {
         }
     }
 }
-exports.TemplateModel = TemplateModel;
+exports.BLUTemplateModel = BLUTemplateModel;
 //# sourceMappingURL=template.model.js.map

@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WorkspaceModel = void 0;
 const blu_interface_1 = require("../../../../../shared/interfaces/blu.interface");
-const environment_model_1 = require("./environment.model");
+const blu_environment_model_1 = require("./blu.environment.model");
 const file_system_1 = require("../../../lib/file-system");
 const path_1 = require("path");
-const stack_model_1 = require("./stack.model");
+const blu_stack_model_1 = require("./blu.stack.model");
 const environment_data_1 = require("./environment.data");
-class WorkspaceModel extends environment_model_1.EnvironmentModel {
+class WorkspaceModel extends blu_environment_model_1.BLUEnvironmentModel {
     constructor(path, name) {
         super(path, name, 'workspace', blu_interface_1.BLU.Item.Type.Workspace, null);
         this.name = name;
@@ -17,11 +17,11 @@ class WorkspaceModel extends environment_model_1.EnvironmentModel {
     loadStacks() {
         const excludeFolders = [".git"];
         const stackIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.stacks, excludeFolders);
-        this.stacks.push(...stackIDs.map(id => new stack_model_1.StackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
+        this.stacks.push(...stackIDs.map(id => new blu_stack_model_1.BLUStackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
         this.children.push(...this.stacks);
     }
     loadDataMembers() {
-        environment_data_1.EnvironmentData.dataTypes.forEach(dataType => {
+        environment_data_1.BLUEnvironmentData.dataTypes.forEach(dataType => {
             this.stacks.forEach(stack => this.addDataMembers(stack.environmentData.getDataMembersByType(dataType), dataType));
             this.addDataMembers(this.environmentData.getDataMembersByType(dataType), dataType);
         });

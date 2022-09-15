@@ -3,7 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UUIDv4 = exports.UUIDLong = exports.UUIDMedium = exports.UUIDShort = exports.UUID = exports.getLastDirectoryName = exports.isDirectorySync = void 0;
 const fs_extra_1 = require("fs-extra");
 const path_1 = require("path");
-exports.isDirectorySync = path => fs_extra_1.lstatSync(path).isDirectory();
+exports.isDirectorySync = (path) => {
+    try {
+        return fs_extra_1.lstatSync(path).isDirectory();
+    }
+    catch (e) {
+        return false;
+    }
+};
 exports.getLastDirectoryName = (filePath) => filePath.split(path_1.sep).reverse()[0];
 exports.UUID = () => {
     return exports.UUIDv4('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');

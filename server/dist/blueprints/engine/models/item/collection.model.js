@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CollectionModel = void 0;
+exports.BLUCollectionModel = void 0;
 const file_system_1 = require("../../lib/file-system");
 const path_1 = require("path");
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const template_model_1 = require("./template.model");
-const base_model_1 = require("./base.model");
+const blu_base_model_1 = require("./blu.base.model");
 const fs_extra_1 = require("fs-extra");
 const fs_1 = require("fs");
 const util_1 = require("../../../../shared/lib/util");
-const blu_utils_model_1 = require("../blu-utils.model");
-class CollectionModel extends base_model_1.BaseModel {
+const blu_utils_model_1 = require("../blu.utils.model");
+class BLUCollectionModel extends blu_base_model_1.BLUBaseModel {
     constructor(baseId, parent) {
         super(blu_interface_1.BLU.Item.Type.Collection);
         this.baseId = baseId;
@@ -27,7 +27,7 @@ class CollectionModel extends base_model_1.BaseModel {
     init() {
         var _a;
         this.setPaths();
-        this.config = Object.assign({}, CollectionModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
+        this.config = Object.assign({}, BLUCollectionModel.defaultConfig, (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.config)) !== null && _a !== void 0 ? _a : {});
         this.loadSupportingFiles();
         this.loadTemplates();
     }
@@ -97,7 +97,7 @@ class CollectionModel extends base_model_1.BaseModel {
             // ensure the directory is created
             fs_extra_1.ensureDirSync(path_1.join(collectionPath));
             // create collection files [config.json, readme.md, variables.json, links]
-            fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'config.json'), Object.assign({}, CollectionModel.defaultConfig, { name }));
+            fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'config.json'), Object.assign({}, BLUCollectionModel.defaultConfig, { name }));
             fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'variables.json'), {});
             fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'links.json'), {});
             fs_1.writeFileSync(path_1.join(collectionPath, 'readme.md'), '');
@@ -105,7 +105,7 @@ class CollectionModel extends base_model_1.BaseModel {
             fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'functions'));
             fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'templates'));
             fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'chains'));
-            return { error: null, data: new CollectionModel(collectionId, parent) };
+            return { error: null, data: new BLUCollectionModel(collectionId, parent) };
         }
         catch (error) {
             return { error, data: null };
@@ -116,7 +116,7 @@ class CollectionModel extends base_model_1.BaseModel {
         const newCollectionPath = path_1.join(workspace.paths.collections, newCollectionBaseId);
         try {
             fs_extra_1.copySync(collectionToCopy.paths.self, newCollectionPath);
-            const newCollection = new CollectionModel(newCollectionBaseId, workspace);
+            const newCollection = new BLUCollectionModel(newCollectionBaseId, workspace);
             newCollection.renameIds(collectionToCopy.id, newCollection.id);
             return { error: null, data: newCollection };
         }
@@ -125,5 +125,5 @@ class CollectionModel extends base_model_1.BaseModel {
         }
     }
 }
-exports.CollectionModel = CollectionModel;
+exports.BLUCollectionModel = BLUCollectionModel;
 //# sourceMappingURL=collection.model.js.map

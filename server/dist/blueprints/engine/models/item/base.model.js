@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseModel = void 0;
+exports.BLUBaseModel = void 0;
 const blu_interface_1 = require("../../../../shared/interfaces/blu.interface");
 const fs_extra_1 = require("fs-extra");
-const blu_utils_model_1 = require("../blu-utils.model");
-const function_model_1 = require("./parts/function.model");
+const blu_utils_model_1 = require("../blu.utils.model");
+const blu_function_model_1 = require("./parts/blu.function.model");
 const file_system_1 = require("../../lib/file-system");
 const path_1 = require("path");
-class BaseModel {
+class BLUBaseModel {
     constructor(type) {
         this.type = type;
         this._functions = [];
@@ -103,10 +103,10 @@ class BaseModel {
     }
     loadFunctions() {
         const functionIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.functions);
-        this._functions = functionIDs.map(functionID => new function_model_1.FunctionModel(functionID, this));
+        this._functions = functionIDs.map(functionID => new blu_function_model_1.BLUFunctionModel(functionID, this));
     }
     createFunction(name, description, contents) {
-        const result = function_model_1.FunctionModel.createFunction(this.paths.functions, name, contents, description, this);
+        const result = blu_function_model_1.BLUFunctionModel.createFunction(this.paths.functions, name, contents, description, this);
         if (result.error) {
             return { error: result.error, data: { success: false, function: null } };
         }
@@ -116,5 +116,5 @@ class BaseModel {
         }
     }
 }
-exports.BaseModel = BaseModel;
+exports.BLUBaseModel = BLUBaseModel;
 //# sourceMappingURL=base.model.js.map

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppService = void 0;
-const app_model_1 = require("./models/app.model");
-const app_environment_model_1 = require("./models/app.environment.model");
-const globals_1 = require("../globals");
+const app_model_1 = require("../models/app/app.model");
+const globals_1 = require("../models/globals");
 const path = require("path");
+const environment_model_1 = require("../models/app/environment.model");
 class AppService {
     init(codebasePath) {
         this.INITIAL_CODEBASE_PATH = codebasePath;
@@ -25,7 +25,7 @@ class AppService {
     switchEnvironment(id) {
         const envMetadata = this.APP.getEnvironmentInfoById(id);
         if (envMetadata) {
-            const newEnv = new app_environment_model_1.EnvironmentModel(envMetadata);
+            const newEnv = new environment_model_1.EnvironmentModel(envMetadata);
             newEnv.updateLastUsed();
             this.setAppEnvironment(newEnv);
         }
@@ -35,7 +35,7 @@ class AppService {
         let workspaceMetadata = this.APP.getEnvironmentInfoByCodebase(codebasePath);
         if (workspaceMetadata) {
             // if the workspace found use it
-            this.setAppEnvironment(new app_environment_model_1.EnvironmentModel(workspaceMetadata));
+            this.setAppEnvironment(new environment_model_1.EnvironmentModel(workspaceMetadata));
         }
         else {
             this.setAppEnvironment(null);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataMember = exports.EnvironmentData = void 0;
+exports.DataMember = exports.BLUEnvironmentData = void 0;
 const blu_interface_1 = require("../../../../../shared/interfaces/blu.interface");
 const path_1 = require("path");
 const fs_extra_1 = require("fs-extra");
@@ -12,7 +12,7 @@ const path = require("path");
  * dataModel.model...hah, fuckin' brilliant, should have called them Classes
  * like any normal person would...you ding-dong
  */
-class EnvironmentData {
+class BLUEnvironmentData {
     constructor(parent) {
         this.parent = parent;
         this.folders = {
@@ -92,7 +92,7 @@ class EnvironmentData {
         Object.keys(this.folders).forEach(folderName => fs_extra_1.ensureDirSync(this.paths[folderName]));
     }
     loadDataMembers() {
-        EnvironmentData.dataTypes.forEach(dataType => {
+        BLUEnvironmentData.dataTypes.forEach(dataType => {
             const files = file_system_1.BLUFileSystem.fileList(this.getPathByType(dataType));
             const dataMembers = [];
             files.forEach(file => {
@@ -124,8 +124,8 @@ class EnvironmentData {
         }
     }
 }
-exports.EnvironmentData = EnvironmentData;
-EnvironmentData.dataTypes = [blu_interface_1.BLU.Data.Type.model, blu_interface_1.BLU.Data.Type.input, blu_interface_1.BLU.Data.Type.schema];
+exports.BLUEnvironmentData = BLUEnvironmentData;
+BLUEnvironmentData.dataTypes = [blu_interface_1.BLU.Data.Type.model, blu_interface_1.BLU.Data.Type.input, blu_interface_1.BLU.Data.Type.schema];
 class DataMember {
     constructor(id, parent, type, filePath) {
         var _a;
