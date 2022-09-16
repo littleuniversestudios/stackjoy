@@ -9,6 +9,7 @@ const error_handler_1 = require("./shared/middlewares/error-handler");
 const globals_1 = require("./globals");
 const upload_router_1 = require("./upload/upload.router");
 const api_router_1 = require("./api/api.router");
+const auto_login_1 = require("./shared/lib/auto.login");
 const compression = require("compression");
 const app = express();
 const clientFolder = path.join(__dirname, '../../client/dist');
@@ -32,26 +33,8 @@ app.listen(port, async () => {
     // const codebasePath = `/Users/Shared/stackjoy/angular-demo`;
     globals_1.APP_SERVICE.init(codebasePath);
     // for dev purpose only
-    await autoLogin();
+    await auto_login_1.autoLogin();
     if (process.send)
         process.send({ event: 'started', data: { url: `http://127.0.0.1:${port}`, root: codebasePath } });
 });
-/**
- * For development purposes only. if the env variables are set for user email/password
- * automatically, log the user into the system
- */
-async function autoLogin() {
-    const email = process.env.USER_EMAIL;
-    const password = process.env.USER_PASSWORD;
-    if (email && password) {
-        console.log('\n!!!!!!!!!!!!!!!!!!!!!!!!!  WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log('! You are using credentials set in the environment variables !');
-        console.log('!                                                            !');
-        console.log('! EMAIL: ', email);
-        console.log('! PASSWORD: ', password);
-        console.log('!                                                            !');
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!! /WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
-        await globals_1.AUTH_SERVICE.login({ email, password });
-    }
-}
 //# sourceMappingURL=index.js.map

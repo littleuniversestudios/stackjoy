@@ -106,6 +106,7 @@ class AppModel {
     }
     createStack(name, isLocal = true) {
         const stack = this.userModel.createStack(name, isLocal);
+        console.log('stack:::: ', stack);
         this.refresh();
         this.createDefaultCollection(stack.id);
         return stack;

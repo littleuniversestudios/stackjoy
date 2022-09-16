@@ -30,7 +30,7 @@ class SJServerModel {
      * Git commands with Token Header added
      * =====================================
      */
-    static async push(git, token, branch = 'master') {
+    static async push(git, token, branch = SJServerModel.STACKJOY_BRANCH) {
         await git.raw(...SJServerModel.addHTTPHeader(token, 'push', '-u', 'origin', branch));
     }
     static async pull(git, token) {
@@ -68,6 +68,7 @@ class SJServerModel {
         // Initialize the git repo
         const git = SJServerModel.createGit(baseDir);
         await (git.init()
+            .checkout(['-b', SJServerModel.STACKJOY_BRANCH])
             .addRemote('origin', this.repoUrl(envId))
             .add('.')
             .commit('Version 1'));
@@ -86,7 +87,8 @@ class SJServerModel {
         fs_extra_1.mkdirpSync(baseDir);
         const git = SJServerModel.createGit(baseDir);
         try {
-            await git.raw(...SJServerModel.addHTTPHeader(await globals_1.FIREBASE_SERVICE.getAuthToken(), 'clone', this.repoUrl(repoId), '.'));
+            await git.raw(...SJServerModel.addHTTPHeader(await globals_1.FIREBASE_SERVICE.getAuthToken(), 'clone', this.repoUrl(repoId), '.'))
+                .checkout(SJServerModel.STACKJOY_BRANCH);
             return { error: null, data: { success: true } };
         }
         catch (err) {
@@ -272,4 +274,5 @@ class SJServerModel {
     }
 }
 exports.SJServerModel = SJServerModel;
+SJServerModel.STACKJOY_BRANCH = 'stackjoy';
 //# sourceMappingURL=sj.server.model.js.map

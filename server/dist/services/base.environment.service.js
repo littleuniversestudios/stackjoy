@@ -102,6 +102,7 @@ class BaseEnvironmentService {
                 await globals_1.APP_SERVICE.APP.publishRemoteEnvironment(env, commitMessage);
         }
         catch (e) {
+            console.log('error: ', e);
             globals_1.logger.error(e.message);
             throw e;
         }

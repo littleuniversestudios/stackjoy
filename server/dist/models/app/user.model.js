@@ -29,6 +29,8 @@ class UserModel {
     }
     init() {
         if (!!this.user) {
+            this.relativeWorkspacesPath = path_1.join('users', this.user.uid, 'workspaces');
+            this.relativeStacksPath = path_1.join('users', this.user.uid, 'stacks');
             this.workspacesPath = path_1.join(this.usersPath, this.user.uid, 'workspaces');
             this.stacksPath = path_1.join(this.usersPath, this.user.uid, 'stacks');
             this.statePath = path_1.join(this.usersPath, this.user.uid, 'state');
@@ -47,7 +49,7 @@ class UserModel {
      * @private
      */
     setUserPrivileges() {
-        this.maxWorkspaces = 10; // every signed in user gets 3 worksoaces for free
+        this.maxWorkspaces = 2; // every signed in user gets 3 worksoaces for free
         // todo: check account level and assign max workspaces accordingly
     }
     createLists() {
@@ -106,7 +108,7 @@ class UserModel {
         return this.createEnvironment(codebasePath, name, app_interface_1.App.Environment.Type.Stack, isLocal);
     }
     createEnvironment(codebasePath, name, type, isLocal, id = util_1.UUIDShort()) {
-        const environmentRelativePath = path_1.join(type === app_interface_1.App.Environment.Type.Workspace ? this.workspacesPath : this.stacksPath, id);
+        const environmentRelativePath = path_1.join(type === app_interface_1.App.Environment.Type.Workspace ? this.relativeWorkspacesPath : this.relativeStacksPath, id);
         return environment_model_1.EnvironmentModel.createEnvironment(environmentRelativePath, { codebasePath, name, type, isLocal, id });
     }
 }

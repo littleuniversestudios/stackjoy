@@ -68,4 +68,8 @@ exports.stackRouter.delete('/:stackId', route_validation_1.validateRequest(stack
     const result = await stackService.deleteStack(`${req.params.stackId}`);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.stackRouter.delete('/purge/:remoteId', route_validation_1.validateRequest(stackRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.purge(req.params.remoteId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 //# sourceMappingURL=stack.router.js.map
