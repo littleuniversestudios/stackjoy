@@ -23,7 +23,7 @@ class SystemWorkspaceModel extends environment_model_1.EnvironmentModel {
         const systemEnvironmentMetadata = environment_model_1.EnvironmentModel.createEnvironment(systemWorkspaceRelativePath, {
             id: util_1.UUIDShort(),
             codebasePath: null,
-            name: 'SYSTEM WORKSPACE',
+            name: 'FREE WORKSPACE',
             type: app_interface_1.App.Environment.Type.Workspace,
             isLocal: true,
             isSystemWorkspace: true,

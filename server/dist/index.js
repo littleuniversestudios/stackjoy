@@ -28,9 +28,9 @@ app.use('/upload', upload_router_1.uploadRouter); // upload files
 app.all('*', (req, res) => res.status(200).sendFile(`/`, { root: clientFolder })); // SERVE APPLICATION PATHS
 app.use(error_handler_1.serverErrorHandler);
 app.listen(port, async () => {
+    var _a;
     globals_1.initStackjoy();
-    const codebasePath = process.cwd();
-    // const codebasePath = `/Users/Shared/stackjoy/angular-demo`;
+    const codebasePath = (_a = process.env.CODEBASE_PATH) !== null && _a !== void 0 ? _a : process.cwd();
     globals_1.APP_SERVICE.init(codebasePath);
     // for dev purpose only
     await auto_login_1.autoLogin();

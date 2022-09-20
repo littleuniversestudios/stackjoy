@@ -8,6 +8,7 @@ const fs_1 = require("fs");
 const util_1 = require("../../shared/lib/util");
 const app_interface_1 = require("../../shared/interfaces/app.interface");
 const environment_model_1 = require("./environment.model");
+const models_1 = require("@stackjoy/shared/models");
 /**
  * Folder structure of a workspace/stack
  * .../stackjoy/users/~userID~/
@@ -49,8 +50,19 @@ class UserModel {
      * @private
      */
     setUserPrivileges() {
-        this.maxWorkspaces = 2; // every signed in user gets 3 worksoaces for free
-        // todo: check account level and assign max workspaces accordingly
+        console.log('user: ', this.user);
+        switch (this.user.accountType) {
+            case models_1.AccountType.BASIC:
+                this.maxWorkspaces = 2; // every signed in user gets 2 worksoaces for free
+                break;
+            case models_1.AccountType.EARLY_ADOPTER:
+                this.maxWorkspaces = 10; // early adopters get 10 workspaces
+                break;
+            case models_1.AccountType.PREMIUM:
+                // todo: figure out what paid accounts get, possibly unlimited;
+                this.maxWorkspaces = 25;
+                break;
+        }
     }
     createLists() {
         if (this.user) {
