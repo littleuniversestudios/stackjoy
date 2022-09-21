@@ -9,8 +9,14 @@ class SJServerModel {
     constructor(url) {
         this.SJ_SERVER = url;
     }
-    static addHTTPHeader(token, ...rest) {
-        return ['-c', `http.extraheader=Firebase-Auth-Token: ${token}`, ...rest];
+    static firebaseAuthTokenHeader(token) {
+        return `http.extraheader=Firebase-Auth-Token: ${token}`;
+    }
+    static gitCommandHeader(cmd) {
+        return `http.extraheader=Git-Command: ${cmd}`;
+    }
+    static addHTTPHeaderToGitCommand(header, ...rest) {
+        return ['-c', header, ...rest];
     }
     static createGit(baseDir) {
         return simple_git_1.default({
@@ -31,13 +37,31 @@ class SJServerModel {
      * =====================================
      */
     static async push(git, token, branch = SJServerModel.STACKJOY_BRANCH) {
-        await git.raw(...SJServerModel.addHTTPHeader(token, 'push', '-u', 'origin', branch));
+        const command = [
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token)),
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.gitCommandHeader('push')),
+            'push', '-u', 'origin', branch
+        ];
+        await git.raw(command);
+        // await git.raw(...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token), 'push', '-u', 'origin', branch))
     }
     static async pull(git, token) {
-        await git.raw(...SJServerModel.addHTTPHeader(token, 'pull'));
+        const command = [
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token)),
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.gitCommandHeader('pull')),
+            'pull'
+        ];
+        await git.raw(command);
+        // await git.raw(...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token), 'pull'));
     }
     static async fetch(git, token) {
-        await git.raw(...SJServerModel.addHTTPHeader(token, 'fetch'));
+        const command = [
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token)),
+            ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.gitCommandHeader('fetch')),
+            'fetch'
+        ];
+        await git.raw(command);
+        // await git.raw(...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(token), 'fetch'));
     }
     /**
      *
@@ -87,8 +111,12 @@ class SJServerModel {
         fs_extra_1.mkdirpSync(baseDir);
         const git = SJServerModel.createGit(baseDir);
         try {
-            await git.raw(...SJServerModel.addHTTPHeader(await globals_1.FIREBASE_SERVICE.getAuthToken(), 'clone', this.repoUrl(repoId), '.'))
-                .checkout(SJServerModel.STACKJOY_BRANCH);
+            const command = [
+                ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.firebaseAuthTokenHeader(await globals_1.FIREBASE_SERVICE.getAuthToken())),
+                ...SJServerModel.addHTTPHeaderToGitCommand(SJServerModel.gitCommandHeader('clone')),
+                'clone', this.repoUrl(repoId), '.'
+            ];
+            await git.raw(command).checkout(SJServerModel.STACKJOY_BRANCH);
             return { error: null, data: { success: true } };
         }
         catch (err) {
@@ -271,6 +299,14 @@ class SJServerModel {
      */
     async crudProfile(uid, username, email) {
         return axios_1.default.put(`${this.SJ_SERVER}/users/profile/${uid}`, { username, email }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Upgrade an account
+     * @param uid
+     * @param newAccountType
+     */
+    async upgradeAccount(uid, newAccountType) {
+        return axios_1.default.post(`${this.SJ_SERVER}/users/upgrade/${uid}`, { newAccountType }, await SJServerModel.firebaseTokenRequestConfig());
     }
 }
 exports.SJServerModel = SJServerModel;

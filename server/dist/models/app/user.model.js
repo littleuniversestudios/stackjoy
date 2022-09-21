@@ -50,7 +50,6 @@ class UserModel {
      * @private
      */
     setUserPrivileges() {
-        console.log('user: ', this.user);
         switch (this.user.accountType) {
             case models_1.AccountType.BASIC:
                 this.maxWorkspaces = 2; // every signed in user gets 2 worksoaces for free

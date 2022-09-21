@@ -98,6 +98,18 @@ class AuthService {
             return { error: { status: 500, code: types_1.HttpError.UNKNOWN, message: e.message || "Unknown error occurred.", data: e }, data: null };
         }
     }
+    async upgradeAccount({ newAccountType }) {
+        try {
+            const uid = globals_1.FIREBASE_SERVICE.getAuthenticatedUser().uid;
+            if (!uid)
+                return { error: { status: 401, code: types_1.HttpError.UNAUTHORIZED, message: 'User must be logged in!' }, data: null };
+            const response = await globals_1.SJ_SERVER.upgradeAccount(uid, newAccountType);
+            return { error: null, data: response.data };
+        }
+        catch (e) {
+            return { error: { status: 500, code: types_1.HttpError.UNKNOWN, message: e.message || "Unknown error occurred." }, data: null };
+        }
+    }
 }
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

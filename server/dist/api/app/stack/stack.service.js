@@ -8,6 +8,7 @@ const base_environment_service_1 = require("../../../services/base.environment.s
 const environment_model_1 = require("../../../models/app/environment.model");
 const util_1 = require("../../../shared/lib/util");
 const globals_1 = require("../../../globals");
+const fs_1 = require("fs");
 class StackService extends base_environment_service_1.BaseEnvironmentService {
     async findAll() {
         const stacks = globals_1.APP_SERVICE.APP.list.stacks;
@@ -128,6 +129,7 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
                 }
                 // clone and store the remote stack into a temp directory
                 if (result === null || result === void 0 ? void 0 : result.error) {
+                    fs_1.rmdirSync(cachePath);
                     return result;
                 }
                 else {

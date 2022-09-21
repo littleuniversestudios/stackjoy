@@ -5,9 +5,8 @@ const path_1 = require("path");
 const blueprints_model_1 = require("../blueprints/engine/models/blueprints.model");
 const fs_extra_1 = require("fs-extra");
 const util_1 = require("../../shared/lib/util");
-const fs_1 = require("fs");
-const example_template_1 = require("../../documentation/example.template");
 const globals_1 = require("../../globals");
+const blu_template_model_1 = require("../blueprints/engine/models/item/blu.template.model");
 class EnvironmentModel {
     constructor(metadata) {
         this.metadata = metadata;
@@ -126,16 +125,27 @@ class EnvironmentModel {
      */
     static createDefaultCollection(environment) {
         const environmentBlueprints = environment.getBlueprints();
-        // create main collection with example template
+        // create main collection with stackjoy documentation template
         const result = environmentBlueprints.createCollection('main');
         if (!result.error) {
             const collection = result.data.collection;
-            const templateResult = collection.createTemplate('documentation');
-            if (!templateResult.error) {
-                const pathToTemplateFiles = templateResult.data.template.paths.files;
-                templateResult.data.template.updateVariables({ colors: ["yellow", "blue", "green"], strongPassword: 'password' });
-                fs_1.writeFileSync(path_1.join(pathToTemplateFiles, 'hello-world.txt'), example_template_1.exampleTemplateText);
-                // todo: create a whole slew of example files that the user can use as a reference
+            /**
+             * COPY THE STACKJOY DOCUMENTATION TEMPLATE FROM /assets FOLDER
+             * this uses process.argv[1] method to get the path where stackjoy-agent-server is being executed. This runs
+             * correctly UNLESS someone runs stackjoy using node process manager like pm2 THEN process.argv[1] will point to
+             * the executable of the process manager...NOT WHAT WE WANT!!!! but those cases should be very rare
+             */
+            const templateId = blu_template_model_1.BLUTemplateModel.newId();
+            const documentationTemplatePath = path_1.join(globals_1.APP_PATHS.assets, '/templates/documentation-template');
+            const destination = path_1.join(collection.paths.templates, templateId);
+            if (fs_extra_1.existsSync(documentationTemplatePath)) {
+                try {
+                    fs_extra_1.copySync(documentationTemplatePath, destination);
+                }
+                catch (e) {
+                    console.log('COULD NOT COPY STACKJOY DOCUMENTATION');
+                    console.log(e);
+                }
             }
         }
     }

@@ -39,6 +39,7 @@ async function autoLogin() {
             console.log('! PASSWORD:  ', password);
             console.log('! UID:       ', (_a = response.data) === null || _a === void 0 ? void 0 : _a.uid);
             console.log('! USERNAME:  ', (_b = response.data) === null || _b === void 0 ? void 0 : _b.username);
+            console.log('! Auth Token:  ', await globals_1.FIREBASE_SERVICE.getAuthToken());
             console.log('!                                                            !');
             console.log('!!!!!!!!!!!!!!!!!!!!!!!!! /WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
         }

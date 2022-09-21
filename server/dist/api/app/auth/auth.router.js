@@ -6,6 +6,7 @@ const route_validation_1 = require("../../../shared/middlewares/route-validation
 const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const check_1 = require("express-validator/check");
 const globals_1 = require("../../../globals");
+const models_1 = require("@stackjoy/shared/models");
 exports.authRouter = express_1.Router();
 /*
  * GET
@@ -44,6 +45,12 @@ exports.authRouter.post('/resetPassword', route_validation_1.validateRequest([
     check_1.body('email').isEmail(),
 ]), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await globals_1.AUTH_SERVICE.resetPassword(req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.authRouter.post('/upgradeAccount', route_validation_1.validateRequest([
+    check_1.body('newAccountType').isNumeric().isIn(Object.keys(models_1.AccountType))
+]), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await globals_1.AUTH_SERVICE.upgradeAccount(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 /*
