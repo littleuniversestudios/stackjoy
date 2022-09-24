@@ -19,6 +19,10 @@ exports.environmentRouter.get('/current', route_validation_1.validateRequest(app
     const result = appEnvironmentService.getCurrentEnvironment();
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.environmentRouter.get('/:envId/state', route_validation_1.validateRequest(appEnvironmentRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = appEnvironmentService.getEnvironmentState(req.params.envId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 /*
 * PUT
  */
@@ -38,16 +42,15 @@ exports.environmentRouter.put('/:appEnvironmentId/rename', route_validation_1.va
     const result = await appEnvironmentService.rename(`${req.params.appEnvironmentId}`, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.environmentRouter.delete('/:appEnvironmentId', route_validation_1.validateRequest(appEnvironmentRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
-    // const result = await appEnvironmentService.delete(`${req.params.appEnvironmentId}`);
-    // result.error ? next(result.error) : res.json(result.data);
-}));
-exports.environmentRouter.get('/:envId/state', route_validation_1.validateRequest(appEnvironmentRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = appEnvironmentService.getEnvironmentState(req.params.envId);
-    result.error ? next(result.error) : res.json(result.data);
-}));
 exports.environmentRouter.put('/:envId/state', route_validation_1.validateRequest(appEnvironmentRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
     const result = appEnvironmentService.saveEnvironmentState(req.params.envId, req.body);
     result.error ? next(result.error) : res.json(result.data);
+}));
+/*
+* DELETE
+ */
+exports.environmentRouter.delete('/:appEnvironmentId', route_validation_1.validateRequest(appEnvironmentRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
+    // const result = await appEnvironmentService.delete(`${req.params.appEnvironmentId}`);
+    // result.error ? next(result.error) : res.json(result.data);
 }));
 //# sourceMappingURL=environment.router.js.map

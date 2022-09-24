@@ -308,6 +308,13 @@ class SJServerModel {
     async upgradeAccount(uid, newAccountType) {
         return axios_1.default.post(`${this.SJ_SERVER}/users/upgrade/${uid}`, { newAccountType }, await SJServerModel.firebaseTokenRequestConfig());
     }
+    /**
+     * Star an environment
+     * @param envId
+     */
+    async starEnvironment(envId) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/star`, {}, await SJServerModel.firebaseTokenRequestConfig());
+    }
 }
 exports.SJServerModel = SJServerModel;
 SJServerModel.STACKJOY_BRANCH = 'stackjoy';

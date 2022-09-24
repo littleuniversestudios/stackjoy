@@ -9,6 +9,7 @@ const environment_model_1 = require("../../../models/app/environment.model");
 const util_1 = require("../../../shared/lib/util");
 const globals_1 = require("../../../globals");
 const fs_1 = require("fs");
+const types_1 = require("@stackjoy/shared/types");
 class StackService extends base_environment_service_1.BaseEnvironmentService {
     async findAll() {
         const stacks = globals_1.APP_SERVICE.APP.list.stacks;
@@ -60,6 +61,17 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
             const result = stackWorkspace.addCollection(collection);
             return { error: result.error, data: { success: !result.error } };
         }
+    }
+    /**
+     * Star an environment
+     * @param envId
+     */
+    async star(envId) {
+        const response = await globals_1.SJ_SERVER.starEnvironment(envId);
+        if (response.status !== 200) {
+            return { error: { message: response.statusText, status: response.status, code: types_1.HttpError.UNKNOWN, data: response.data }, data: null };
+        }
+        return { error: null, data: response.data };
     }
     /**
      * Get a list of remote stacks

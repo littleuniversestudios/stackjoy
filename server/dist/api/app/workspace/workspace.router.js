@@ -37,11 +37,11 @@ exports.workspaceRouter.get('/:envId/userProfiles', route_validation_1.validateR
  * POST
  */
 exports.workspaceRouter.post('/:envId/acceptInvite', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await workspaceService.acceptInvite(req.params.envId, req.header('Firebase-Auth-Token'));
+    const result = await workspaceService.acceptInvite(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.workspaceRouter.post('/:envId/declineInvite', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await workspaceService.declineInvite(req.params.envId, req.header('Firebase-Auth-Token'));
+    const result = await workspaceService.declineInvite(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.workspaceRouter.post('/:envId/updateUserPermission', check_1.param('envId').isString(), check_1.body('targetId').isString(), check_1.body('permission').isNumeric(), route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {

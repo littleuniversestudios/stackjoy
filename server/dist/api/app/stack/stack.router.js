@@ -6,6 +6,8 @@ const stackRules = require("./stack.rules");
 const route_validation_1 = require("../../../shared/middlewares/route-validation");
 const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const stack_service_1 = require("./stack.service");
+const app_interface_1 = require("../../../shared/interfaces/app.interface");
+const workspaceRules = require("../workspace/workspace.rules");
 exports.stackRouter = express_1.Router();
 const stackService = new stack_service_1.StackService();
 /*
@@ -23,6 +25,10 @@ exports.stackRouter.get('/public', route_handler_1.handleRoute(async (req, res, 
     const result = await stackService.getPublicStacks();
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.stackRouter.get('/invites', route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.getInvites(app_interface_1.App.Environment.Type.Stack, req.header('Firebase-Auth-Token'));
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.stackRouter.get('/:stackId', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.findById(req.params.stackId);
     result.error ? next(result.error) : res.json(result.data);
@@ -36,6 +42,18 @@ exports.stackRouter.post('/', route_validation_1.validateRequest(stackRules.forP
 }));
 exports.stackRouter.post('/sync', route_validation_1.validateRequest(stackRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.syncEnvironment(req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.post('/:envId/acceptInvite', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.acceptInvite(req.params.envId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.post('/:envId/declineInvite', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.declineInvite(req.params.envId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.post('/:envId/star', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.star(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
 /*

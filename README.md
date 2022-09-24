@@ -109,7 +109,7 @@ are ready to re-use your generators in your new project.
 ### Your Files are **THE** Templates
 
 No need to generate metadata describing what your template does. A file from your 
-application/code (with it’s file extension) **IS** the template. 
+application/code (with its file extension) **IS** the template. 
 
 ### Quick and Easy Template Creation
 
@@ -131,6 +131,8 @@ its contents.
 
 - Can be used without an account (no login required). 
 - Majority of the functionality is available on the FREE WORKSPACE but for complete functionality a stackjoy account is required.## Stackjoy Stacks
+
+## Stackjoy Stacks
 
 Stacks are similar to Workspaces but have some differences:
 
@@ -165,11 +167,11 @@ The main components of the BLU language are:
 - Transformations: Special type of syntax that passes and input into a function
 - Logic: If/Else If/ Else statements
 - Iterators: "For Each" syntax to iterate over arrays or lists
-- Switch statements: "switch(somevalue)" syntax for multi option statements
+- Switch statements: "switch(some_value)" syntax for multi option statements
 
 The language is somewhat unique in its syntax so that it does not collide with anything 
 else within the code that is being generated. This was done on purpose because stackjoy 
-works with any language so it was imparative that there were no collisions between the 
+works with any language so it was imperative that there were no collisions between the 
 BLU Language and the language being generated. 
 
 ## BLU Language Expressions
@@ -194,7 +196,9 @@ Examples:
   
   > Expression:  ```^^true^^``` evaluates to ```true```
   
-  > Expression:  ```^^false^^``` evaluates to ```false```# BLU Language Inputs
+  > Expression:  ```^^false^^``` evaluates to ```false```
+ 
+# BLU Language Inputs
 
 An input is any value that is passed to the generator. It can be a variable, string 
 (within double quotes " "), numbers, null, boolean
@@ -220,20 +224,20 @@ BLU language comes with some inputs by default; and you can always add you own t
   
 
   - Relative Path where this generator will be gererated:  
-  ``` ^^destination^^    =   /Users/nvitas/lus/npm/stackjoy/tmp/stackjoy```
+  ``` ^^destination^^    =   /codebase_root/tmp/stackjoy```
 
 
   - File Path where this generator will be gererated:  
-  ``` ^^filePath^^    =   /Users/nvitas/lus/npm/stackjoy/tmp/stackjoy/2.BLU_Language/3.Inputs.md```
+  ``` ^^filePath^^    =   /codebase_root/tmp/stackjoy/2.BLU_Language/3.Inputs.md```
 
 
   - Absolute path to your codebase associated with this workspace:  
-  ``` ^^CODEBASE_PATH^^    =   /Users/nvitas/lus/npm/stackjoy```
+  ``` ^^CODEBASE_PATH^^    =   /codebase_root```
   
 
 Hint:
 
->   You can quickly bring up all availble inputs by pressing ctrl+space   
+>   You can quickly bring up all available inputs by pressing ctrl+space   
 >   to get all code hints (cursor/focus must is in the file otherwise     
 >   you will launch the console instead)                                  
 
@@ -248,18 +252,18 @@ There are other helper functions to help with determining paths to other files:
 
 Examples:
 
-  > Join two (..or more paths, usign paths as string pramaters ):
+  > Join two (..or more paths, using paths as string parameters ):
   >
   >  ^^join("/some/path", "some/other/path")^^  = /some/path/some/other/path
   
   
-  > Join two paths (usiang a string & input parameter):
+  > Join two paths (using a string & input parameter):
   >
-  > ^^join("/my/root/path",destination)^^ = /my/root/path/Users/nvitas/lus/npm/stackjoy/tmp/stackjoy
+  > ^^join("/my/root/path",destination)^^ = /my/root/path/codebase_root/tmp/stackjoy
   
   > Join two path (using only inputs as parameters):
   >
-  > ^^join(CODEBASE_PATH,destination)^^  = /Users/nvitas/lus/npm/stackjoy/Users/nvitas/lus/npm/stackjoy/tmp/stackjoy
+  > ^^join(CODEBASE_PATH,destination)^^  = /codebase_root/codebase_root/tmp/stackjoy
 
   > Get a Relative Path (from starting folder to end folder):
   >
@@ -294,7 +298,7 @@ Example:
 
 Hint:
 
->   Strings used within expression must be stricly wrapped by DOUBLE QUOTES   
+>   Strings used within expression must be strictly wrapped by DOUBLE QUOTES   
 >   "my string " is a valid string, 'my string' is NOT a valid string         
                                                                              
 

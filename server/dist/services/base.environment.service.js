@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseEnvironmentService = void 0;
 const globals_1 = require("../globals");
+const app_interface_1 = require("../shared/interfaces/app.interface");
 const types_1 = require("@stackjoy/shared/types");
 class BaseEnvironmentService {
     async delete(id) {
@@ -30,11 +31,16 @@ class BaseEnvironmentService {
         return { error: null, data: { success: true } };
     }
     async purge(remoteId) {
-        return (await globals_1.SJ_SERVER.purgeRepo(remoteId)) ? { error: null, data: { success: true } } : {
-            error: {
-                status: 500, code: 'internal-error', message: 'Something went wrong. Please try again later.'
-            }, data: { success: false }
-        };
+        const local = globals_1.APP_SERVICE.APP.findEnvironment(w => { var _a; return ((_a = w.remote) === null || _a === void 0 ? void 0 : _a.id) == remoteId; });
+        const success = await globals_1.SJ_SERVER.purgeRepo(remoteId);
+        if (!success)
+            return { error: { status: 500, code: 'internal-error', message: 'Something went wrong. Please try again later.' }, data: { success: false } };
+        if (local) {
+            delete local.remote;
+            local.isLocal = true;
+            await globals_1.APP_SERVICE.APP.updateEnvironmentMetadata(local);
+        }
+        return { error: null, data: { success: true } };
     }
     async findById(id) {
         const env = globals_1.APP_SERVICE.APP.getEnvironmentInfoById(id);
@@ -131,14 +137,32 @@ class BaseEnvironmentService {
         globals_1.APP_SERVICE.APP.updateEnvironmentModel(stack);
         return { error: null, data: stack.metadata };
     }
+    static async updateLocalRemoteMappings(remoteEnvs, type) {
+        const remoteIds = remoteEnvs.reduce((obj, env) => {
+            obj[env.eid] = true;
+            return obj;
+        }, {});
+        const envs = type == app_interface_1.App.Environment.Type.Workspace ? globals_1.APP_SERVICE.APP.workspaceList : globals_1.APP_SERVICE.APP.stackList;
+        for (const env of envs) {
+            if (!env.remote || !env.remote.id)
+                continue;
+            if (!remoteIds[env.remote.id]) {
+                delete env.remote;
+                env.isLocal = true;
+                await globals_1.APP_SERVICE.APP.updateEnvironmentMetadata(env);
+            }
+        }
+    }
     /**
      * Get a list of remote environments from the database
      * @param type
      */
     async getRemoteEnvironments(type) {
         const response = await globals_1.SJ_SERVER.getRemoteEnvironments(type);
+        // Let this run async in the background so we don't block the thread/response
+        BaseEnvironmentService.updateLocalRemoteMappings(response.data, type).then();
         if (response.status !== 200) {
-            return { error: { message: response.statusText }, data: null };
+            return { error: { message: response.statusText, status: 500, code: types_1.HttpError.UNKNOWN, data: response.data }, data: null };
         }
         return { error: null, data: response.data };
     }
@@ -167,9 +191,8 @@ class BaseEnvironmentService {
     /**
      * Accept an invite for an environment (either stack or workspace)
      * @param eid Environment ID
-     * @param token user auth token
      */
-    async acceptInvite(eid, token) {
+    async acceptInvite(eid) {
         const response = await globals_1.SJ_SERVER.acceptInvite(eid);
         if (response.status !== 200) {
             return { error: { message: response.statusText }, data: null };
@@ -179,9 +202,8 @@ class BaseEnvironmentService {
     /**
      * Decline an invite for an environment (either stack or workspace)
      * @param eid Environment ID
-     * @param token user auth token
      */
-    async declineInvite(eid, token) {
+    async declineInvite(eid) {
         const response = await globals_1.SJ_SERVER.declineInvite(eid);
         if (response.status !== 200) {
             return { error: { message: response.statusText }, data: null };

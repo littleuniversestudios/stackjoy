@@ -61,8 +61,8 @@ class AppModel {
     getEnvironmentInfoById(id) {
         return [...this.list.workspaces, ...this.list.stacks].find(w => w.id === id);
     }
-    async purgeEnvironment(id) {
-        return false;
+    findEnvironment(predicate) {
+        return this.list.workspaces.find(predicate) || this.list.stacks.find(predicate);
     }
     getEnvironmentById(id) {
         const metadata = this.getEnvironmentInfoById(id);
