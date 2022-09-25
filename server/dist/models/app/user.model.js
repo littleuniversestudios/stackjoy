@@ -52,14 +52,14 @@ class UserModel {
     setUserPrivileges() {
         switch (this.user.accountType) {
             case models_1.AccountType.BASIC:
-                this.maxWorkspaces = 2; // every signed in user gets 2 worksoaces for free
+                this.maxWorkspaces = 1; // every signed in user gets 2 worksoaces for free
                 break;
             case models_1.AccountType.EARLY_ADOPTER:
                 this.maxWorkspaces = 10; // early adopters get 10 workspaces
                 break;
             case models_1.AccountType.PREMIUM:
                 // todo: figure out what paid accounts get, possibly unlimited;
-                this.maxWorkspaces = 25;
+                this.maxWorkspaces = 99;
                 break;
         }
     }
@@ -81,7 +81,7 @@ class UserModel {
         }
     }
     canCreateNewWorkspace() {
-        return this.workspaceList.length < this.maxWorkspaces;
+        return this.workspaceList.filter(w => !w.isSystemWorkspace).length < this.maxWorkspaces;
     }
     refresh() {
         this.createLists();

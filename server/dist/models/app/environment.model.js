@@ -44,6 +44,10 @@ class EnvironmentModel {
         // where system.data.path is located at init time
         delete savedMetadata['environmentPath'];
         delete savedMetadata['blueprintsPath'];
+        delete savedMetadata['disabled'];
+        // todo: there are environment properties that end up in the environment metadata that are only
+        // todo: valid for the session and sometimes end up saved. need to rethink how we store permanent info
+        // todo: and session only info
         fs_extra_1.writeJSONSync(path_1.join(this.metadata.environmentPath, 'metadata.json'), savedMetadata);
     }
     /**
