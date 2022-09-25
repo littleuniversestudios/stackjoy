@@ -1,6 +1,6 @@
 {
   "name": "stackjoy",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Rapid Development Platform",
   "main": "./npm-app/dist/index.js",
   "bin": {
