@@ -112,6 +112,12 @@ class ExecuteItemModel {
                 // add a subfolder with the value of the name to the destination
                 if (!name) {
                     this.errors.push({
+                        data: {
+                            syntaxError: {
+                                suggestedName: 'name',
+                                type: 'identifierNotFound'
+                            }
+                        },
                         executeContextId: this.execId,
                         message: `Template must have a name. Input 'name' is missing`,
                         origin: {

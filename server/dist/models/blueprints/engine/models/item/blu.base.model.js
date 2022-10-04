@@ -48,7 +48,7 @@ class BLUBaseModel {
     get info() {
         return {
             id: this.id,
-            namespace: `${this.type}:${this.parent ? `${this.parent.name}.` : ''}${this.name}`,
+            namespace: `${this.parent ? `${this.parent.name}.` : ''}${this.name}`,
             name: this.name,
             config: this.config,
             type: this.type,
