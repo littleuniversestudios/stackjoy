@@ -51,6 +51,29 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
             return { error: { status: 400, code: 'create-file-error', message: `Could not create file ${newFileName}`, data: error }, data: { success: false } };
         }
     }
+    copyCodebasePaths(filePaths, destinationPath) {
+        try {
+            const overwriteFiles = [];
+            for (let i = 0; i < filePaths.length; i++) {
+                const destinationFile = path_1.join(destinationPath, path_1.basename(filePaths[i]));
+                if (fs_extra_1.existsSync(destinationFile)) {
+                    overwriteFiles.push(path_1.basename(filePaths[i]));
+                }
+            }
+            if (overwriteFiles.length === 0) {
+                filePaths === null || filePaths === void 0 ? void 0 : filePaths.forEach(filePath => {
+                    fs_extra_1.copySync(filePath, path_1.join(destinationPath, path_1.basename(filePath)));
+                });
+                return { error: null, data: { success: true } };
+            }
+            else {
+                return { error: { status: 400, code: 'overwrite-error', message: `File`, data: { overwriteFiles } }, data: { success: false } };
+            }
+        }
+        catch (error) {
+            return { error: { status: 400, code: 'create-file-error', message: `Could not copy codebase files`, data: error }, data: { success: false } };
+        }
+    }
     createNewFolder(newFolderName, path = '') {
         try {
             const filePath = path_1.join(this.paths.files, path, newFolderName);

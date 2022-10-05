@@ -32,6 +32,10 @@ exports.templateRouter.post('/file/:templateId', route_validation_1.validateRequ
     const result = templateService.createFile(req.params.templateId, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.templateRouter.post('/file-copy-from-codebase/:templateId', route_validation_1.validateRequest(templateRules.forDUPLICATE), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = templateService.copyCodebaseFiles(req.params.templateId, req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 exports.templateRouter.post('/folder/:templateId', route_validation_1.validateRequest(templateRules.forDUPLICATE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = templateService.createFolder(req.params.templateId, req.body);
     result.error ? next(result.error) : res.json(result.data);

@@ -175,6 +175,15 @@ class BlueprintsModel {
             return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
         }
     }
+    copyCodebaseFiles(templateId, filePaths, destinationPath) {
+        const template = this.getTemplate(templateId);
+        if (template) {
+            return template.copyCodebasePaths(filePaths, destinationPath);
+        }
+        else {
+            return { error: { status: 400, code: 'template-not-found', message: `Template with id '${templateId}' not found` }, data: { success: false } };
+        }
+    }
     createNewFolder(templateId, newFolderName, path) {
         const template = this.getTemplate(templateId);
         if (template) {

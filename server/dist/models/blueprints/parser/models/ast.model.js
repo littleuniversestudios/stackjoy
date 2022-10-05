@@ -214,9 +214,15 @@ class AST {
         if (nodeResponse.error) {
             return { error: nodeResponse.error, result: null };
         }
-        const itemToIterate = nodeResponse.result;
+        let itemToIterate = nodeResponse.result;
         if (!Array.isArray(itemToIterate)) {
-            return { error: { message: `${node.value.value} is not an array`, context }, result: null };
+            // try turning the item into an array
+            try {
+                itemToIterate = itemToIterate.split(',');
+            }
+            catch (error) {
+                return { error: { message: `${node.value.value} is not an array`, context }, result: null };
+            }
         }
         return { error: null, result: { key, operator, itemToIterate, indexName: node.indexName } };
     }

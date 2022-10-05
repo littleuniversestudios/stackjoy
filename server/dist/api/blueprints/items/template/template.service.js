@@ -32,6 +32,9 @@ class TemplateService {
     createFile(id, { newFileName, path }) {
         return globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints().createNewFile(id, newFileName, path);
     }
+    copyCodebaseFiles(id, { filePaths, destinationPath }) {
+        return globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints().copyCodebaseFiles(id, filePaths, destinationPath);
+    }
     createFolder(id, { newFolderName, path }) {
         return globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints().createNewFolder(id, newFolderName, path);
     }

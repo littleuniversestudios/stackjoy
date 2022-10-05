@@ -82,7 +82,7 @@ class ExecuteItemModel {
      *    1.2) otherwise it's a single file so just put it in the current working directory
      */
     mergeDestination(parentDestination, itemDestination, allVariables) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         const name = (_a = ExecuteItemModel.getVariable(allVariables, 'name')) === null || _a === void 0 ? void 0 : _a.value;
         const wrapInFolder = (_b = ExecuteItemModel.getVariable(allVariables, 'wrapInFolder')) === null || _b === void 0 ? void 0 : _b.value;
         const folderName = (_c = ExecuteItemModel.getVariable(allVariables, 'folderName')) === null || _c === void 0 ? void 0 : _c.value;
@@ -105,16 +105,21 @@ class ExecuteItemModel {
         else if (this.item.type === blu_interface_1.BLU.Item.Type.Template) {
             // if wrapInFolder is set to false then just use the parent destination
             if (wrapInFolder === false) {
+                // do not wrap in folder
                 return parentDestination;
             }
-            else if (this.numFiles > 1 || wrapInFolder === true || !!folderName) {
-                // if there are more than 1 files or 'wrapInFolder' is set to true
-                // add a subfolder with the value of the name to the destination
+            else if (!!folderName) {
+                // return the folderName
+                return path.join(parentDestination, (_d = (folderName)) !== null && _d !== void 0 ? _d : '');
+            }
+            else if (this.numFiles > 1 || wrapInFolder === true) {
+                // if there is more than 1 file AND (wrapInFolder = true OR folderName is empty)
+                // add a sub folder with the value of the name to the destination
                 if (!name) {
                     this.errors.push({
                         data: {
                             syntaxError: {
-                                suggestedName: 'name',
+                                suggestedName: 'folderName',
                                 type: 'identifierNotFound'
                             }
                         },
@@ -123,12 +128,12 @@ class ExecuteItemModel {
                         origin: {
                             location: blu_interface_1.BLU.Execute.ErrorLocation.item,
                             section: blu_interface_1.BLU.Execute.ErrorSection.inputs,
-                            property: 'name'
+                            property: 'folderName'
                         },
                         type: blu_interface_1.BLU.Execute.ErrorType.missingInput
                     });
                 }
-                return path.join(parentDestination, (_d = (folderName !== null && folderName !== void 0 ? folderName : name)) !== null && _d !== void 0 ? _d : '');
+                return path.join(parentDestination, (_e = (folderName !== null && folderName !== void 0 ? folderName : name)) !== null && _e !== void 0 ? _e : '');
             }
             else {
                 return parentDestination;
