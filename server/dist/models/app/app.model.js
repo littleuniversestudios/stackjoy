@@ -33,8 +33,9 @@ class AppModel {
         this.workspaceList = [this.systemWorkspace];
     }
     createLists() {
-        this.workspaceList = [this.systemWorkspace, ...this.userModel.workspaceList];
-        this.stackList = this.userModel.stackList;
+        var _a, _b, _c, _d;
+        this.workspaceList = [this.systemWorkspace, ...((_b = (_a = this.userModel) === null || _a === void 0 ? void 0 : _a.workspaceList) !== null && _b !== void 0 ? _b : [])];
+        this.stackList = (_d = (_c = this.userModel) === null || _c === void 0 ? void 0 : _c.stackList) !== null && _d !== void 0 ? _d : [];
     }
     initUser(user) {
         this.userModel = new user_model_1.UserModel(user);
@@ -45,10 +46,12 @@ class AppModel {
         this.refresh();
     }
     get isUserLoggedIn() {
-        return !!this.userModel.user;
+        var _a;
+        return !!((_a = this.userModel) === null || _a === void 0 ? void 0 : _a.user);
     }
     refresh() {
-        this.userModel.refresh();
+        var _a;
+        (_a = this.userModel) === null || _a === void 0 ? void 0 : _a.refresh();
         this.createLists();
     }
     static get logFile() {

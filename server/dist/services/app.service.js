@@ -38,23 +38,13 @@ class AppService {
             this.setAppEnvironment(new environment_model_1.EnvironmentModel(workspaceMetadata));
         }
         else {
-            this.setAppEnvironment(null);
-            // todo: determine if using this flow is better for the user
             /**
-             * Currently if it's a new user they will get a "Create Workspace" dialog when first entering the app. The dialog states what the intention of the
-             * app is: either use the free SYSTEM WORKSPACE or Log in
-             * The alternative is that we just assign the SYSTEM WORKSPACE to the initial codebase path and drop them right into the app. Its less steps
-             * for the user but also less clear. The code for this is below:
+             * assign the SYSTEM WORKSPACE to the initial codebase path and drop them right into the app.
+             * Its fewer steps for the user but also less clear. This is faster and less confusing
              */
-            // if workspace not found AND SYSTEM WORKSPACE codebase is not assigned, assign it and use it
-            // if (!this.APP.systemWorkspace.codebasePath) {
-            //     this.APP.systemWorkspace.codebasePath = codebasePath;
-            //     this.APP.updateEnvironmentMetadata(this.APP.systemWorkspace);
-            //     this.setAppEnvironment(new EnvironmentModel(this.APP.systemWorkspace));
-            // } else {
-            //     // else, no workspace is found so let user know
-            //     this.setAppEnvironment(null);
-            // }
+            this.APP.systemWorkspace.codebasePath = codebasePath;
+            this.APP.updateEnvironmentMetadata(this.APP.systemWorkspace);
+            this.setAppEnvironment(new environment_model_1.EnvironmentModel(this.APP.systemWorkspace));
         }
     }
     setAppEnvironment(environment) {
