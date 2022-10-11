@@ -7,6 +7,8 @@ const fs_extra_1 = require("fs-extra");
 const util_1 = require("../../shared/lib/util");
 const globals_1 = require("../../globals");
 const blu_template_model_1 = require("../blueprints/engine/models/item/blu.template.model");
+const fs = require("fs");
+const recommendation_mappings_1 = require("./recommendation.mappings");
 class EnvironmentModel {
     constructor(metadata) {
         this.metadata = metadata;
@@ -153,6 +155,73 @@ class EnvironmentModel {
             }
         }
     }
+    async getTagsFor(path) {
+        const tags = new Set();
+        // Ensure the path exists and is a directory.
+        try {
+            const stats = fs.lstatSync(path);
+            if (!stats.isDirectory())
+                return [];
+        }
+        catch (_a) {
+            // Path doesn't exist, return nothing.
+            return [];
+        }
+        // Read the directory structure and start checking names.
+        for (let name of fs.readdirSync(path)) {
+            for (let mapping of recommendation_mappings_1.RecommendationMappings) {
+                // If no file name match continue
+                if (!mapping.regex.test(name))
+                    continue;
+                // File name matches so push generic tags
+                mapping.tags.forEach(v => tags.add(v));
+                if (mapping.descendIntoDirectory) {
+                    // If directory we recurse into it.
+                    // Don't need to do a directory check here b/c it's checked in the method call.
+                    (await this.getTagsFor(path_1.join(path, name))).forEach(v => tags.add(v));
+                }
+                else if (mapping.contentChecks) {
+                    // Check contents if desired and only if not a directory.
+                    const content = fs.readFileSync(path_1.join(path, name)).toString();
+                    for (let contentMapping of mapping.contentChecks) {
+                        if (contentMapping.keyword.test(content))
+                            contentMapping.tags.forEach(v => tags.add(v));
+                    }
+                }
+            }
+        }
+        return Array.from(tags);
+    }
+    async clearSuggestionCacheForEnv() {
+        delete EnvironmentModel.suggestedStacksCache[this.metadata.id];
+    }
+    async suggestedStacks() {
+        let tags = [];
+        if (!!EnvironmentModel.suggestedStacksCache[this.metadata.id]
+            // TODO make the scan delay time variable. Right now its at 3600000ms = 1h
+            && new Date().getTime() - EnvironmentModel.suggestedStacksCache[this.metadata.id].generatedAt < 3600000) {
+            // Use the cached tags
+            tags = EnvironmentModel.suggestedStacksCache[this.metadata.id].tags;
+        }
+        else {
+            // Scan the filesystem and generated tags
+            const path = this.codebasePath;
+            if (!fs.existsSync(path))
+                return { tags: [], stacks: [] };
+            tags = await this.getTagsFor(path);
+        }
+        const response = await globals_1.SJ_SERVER.getPublicStacksWithTags(tags);
+        const suggestion = { tags, stacks: response.data };
+        EnvironmentModel.suggestedStacksCache[this.metadata.id] = {
+            tags,
+            generatedAt: new Date().getTime()
+        };
+        return suggestion;
+    }
 }
 exports.EnvironmentModel = EnvironmentModel;
+// Used to cache the recommended stacks so we aren't constantly scanning the new files.
+// TODO refactor EnvironmentModel so we arent instantiating it every time and we can use
+//      class-scope variables
+EnvironmentModel.suggestedStacksCache = {};
 //# sourceMappingURL=environment.model.js.map

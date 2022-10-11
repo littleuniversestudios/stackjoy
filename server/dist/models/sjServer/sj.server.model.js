@@ -315,6 +315,44 @@ class SJServerModel {
     async starEnvironment(envId) {
         return axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/star`, {}, await SJServerModel.firebaseTokenRequestConfig());
     }
+    /**
+     * Get public stacks with the given tags
+     * @param tags
+     */
+    async getPublicStacksWithTags(tags) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/stacks/public/withTags`, { tags }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Update the description of an environment
+     * @param remoteId
+     * @param description
+     */
+    async updateEnvironmentDescription(remoteId, description) {
+        return axios_1.default.put(`${this.SJ_SERVER}/environments/${remoteId}/description`, { description }, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Get the tags for an environment
+     * @param remoteId
+     */
+    async getTags(remoteId) {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/${remoteId}/tags`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Delete a tag from an environment
+     * @param remoteId
+     * @param tag
+     */
+    async deleteTag(remoteId, tag) {
+        return axios_1.default.delete(`${this.SJ_SERVER}/environments/${remoteId}/tags/${tag}`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Add a tag to an environment
+     * @param remoteId
+     * @param tag
+     */
+    async addTag(remoteId, tag) {
+        return axios_1.default.put(`${this.SJ_SERVER}/environments/${remoteId}/tags/${tag}`, {}, await SJServerModel.firebaseTokenRequestConfig());
+    }
 }
 exports.SJServerModel = SJServerModel;
 SJServerModel.STACKJOY_BRANCH = 'stackjoy';

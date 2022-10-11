@@ -8,6 +8,7 @@ const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const stack_service_1 = require("./stack.service");
 const app_interface_1 = require("../../../shared/interfaces/app.interface");
 const workspaceRules = require("../workspace/workspace.rules");
+const check_1 = require("express-validator/check");
 exports.stackRouter = express_1.Router();
 const stackService = new stack_service_1.StackService();
 /*
@@ -27,6 +28,10 @@ exports.stackRouter.get('/public', route_handler_1.handleRoute(async (req, res, 
 }));
 exports.stackRouter.get('/invites', route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.getInvites(app_interface_1.App.Environment.Type.Stack, req.header('Firebase-Auth-Token'));
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.get('/:stackId/tags', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.getTags(req.params.stackId);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.get('/:stackId', route_validation_1.validateRequest(stackRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
@@ -79,15 +84,36 @@ exports.stackRouter.put('/:stackId/add-collection', route_validation_1.validateR
     const result = await stackService.addCollectionToStack(`${req.params.stackId}`, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.stackRouter.put('/:envId/description', route_validation_1.validateRequest([
+    check_1.body('description').exists().isString(),
+    check_1.param('envId').exists().isString()
+]), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.updateDescription(req.params.envId, req.body);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.put('/:remoteId/tags/:tag', route_validation_1.validateRequest([
+    check_1.param('remoteId').isString(),
+    check_1.param('tag').isString()
+]), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.addTag(req.params.remoteId, req.params.tag);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 /*
  * DELETE
  */
 exports.stackRouter.delete('/:stackId', route_validation_1.validateRequest(stackRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await stackService.deleteStack(`${req.params.stackId}`);
+    const result = await stackService.deleteStack(req.params.stackId);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.delete('/purge/:remoteId', route_validation_1.validateRequest(stackRules.forDELETE), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await stackService.purge(req.params.remoteId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
+exports.stackRouter.delete('/:remoteId/tags/:tag', route_validation_1.validateRequest([
+    check_1.param('remoteId').isString(),
+    check_1.param('tag').isString()
+]), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await stackService.deleteTag(req.params.remoteId, req.params.tag);
     result.error ? next(result.error) : res.json(result.data);
 }));
 //# sourceMappingURL=stack.router.js.map

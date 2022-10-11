@@ -33,6 +33,10 @@ exports.workspaceRouter.get('/:envId/userProfiles', route_validation_1.validateR
     const result = await workspaceService.getUserProfilesForEnv(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
+exports.workspaceRouter.get('/:envId/suggestedStacks', route_validation_1.validateRequest([check_1.param('envId').exists().isString()]), route_handler_1.handleRoute(async (req, res, next) => {
+    const result = await workspaceService.getSuggestedStacks(req.params.envId);
+    result.error ? next(result.error) : res.json(result.data);
+}));
 /*
  * POST
  */

@@ -36,6 +36,7 @@ class EnvironmentService {
         const env = ((_b = (_a = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT) === null || _a === void 0 ? void 0 : _a.metadata) === null || _b === void 0 ? void 0 : _b.id) === values.id ? globals_1.APP_SERVICE.CURRENT_ENVIRONMENT : globals_1.APP_SERVICE.APP.getEnvironmentById(values.id);
         if (env) {
             env.switchCodebase(values.codebasePath);
+            env.clearSuggestionCacheForEnv();
             return { error: null, data: env.metadata };
         }
         else {

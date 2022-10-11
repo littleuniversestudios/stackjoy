@@ -5,6 +5,7 @@ const app_interface_1 = require("../../../shared/interfaces/app.interface");
 const base_environment_service_1 = require("../../../services/base.environment.service");
 const environment_model_1 = require("../../../models/app/environment.model");
 const globals_1 = require("../../../globals");
+const types_1 = require("@stackjoy/shared/types");
 class WorkspaceService extends base_environment_service_1.BaseEnvironmentService {
     async findAll() {
         const workspaces = globals_1.APP_SERVICE.APP.list.workspaces;
@@ -48,6 +49,15 @@ class WorkspaceService extends base_environment_service_1.BaseEnvironmentService
         };
         await super.downloadEnvironment(stack);
         return { error: null, data: null };
+    }
+    /**
+     * Get suggested stacks for the current environment
+     */
+    async getSuggestedStacks(envId) {
+        const workspace = globals_1.APP_SERVICE.APP.getEnvironmentById(envId);
+        if (!workspace)
+            return { error: { status: 500, code: types_1.HttpError.UNKNOWN, message: `Could not find environment ${envId}` }, data: null };
+        return { error: null, data: await workspace.suggestedStacks() };
     }
 }
 exports.WorkspaceService = WorkspaceService;

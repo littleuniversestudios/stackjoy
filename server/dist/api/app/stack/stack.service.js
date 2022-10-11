@@ -211,6 +211,47 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
         fs_extra_1.writeJSONSync(path_1.join(newStackPath, 'metadata.json'), metadata);
         return { error: null, data: { success: true } };
     }
+    /**
+     * Update the description of a stack
+     * @param remoteId
+     * @param description
+     */
+    async updateDescription(remoteId, { description }) {
+        await globals_1.SJ_SERVER.updateEnvironmentDescription(remoteId, description);
+        return { error: null, data: null };
+    }
+    /**
+     * Get the tags for a stack
+     * @param remoteId
+     */
+    async getTags(remoteId) {
+        const response = await globals_1.SJ_SERVER.getTags(remoteId);
+        if (response.status !== 200)
+            return { error: { status: response.status, message: response.statusText, code: types_1.HttpError.UNKNOWN }, data: null };
+        return { error: null, data: response.data };
+    }
+    /**
+     * Delete a tag from an environment
+     * @param remoteId
+     * @param tag
+     */
+    async deleteTag(remoteId, tag) {
+        const response = await globals_1.SJ_SERVER.deleteTag(remoteId, tag);
+        if (response.status !== 200)
+            return { error: { status: response.status, message: response.statusText, code: types_1.HttpError.UNKNOWN }, data: null };
+        return { error: null, data: response.data };
+    }
+    /**
+     * Add a tag to an environment
+     * @param remoteId
+     * @param tag
+     */
+    async addTag(remoteId, tag) {
+        const response = await globals_1.SJ_SERVER.addTag(remoteId, tag);
+        if (response.status !== 200)
+            return { error: { status: response.status, message: response.statusText, code: types_1.HttpError.UNKNOWN }, data: null };
+        return { error: null, data: response.data };
+    }
 }
 exports.StackService = StackService;
 //# sourceMappingURL=stack.service.js.map

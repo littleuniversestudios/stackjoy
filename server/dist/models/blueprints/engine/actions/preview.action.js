@@ -63,7 +63,7 @@ class PreviewAction {
         };
     }
     getExecuteContext(executeItem) {
-        const allErrors = [...executeItem.errors];
+        let allErrors = [...executeItem.errors];
         let onSuccess = executeItem.onSuccess;
         const ctx = {
             ROOT_DIR: globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.metadata.codebasePath,
@@ -83,7 +83,23 @@ class PreviewAction {
             allErrors.push(...errors);
             onSuccess += `${os_1.EOL}${childItem.onSuccess}`;
         });
+        allErrors = this.filterErrors(allErrors);
         return { errors: allErrors, onSuccess, executeContext: ctx };
+    }
+    /**
+     * If both 'folderName' and 'name' are missing only return 'name' as 'name' is the default for 'folderName'. The user does
+     * not need to see both as one or the other will satisfy the creation of the parent folder (when there are 2 or more
+     * files present in the generator). But 'name' takes precedence over folderName so if both are present, discard folderName
+     * @private
+     */
+    filterErrors(allErrors) {
+        const folderNameErrorIndex = allErrors.findIndex(error => error.type === 'missingInput' && error.origin.property === 'folderName');
+        const nameError = allErrors.find(error => { var _a, _b; return ((_b = (_a = error.data) === null || _a === void 0 ? void 0 : _a.syntaxError) === null || _b === void 0 ? void 0 : _b.suggestedName) === 'name'; });
+        if (folderNameErrorIndex >= 0 && !!nameError) {
+            // delete the folderName error
+            allErrors.splice(folderNameErrorIndex, 1);
+        }
+        return allErrors;
     }
     prepareItem(item, inputs, parent = null, extraInfo) {
         return this.generate(item, inputs, parent, extraInfo);
