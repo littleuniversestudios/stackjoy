@@ -5,6 +5,7 @@ const simple_git_1 = require("simple-git");
 const axios_1 = require("axios");
 const fs_extra_1 = require("fs-extra");
 const globals_1 = require("../../globals");
+const http_proxy_middleware_1 = require("http-proxy-middleware");
 class SJServerModel {
     constructor(url) {
         this.SJ_SERVER = url;
@@ -22,6 +23,25 @@ class SJServerModel {
         return simple_git_1.default({
             baseDir
         });
+    }
+    static proxy(target, basePath) {
+        return [
+            async (req, res, next) => {
+                const { headers } = await SJServerModel.firebaseTokenRequestConfig();
+                res.locals[SJServerModel.FIREBASE_TOKEN_HEADER_KEY] = headers[SJServerModel.FIREBASE_TOKEN_HEADER_KEY];
+                next();
+            }, http_proxy_middleware_1.createProxyMiddleware({
+                target,
+                changeOrigin: true,
+                pathRewrite: (path) => {
+                    return path.replace(basePath, '');
+                },
+                logLevel: 'silent',
+                onProxyReq: (proxyReq, req, res) => {
+                    proxyReq.setHeader(SJServerModel.FIREBASE_TOKEN_HEADER_KEY, res.locals[SJServerModel.FIREBASE_TOKEN_HEADER_KEY]);
+                }
+            })
+        ];
     }
     /**
      * Create the git repo url
@@ -70,7 +90,7 @@ class SJServerModel {
     static async firebaseTokenRequestConfig() {
         return {
             headers: {
-                'Firebase-Auth-Token': await globals_1.FIREBASE_SERVICE.getAuthToken()
+                [SJServerModel.FIREBASE_TOKEN_HEADER_KEY]: await globals_1.FIREBASE_SERVICE.getAuthToken()
             }
         };
     }
@@ -356,4 +376,6 @@ class SJServerModel {
 }
 exports.SJServerModel = SJServerModel;
 SJServerModel.STACKJOY_BRANCH = 'stackjoy';
+SJServerModel.PROXY_PREFIX = '/sj-proxy';
+SJServerModel.FIREBASE_TOKEN_HEADER_KEY = 'Firebase-Auth-Token';
 //# sourceMappingURL=sj.server.model.js.map

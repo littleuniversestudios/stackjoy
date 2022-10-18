@@ -108,8 +108,16 @@ class BaseEnvironmentService {
                 await globals_1.APP_SERVICE.APP.publishRemoteEnvironment(env, commitMessage);
         }
         catch (e) {
-            console.log('error: ', e);
-            globals_1.logger.error(e.message);
+            if (e.isAxiosError) {
+                const error = e;
+                return {
+                    error: {
+                        status: error.response.status,
+                        code: error.response.data.code || types_1.HttpError.UNKNOWN,
+                        message: error.response.data.message || 'Unknown error occurred!'
+                    }, data: null
+                };
+            }
             throw e;
         }
         globals_1.APP_SERVICE.APP.updateEnvironmentModel(env);

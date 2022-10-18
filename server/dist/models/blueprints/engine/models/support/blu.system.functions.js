@@ -58,6 +58,18 @@ function bluSystemFunctions(fnContext) {
             "description": "my-test-component => My Test Component"
         },
         {
+            "id": "system_fn_9_1",
+            "name": "upperCase",
+            "execFunc": "s => (s??'').toUpperCase()",
+            "description": "my-test-component => MY-TEST-COMPONENT"
+        },
+        {
+            "id": "system_fn_9_2",
+            "name": "lowerCase",
+            "execFunc": "s => (s??'').toLowerCase()",
+            "description": "my-test-component => my-test-component"
+        },
+        {
             "id": "system_fn_10",
             "name": "relativeTo",
             "execFunc": "(from,to) => path.relative(from,to)",
