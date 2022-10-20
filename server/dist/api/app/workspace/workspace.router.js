@@ -52,24 +52,12 @@ exports.workspaceRouter.post('/:envId/updateUserPermission', check_1.param('envI
     const result = await workspaceService.updateUserPermission(req.params['envId'], req.body, req.header('Firebase-Auth-Token'));
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.workspaceRouter.post('/:envId/revokeUserPermission', check_1.param('envId').isString(), check_1.body('targetId').isString(), route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await workspaceService.revokeUserPermission(req.params['envId'], req.body, req.header('Firebase-Auth-Token'));
-    result.error ? next(result.error) : res.json(result.data);
-}));
 exports.workspaceRouter.post('/', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await workspaceService.create(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.workspaceRouter.post('/sync', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
     const result = await workspaceService.syncEnvironment(req.body);
-    result.error ? next(result.error) : res.json(result.data);
-}));
-exports.workspaceRouter.post('/share', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await workspaceService.shareEnvironment(req.body);
-    result.error ? next(result.error) : res.json(result.data);
-}));
-exports.workspaceRouter.post('/cancelShare', route_validation_1.validateRequest(workspaceRules.forPOST), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = await workspaceService.cancelShare(req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 /*

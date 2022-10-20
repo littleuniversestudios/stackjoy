@@ -4,6 +4,7 @@ exports.EnvironmentService = void 0;
 const path = require("path");
 const blu_utils_model_1 = require("../../../models/blueprints/engine/models/blu.utils.model");
 const globals_1 = require("../../../globals");
+const shared_1 = require("@stackjoy/shared");
 class EnvironmentService {
     async findAll() {
         return { error: null, data: globals_1.APP_SERVICE.APP.list };
@@ -12,19 +13,48 @@ class EnvironmentService {
         return globals_1.APP_SERVICE.getCurrentEnvironment();
     }
     async rename(id, { name }) {
+        var _a;
         const envMetadata = globals_1.APP_SERVICE.APP.getEnvironmentInfoById(id);
-        if (envMetadata) {
-            if (envMetadata.isSystemWorkspace) {
-                return { error: { status: 403, message: `Cannot rename the System Workspace` }, data: { success: false } };
-            }
-            else {
-                envMetadata.name = name;
-                globals_1.APP_SERVICE.APP.updateEnvironmentMetadata(envMetadata);
+        if (envMetadata && envMetadata.isSystemWorkspace) {
+            return { error: { status: 403, code: shared_1.HttpError.FORBIDDEN, message: `Cannot rename the System Workspace` }, data: null };
+        }
+        if (!envMetadata) {
+            // Could be just a remote env, so send it upstream
+            try {
+                await globals_1.SJ_SERVER.rename(id, name);
                 return { error: null, data: { success: true } };
+            }
+            catch (e) {
+                let resp = {
+                    status: 500,
+                    code: shared_1.HttpError.UNKNOWN,
+                    message: 'Unknown error.'
+                };
+                if (e.isAxiosError) {
+                    const error = e;
+                    return { data: null, error: error.response.data };
+                }
+                return { data: null, error: resp };
             }
         }
         else {
-            return { error: { message: `Environment with id: ${id} not found` }, data: { success: false } };
+            // Update remote if exists first
+            try {
+                if ((_a = envMetadata.remote) === null || _a === void 0 ? void 0 : _a.id)
+                    await globals_1.SJ_SERVER.rename(envMetadata.remote.id, name);
+            }
+            catch (e) {
+                if (e.isAxiosError) {
+                    const error = e;
+                    return { data: null, error: error.response.data };
+                }
+                else
+                    throw e;
+            }
+            // Assuming success update local model
+            envMetadata.name = name;
+            globals_1.APP_SERVICE.APP.updateEnvironmentMetadata(envMetadata);
+            return { error: null, data: { success: true } };
         }
     }
     switchEnvironment(values) {

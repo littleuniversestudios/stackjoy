@@ -162,9 +162,10 @@ class AppModel {
     /**
      * Create a new remote environment
      * @param env
+     * @param orgId {optional} the organization id to link a stack with.
      */
-    async createRemoteEnvironment(env) {
-        const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, env.metadata.name, env.metadata.type);
+    async createRemoteEnvironment(env, orgId) {
+        const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, env.metadata.name, env.metadata.type, orgId);
         env.metadata.isLocal = false;
         env.metadata.remote = {
             id: envId,

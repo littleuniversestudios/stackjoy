@@ -8,28 +8,6 @@ class BaseEnvironmentService {
     async delete(id) {
         return await globals_1.APP_SERVICE.APP.deleteEnvironment(id);
     }
-    /**
-     * Share an environment
-     * @param envId Env id to share
-     * @param email Email to share with
-     * @param permission Permission granted
-     * @param token Auth token
-     */
-    async shareEnvironment({ envId, email, permission }) {
-        const resp = await globals_1.SJ_SERVER.shareEnvironment(envId, email, permission);
-        if (resp.status !== 200)
-            return { error: 'Unknown error occurred', data: { success: false } };
-        return { error: null, data: { success: true, userId: resp.data['userId'] } };
-    }
-    /**
-     * Cancel an share request for an environment
-     */
-    async cancelShare({ envId, uid }) {
-        const resp = await globals_1.SJ_SERVER.cancelShare(envId, uid);
-        if (resp.status !== 200)
-            return { error: 'Unknown error occurred', data: { success: false } };
-        return { error: null, data: { success: true } };
-    }
     async purge(remoteId) {
         const local = globals_1.APP_SERVICE.APP.findEnvironment(w => { var _a; return ((_a = w.remote) === null || _a === void 0 ? void 0 : _a.id) == remoteId; });
         const success = await globals_1.SJ_SERVER.purgeRepo(remoteId);
@@ -103,7 +81,7 @@ class BaseEnvironmentService {
         const env = globals_1.APP_SERVICE.APP.getEnvironmentById(id);
         try {
             if (env.metadata.isLocal)
-                await globals_1.APP_SERVICE.APP.createRemoteEnvironment(env);
+                await globals_1.APP_SERVICE.APP.createRemoteEnvironment(env, values.organizationId);
             else
                 await globals_1.APP_SERVICE.APP.publishRemoteEnvironment(env, commitMessage);
         }
@@ -227,19 +205,6 @@ class BaseEnvironmentService {
      */
     async updateUserPermission(eid, { targetId, permission }, token) {
         const response = await globals_1.SJ_SERVER.updateUserPermission(eid, targetId, permission);
-        if (response.status !== 200) {
-            return { error: { message: response.statusText }, data: null };
-        }
-        return { error: null, data: response.data };
-    }
-    /**
-     * Update the permissions for a user in an environment
-     * @param eid Environment ID
-     * @param uid User ID to change
-     * @param token Requesting user auth token
-     */
-    async revokeUserPermission(eid, { targetId }, token) {
-        const response = await globals_1.SJ_SERVER.revokeUserPermission(eid, targetId);
         if (response.status !== 200) {
             return { error: { message: response.statusText }, data: null };
         }

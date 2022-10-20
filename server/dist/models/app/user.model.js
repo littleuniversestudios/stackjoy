@@ -21,7 +21,7 @@ const models_1 = require("@stackjoy/shared/models");
  */
 class UserModel extends models_1.SharedUserModel {
     constructor(user) {
-        super(user);
+        super(user || { uid: '' });
         this.user = user;
         this.usersPath = path_1.join(globals_1.SYSTEM.path.data, 'users');
         this.workspaceList = [];

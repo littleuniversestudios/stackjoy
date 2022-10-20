@@ -1,4 +1,4 @@
-## Generator Filenames
+## Filenames
 
 Filenames property is a rule that can be applied to all the template files of the generator.
 
@@ -6,7 +6,7 @@ If the **filenames** property is left blank then all the generated files will ha
 name as the template files.
 
 You can change the template filenames by changing the filenames property however. You can use [expressions](documentation/blu-language/expressions) ,
-[functions](documentation/generator/config/functions)  and constants to change the file names of the generated files. 
+[functions](documentation/generator-config/functions)  and constants to change the file names of the generated files. 
 
 > Note: This property applies to ALL the template files of the generator. Currently, there is no 
 > way to apply different filename rules on individual files.

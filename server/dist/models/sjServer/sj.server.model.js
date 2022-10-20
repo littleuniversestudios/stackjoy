@@ -99,9 +99,10 @@ class SJServerModel {
      * @param baseDir
      * @param displayName
      * @param type
+     * @param orgId {optional} the organization id to link the stack with
      */
-    async createRepo(baseDir, displayName, type) {
-        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/create`, { displayName, type }, await SJServerModel.firebaseTokenRequestConfig());
+    async createRepo(baseDir, displayName, type, orgId) {
+        const resp = await axios_1.default.post(`${this.SJ_SERVER}/repo/create`, { displayName, type, orgId }, await SJServerModel.firebaseTokenRequestConfig());
         const token = await globals_1.FIREBASE_SERVICE.getAuthToken();
         if (resp.status !== 200)
             return null;
@@ -221,23 +222,6 @@ class SJServerModel {
         return resp.status === 200;
     }
     /**
-     * Share an environment
-     * @param envId Env Id to share
-     * @param email Email of user to share with
-     * @param permission Permission value of new user
-     */
-    async shareEnvironment(envId, email, permission) {
-        return await axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/share`, { email, permission }, await SJServerModel.firebaseTokenRequestConfig());
-    }
-    /**
-     * Cancel an invitation for a user on a specific environment
-     * @param envId
-     * @param uid
-     */
-    async cancelShare(envId, uid) {
-        return await axios_1.default.post(`${this.SJ_SERVER}/environments/${envId}/cancelShare`, { uid }, await SJServerModel.firebaseTokenRequestConfig());
-    }
-    /**
      * Accept an invitation (to join stackjoy)
      * @param inviteId
      * @param displayName
@@ -295,14 +279,6 @@ class SJServerModel {
      */
     async updateUserPermission(eid, targetId, permission) {
         return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/updateUserPermission`, { targetId, permission }, await SJServerModel.firebaseTokenRequestConfig());
-    }
-    /**
-     * Revoke the permissions of a user from a workspace
-     * @param eid Environment ID
-     * @param targetId User ID to revoke
-     */
-    async revokeUserPermission(eid, targetId) {
-        return axios_1.default.post(`${this.SJ_SERVER}/environments/${eid}/revokeUserPermission`, { targetId }, await SJServerModel.firebaseTokenRequestConfig());
     }
     /**
      * Revoke the permissions of a user from a workspace
@@ -372,6 +348,14 @@ class SJServerModel {
      */
     async addTag(remoteId, tag) {
         return axios_1.default.put(`${this.SJ_SERVER}/environments/${remoteId}/tags/${tag}`, {}, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
+     * Rename an environment
+     * @param id Should be a remote id, but will fail gracefully if not found
+     * @param name
+     */
+    async rename(id, name) {
+        return axios_1.default.put(`${this.SJ_SERVER}/environments/${id}/rename`, { name }, await SJServerModel.firebaseTokenRequestConfig());
     }
 }
 exports.SJServerModel = SJServerModel;

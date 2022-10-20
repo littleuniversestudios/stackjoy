@@ -1,7 +1,7 @@
-## Hierarchy Order
+## Hierarchy
 
 Stackjoy was designed with a hierarchy pattern in mind where the generator is the last leaf in a tree like structure and 
-the workspace is top most parent. A generator will traverse upwards looking for needed [inputs](documentation/generator/inputs), [variables](documentation/generator/config/variables), [functions](documentation/generator/config/functions), [filenames](documentation/generator/config/filenames) until it finds what it needs and will throw an error if it does not find what it's looking for.
+the workspace is top most parent. A generator will traverse upwards looking for needed [inputs](documentation/generator/inputs), [variables](documentation/generator-config/variables), [functions](documentation/generator-config/functions), [filenames](documentation/generator-config/filenames) until it finds what it needs and will throw an error if it does not find what it's looking for.
 
 Here's what the hierarchy looks like:
 
@@ -13,16 +13,17 @@ Here's what the hierarchy looks like:
 ```
 
 > The order of lookup will always flow upwards from generator to workspace. 
-> i.e. generator > collection > workspace
+> 
+> i.e. [generator](documentation/generator/introduction) > [collection](documentation/structure/collections) > [workspace](documentation/structure/workspaces)
 
-Each "node" (workspace, collection, generator) in the hierarchy has its own config. This allows you to set [inputs](documentation/generator/inputs), [variables](documentation/generator/config/variables), [functions](documentation/generator/config/functions), [filenames](documentation/generator/config/filenames) at different levels so as not to repeat yourself.
+Each "node" (workspace, collection, generator) in the hierarchy has its own config. This allows you to set [inputs](documentation/generator/inputs), [variables](documentation/generator-config/variables), [functions](documentation/generator-config/functions), [filenames](documentation/generator-config/filenames) at different levels so as not to repeat yourself.
 
-> The order of lookup will stop at the level it finds what it needs and will NOT continue to go any further up. Take a look at [Generator Context](documentation/generator/config/context) section to see what your generator sees at run time.  
+> The order of lookup will stop at the level it finds what it needs and will NOT continue to go any further up. Take a look at [Generator Context](documentation/generator-config/context) section to see what your generator sees at run time.  
 
-For example, if you had a [function](documentation/generator/config/functions) that was needed by two generators you could group the two generators under one "collection" and place the function in the collection's config instead of placing the same function once in generator 1 and once in generator 2. You could even go up a level and set the function at the workspace level. In that case ALL the 
+For example, if you had a [function](documentation/generator-config/functions) (or a [variable](documentation/generator-config/variables)) that was needed by two generators you could group the two generators under one "collection" and place the function in the collection's config instead of placing the same function once in generator 1 and once in generator 2. You could even go up a level and set the function at the workspace level. In that case ALL the 
 collections, and in turn ALL the generators, would now have access to that function.
 
-Similar approach can be taken with the [filenames](documentation/generator/config/filenames) property. If a bunch of generators follow the same filename naming 
+Similar approach can be taken with the [filenames](documentation/generator-config/filenames) property. If a bunch of generators follow the same filename naming 
 strategy you could set that strategy at the collection config level and place the generators in the collection. Now
 all the generators within that collection will follow the same naming strategy without having to repeat it for every single generator. Placing that same naming strategy at the workspace level would guarantee that every "node" in the tree structure (collections, generators) would follow the same strategy.
 
@@ -44,7 +45,7 @@ Generator2's order of lookup will look like this:
 
 > generator2 > collection2 > stack > workspace
 
-One final scenario is with [chained generators](documentation/generator/config/chains). You can pass/set inputs on a chained generator in the chain list. 
+One final scenario is with [chained generators](documentation/generator-config/chains). You can pass/set inputs on a chained generator in the chain list. 
 
 
 ```
