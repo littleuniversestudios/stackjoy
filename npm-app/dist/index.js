@@ -40,8 +40,8 @@ async function runScript(scriptPath, args = [], callback) {
     });
 }
 // Now we can run a script and invoke a callback when complete, e.g.
-const port = `${Math.floor(Math.random() * 9000) + 4000}`;
-runScript(path.join(__dirname, '../../server/dist/index.js'), [port], (err) => {
+const cmdLineArgs = process.argv.slice(2); // commands like `sj install stack-name` wil get picked up here and passed to agent
+runScript(path.join(__dirname, '../../server/dist/index.js'), [...cmdLineArgs], (err) => {
     if (err)
         throw err;
 }).then(null);

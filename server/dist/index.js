@@ -21,7 +21,7 @@ const clientFolder = path.join(__dirname, '../../client/dist');
  * so that the client can be run separately and know where to hit the server.
  */
 const cmdLineArgs = args_1.parseArgs();
-const devPort = (_a = cmdLineArgs.port) === null || _a === void 0 ? void 0 : _a[0];
+const devPort = (_a = cmdLineArgs.port) === null || _a === void 0 ? void 0 : _a[0]; // get the port from command line, if it was provided
 const port = devPort || Math.floor(Math.random() * 9000) + 4000; // assign a random port if port not provided, should fix it to a default port
 app.use(compression());
 app.use(helmet());
