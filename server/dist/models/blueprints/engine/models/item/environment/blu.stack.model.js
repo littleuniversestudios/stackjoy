@@ -14,6 +14,9 @@ class BLUStackModel extends blu_environment_model_1.BLUEnvironmentModel {
         this.loadStacks();
         this.loadDataMembers();
     }
+    get info() {
+        return Object.assign({}, super.info, { metadata: this.metadata });
+    }
     loadMetadata() {
         var _a;
         this.paths.metadata = path_1.join(this.paths.self, '..', 'metadata.json');

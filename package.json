@@ -18,9 +18,9 @@
   "author": "Little Universe Studios Inc.",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.2",
     "open": "^7.1.0",
-    "@stackjoy/shared": "0.0.15",
+    "@stackjoy/shared": "0.0.16",
     "axios": "^0.21.1",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",

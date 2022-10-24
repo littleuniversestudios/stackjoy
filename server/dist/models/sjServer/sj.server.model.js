@@ -357,6 +357,13 @@ class SJServerModel {
     async rename(id, name) {
         return axios_1.default.put(`${this.SJ_SERVER}/environments/${id}/rename`, { name }, await SJServerModel.firebaseTokenRequestConfig());
     }
+    /**
+     * Find stack ids given names (and optionally prefixes)
+     * @param queries
+     */
+    async findIdsByName(queries) {
+        return axios_1.default.post(`${this.SJ_SERVER}/environments/stacks/findIdsByName`, { queries }, await SJServerModel.firebaseTokenRequestConfig());
+    }
 }
 exports.SJServerModel = SJServerModel;
 SJServerModel.STACKJOY_BRANCH = 'stackjoy';

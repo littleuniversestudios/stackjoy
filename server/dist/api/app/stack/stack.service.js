@@ -131,22 +131,8 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
             }
             else {
                 let version = (_a = remoteStack.version) !== null && _a !== void 0 ? _a : 1;
-                let cacheFolder = `${id}.${version}`;
-                const cachePath = path_1.join(globals_1.APP_SERVICE.APP.cachePath, cacheFolder);
-                let result;
-                // if the remote stack has not been downloaded before (its not cached), get it from remote server
-                if (!fs_extra_1.existsSync(cachePath)) {
-                    result = await globals_1.APP_SERVICE.APP.downloadRemoteEnvironment(cachePath, id);
-                }
-                // clone and store the remote stack into a temp directory
-                if (result === null || result === void 0 ? void 0 : result.error) {
-                    fs_extra_1.removeSync(cachePath);
-                    return result;
-                }
-                else {
-                    // copy the temp dir into current environment
-                    return this.copyStackIntoCurrentEnvironment(cachePath, this.getNewStackMetadata(remoteStack, 'remote'));
-                }
+                const metadata = this.getNewStackMetadata(remoteStack, 'remote');
+                return this.installRemoteStack(id, version, metadata);
             }
         }
         else if (location === 'local') {
@@ -158,6 +144,32 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
                 version: (_c = localStack.remote) === null || _c === void 0 ? void 0 : _c.version
             };
             return this.copyStackIntoCurrentEnvironment(localStack.blueprintsPath, this.getNewStackMetadata(stackInfo, 'local'));
+        }
+    }
+    /**
+     * Install a stack from remote origin
+     * @param id
+     * @param version
+     * @param metadata
+     * @private
+     */
+    async installRemoteStack(id, version, metadata) {
+        version = version !== null && version !== void 0 ? version : 1;
+        let cacheFolder = `${id}.${version}`;
+        const cachePath = path_1.join(globals_1.APP_SERVICE.APP.cachePath, cacheFolder);
+        let result;
+        // if the remote stack has not been downloaded before (its not cached), get it from remote server
+        if (!fs_extra_1.existsSync(cachePath)) {
+            result = await globals_1.APP_SERVICE.APP.downloadRemoteEnvironment(cachePath, id);
+        }
+        // clone and store the remote stack into a temp directory
+        if (result === null || result === void 0 ? void 0 : result.error) {
+            fs_extra_1.removeSync(cachePath);
+            return result;
+        }
+        else {
+            // copy the temp dir into current environment
+            return this.copyStackIntoCurrentEnvironment(cachePath, metadata);
         }
     }
     /**
