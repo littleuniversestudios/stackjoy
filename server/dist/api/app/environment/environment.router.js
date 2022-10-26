@@ -16,7 +16,7 @@ exports.environmentRouter.get('/', route_validation_1.validateRequest(appEnviron
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.environmentRouter.get('/current', route_validation_1.validateRequest(appEnvironmentRules.forGET), route_handler_1.handleRoute(async (req, res, next) => {
-    const result = appEnvironmentService.getCurrentEnvironment();
+    const result = appEnvironmentService.getCurrentEnvironment(req.query.refresh === 'true');
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.environmentRouter.get('/:envId/state', route_validation_1.validateRequest(appEnvironmentRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {

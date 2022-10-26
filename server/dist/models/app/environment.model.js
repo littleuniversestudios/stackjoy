@@ -136,20 +136,20 @@ class EnvironmentModel {
         if (!result.error) {
             const collection = result.data.collection;
             /**
-             * COPY THE STACKJOY DOCUMENTATION TEMPLATE FROM /assets FOLDER
+             * COPY THE STACKJOY EXAMPLE TEMPLATE FROM /assets FOLDER
              * this uses process.argv[1] method to get the path where stackjoy-agent-server is being executed. This runs
              * correctly UNLESS someone runs stackjoy using node process manager like pm2 THEN process.argv[1] will point to
              * the executable of the process manager...NOT WHAT WE WANT!!!! but those cases should be very rare
              */
             const templateId = blu_template_model_1.BLUTemplateModel.newId();
-            const documentationTemplatePath = path_1.join(globals_1.APP_PATHS.assets, '/templates/documentation-template');
+            const documentationTemplatePath = path_1.join(globals_1.APP_PATHS.assets, '/templates/example-template');
             const destination = path_1.join(collection.paths.templates, templateId);
             if (fs_extra_1.existsSync(documentationTemplatePath)) {
                 try {
                     fs_extra_1.copySync(documentationTemplatePath, destination);
                 }
                 catch (e) {
-                    console.log('COULD NOT COPY STACKJOY DOCUMENTATION');
+                    console.log('COULD NOT COPY STACKJOY EXAMPLE TEMPLATE');
                     console.log(e);
                 }
             }

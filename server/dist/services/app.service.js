@@ -23,12 +23,22 @@ class AppService {
         this.APP.logOutUser();
     }
     switchEnvironment(id) {
-        const envMetadata = this.APP.getEnvironmentInfoById(id);
-        if (envMetadata) {
-            const newEnv = new environment_model_1.EnvironmentModel(envMetadata);
-            newEnv.updateLastUsed();
-            this.setAppEnvironment(newEnv);
+        const env = this.loadEnvironment(id);
+        if (env) {
+            env.updateLastUsed();
         }
+    }
+    refreshCurrentEnvironment() {
+        const env = this.loadEnvironment(this.CURRENT_ENVIRONMENT.metadata.id);
+    }
+    loadEnvironment(id) {
+        const envMetadata = this.APP.getEnvironmentInfoById(id);
+        let env;
+        if (envMetadata) {
+            env = new environment_model_1.EnvironmentModel(envMetadata);
+            this.setAppEnvironment(env);
+        }
+        return env;
     }
     determineCurrentEnvironment(codebasePath) {
         // console.log('detemining current env------>',codebasePath)
@@ -50,9 +60,12 @@ class AppService {
     setAppEnvironment(environment) {
         this.CURRENT_ENVIRONMENT = environment;
     }
-    getCurrentEnvironment() {
+    getCurrentEnvironment(refresh = false) {
         var _a, _b, _c, _d, _e;
         if (globals_1.APP_SERVICE.CURRENT_ENVIRONMENT) {
+            if (refresh) {
+                this.refreshCurrentEnvironment();
+            }
             return { error: null, data: (_b = (_a = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT) === null || _a === void 0 ? void 0 : _a.metadata) !== null && _b !== void 0 ? _b : null };
         }
         else {

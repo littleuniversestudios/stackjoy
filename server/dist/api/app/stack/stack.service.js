@@ -41,11 +41,7 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
     }
     async addCollectionToStack(stackId, { collectionId }) {
         const stackResult = await this.findById(stackId);
-        console.log('stackId: ', stackId);
-        console.log('collectionId: ', collectionId);
-        console.log('stack result', stackResult);
         const collection = await globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints().getCollection(collectionId);
-        console.log('collection', collection);
         if (stackResult.error) {
             return stackResult.error;
         }

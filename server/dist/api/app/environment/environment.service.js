@@ -9,8 +9,8 @@ class EnvironmentService {
     async findAll() {
         return { error: null, data: globals_1.APP_SERVICE.APP.list };
     }
-    getCurrentEnvironment() {
-        return globals_1.APP_SERVICE.getCurrentEnvironment();
+    getCurrentEnvironment(refresh = false) {
+        return globals_1.APP_SERVICE.getCurrentEnvironment(refresh);
     }
     async rename(id, { name }) {
         var _a;
