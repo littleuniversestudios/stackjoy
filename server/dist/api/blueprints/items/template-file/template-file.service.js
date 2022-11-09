@@ -11,7 +11,7 @@ class TemplateFileService {
     findByPath(filePath) {
         let contents;
         try {
-            contents = fs_1.readFileSync(filePath, 'utf-8');
+            contents = (0, fs_1.readFileSync)(filePath, 'utf-8');
         }
         catch (e) {
         }
@@ -24,13 +24,13 @@ class TemplateFileService {
         }
         else {
             try {
-                const filePath = path_1.join(absolutePath, newFileName);
-                const pathExists = fs_extra_1.pathExistsSync(filePath);
+                const filePath = (0, path_1.join)(absolutePath, newFileName);
+                const pathExists = (0, fs_extra_1.pathExistsSync)(filePath);
                 if (pathExists && !overwrite) {
                     return { error: { status: 400, code: 'overwrite-file-error', message: `File already exists.`, data: { filePath } }, data: { success: false } };
                 }
                 else {
-                    fs_1.writeFileSync(filePath, '');
+                    (0, fs_1.writeFileSync)(filePath, '');
                     return { error: null, data: { success: true } };
                 }
             }
@@ -46,8 +46,8 @@ class TemplateFileService {
         }
         else {
             try {
-                const filePath = path_1.join(absolutePath, newFolderName);
-                fs_extra_1.ensureDirSync(filePath);
+                const filePath = (0, path_1.join)(absolutePath, newFolderName);
+                (0, fs_extra_1.ensureDirSync)(filePath);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -62,7 +62,7 @@ class TemplateFileService {
         }
         else {
             try {
-                fs_1.writeFileSync(path, contents, 'utf-8');
+                (0, fs_1.writeFileSync)(path, contents, 'utf-8');
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -77,8 +77,8 @@ class TemplateFileService {
         }
         else {
             try {
-                const newFilePath = path_1.join(oldFilePath, '..', newFilename);
-                fs_1.renameSync(oldFilePath, newFilePath);
+                const newFilePath = (0, path_1.join)(oldFilePath, '..', newFilename);
+                (0, fs_1.renameSync)(oldFilePath, newFilePath);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -93,7 +93,7 @@ class TemplateFileService {
         }
         else {
             try {
-                fs_extra_1.removeSync(absolutePath);
+                (0, fs_extra_1.removeSync)(absolutePath);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -112,13 +112,13 @@ class TemplateFileService {
                     const extension = path.extname(absolutePath);
                     const oldFilename = path.basename(absolutePath, extension);
                     let newFileName = `${oldFilename}_copy${extension}`;
-                    let newFilePath = path_1.join(absolutePath, '..', newFileName);
+                    let newFilePath = (0, path_1.join)(absolutePath, '..', newFileName);
                     if (fs.existsSync(newFilePath)) {
                         const rndNum = Math.floor(Math.random() * 10000) + 1;
                         newFileName = `${oldFilename}_${rndNum}${extension}`;
                     }
-                    newFilePath = path_1.join(absolutePath, '..', newFileName);
-                    fs_1.copyFileSync(absolutePath, newFilePath);
+                    newFilePath = (0, path_1.join)(absolutePath, '..', newFileName);
+                    (0, fs_1.copyFileSync)(absolutePath, newFilePath);
                     return { error: null, data: { success: true } };
                 }
                 else {
@@ -139,7 +139,7 @@ class TemplateFileService {
      * @private
      */
     isFileUpdateAllowed(absolutePath) {
-        if (path_1.resolve(absolutePath).indexOf(path_1.resolve(globals_1.SYSTEM.path.data)) !== 0) {
+        if ((0, path_1.resolve)(absolutePath).indexOf((0, path_1.resolve)(globals_1.SYSTEM.path.data)) !== 0) {
             return {
                 error: {
                     status: 401, code: 'unauthorized-file-update',

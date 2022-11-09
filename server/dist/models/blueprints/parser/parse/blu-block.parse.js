@@ -71,8 +71,8 @@ function decomposeBluBlock(text) {
     else {
         let blockStatements = text.substring(blockTag.start.length, endIndex).trim();
         let contents = leftTrim(text.substring(endIndex + 1));
-        const children = start_parse_1.extractChunks(contents);
-        const parseResult = parser_1.parseBLU(blockStatements);
+        const children = (0, start_parse_1.extractChunks)(contents);
+        const parseResult = (0, parser_1.parseBLU)(blockStatements);
         if (parseResult.error || !parseResult.ast) {
             let unexpectedValue = ((_b = (_a = parseResult.error) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.value) ? `Unexpected value '${parseResult.error.token.value}'` : '';
             error = {

@@ -8,16 +8,22 @@ const path_1 = require("path");
 const blu_stack_model_1 = require("./blu.stack.model");
 const blu_environment_data_1 = require("./blu.environment.data");
 class BLUWorkspaceModel extends blu_environment_model_1.BLUEnvironmentModel {
-    constructor(path, name) {
-        super(path, name, 'workspace', blu_interface_1.BLU.Item.Type.Workspace, null);
-        this.name = name;
+    constructor(path, _name) {
+        super(path, _name, 'workspace', blu_interface_1.BLU.Item.Type.Workspace, null);
+        this._name = _name;
         this.loadStacks();
         this.loadDataMembers();
+    }
+    set name(name) {
+        this._name = name;
+    }
+    get name() {
+        return this._name;
     }
     loadStacks() {
         const excludeFolders = [".git"];
         const stackIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.stacks, excludeFolders);
-        this.stacks.push(...stackIDs.map(id => new blu_stack_model_1.BLUStackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
+        this.stacks.push(...stackIDs.map(id => new blu_stack_model_1.BLUStackModel((0, path_1.join)(this.paths.stacks, id, 'blueprints'), id, this)));
         this.children.push(...this.stacks);
     }
     loadDataMembers() {

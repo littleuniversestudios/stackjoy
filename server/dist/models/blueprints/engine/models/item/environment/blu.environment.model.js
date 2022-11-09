@@ -12,10 +12,10 @@ const blu_utils_model_1 = require("../../blu.utils.model");
 const blu_system_functions_1 = require("../../support/blu.system.functions");
 const blu_environment_data_1 = require("./blu.environment.data");
 class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
-    constructor(path, name, baseId, type = blu_interface_1.BLU.Item.Type.Workspace, parent = null) {
+    constructor(path, _name, baseId, type = blu_interface_1.BLU.Item.Type.Workspace, parent = null) {
         super(type);
         this.path = path;
-        this.name = name;
+        this._name = _name;
         this.baseId = baseId;
         this.parent = parent;
         this.stacks = [];
@@ -25,6 +25,12 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
             schema: [],
         };
         this.init();
+    }
+    set name(name) {
+        this._name = name;
+    }
+    get name() {
+        return this._name;
     }
     init() {
         var _a;
@@ -37,14 +43,14 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
     setPaths() {
         this.paths = {
             self: this.path,
-            collections: path_1.join(this.path, 'collections'),
-            stacks: path_1.join(this.path, 'stacks'),
-            functions: path_1.join(this.path, 'functions'),
-            config: path_1.join(this.path, 'config.json'),
-            links: path_1.join(this.path, 'links.json'),
-            data: path_1.join(this.path, 'data'),
-            variables: path_1.join(this.path, 'variables.json'),
-            readme: path_1.join(this.path, 'readme.md'),
+            collections: (0, path_1.join)(this.path, 'collections'),
+            stacks: (0, path_1.join)(this.path, 'stacks'),
+            functions: (0, path_1.join)(this.path, 'functions'),
+            config: (0, path_1.join)(this.path, 'config.json'),
+            links: (0, path_1.join)(this.path, 'links.json'),
+            data: (0, path_1.join)(this.path, 'data'),
+            variables: (0, path_1.join)(this.path, 'variables.json'),
+            readme: (0, path_1.join)(this.path, 'readme.md'),
         };
         this.assertPaths();
     }
@@ -56,7 +62,7 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
         };
     }
     static defaultFunctions(fnContext) {
-        return blu_system_functions_1.bluSystemFunctions(fnContext);
+        return (0, blu_system_functions_1.bluSystemFunctions)(fnContext);
     }
     /**
      *  TREE
@@ -74,7 +80,7 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
                 // path.self refers to the 'blueprints' of the folder
                 // so we go up a folder to delete itself
                 // todo: path.self should really be paths.blueprints
-                fs_extra_1.removeSync(path_1.join(stack.paths.self, '../'));
+                (0, fs_extra_1.removeSync)((0, path_1.join)(stack.paths.self, '../'));
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -125,7 +131,7 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
         const collection = this.getCollection(id);
         if (collection) {
             try {
-                fs_extra_1.removeSync(collection.paths.self);
+                (0, fs_extra_1.removeSync)(collection.paths.self);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -160,21 +166,21 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
      * STATIC MEMBERS
      */
     static createWorkspace(path) {
-        const blueprintsPath = path_1.join(path, 'blueprints');
+        const blueprintsPath = (0, path_1.join)(path, 'blueprints');
         try {
             // make sure the directory exists
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath));
             // create workspace files [config.json, readme.md, variables.json]
-            fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'config.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'variables.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(blueprintsPath, 'links.json'), {});
-            fs_1.writeFileSync(path_1.join(blueprintsPath, 'readme.md'), '');
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(blueprintsPath, 'config.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(blueprintsPath, 'variables.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(blueprintsPath, 'links.json'), {});
+            (0, fs_1.writeFileSync)((0, path_1.join)(blueprintsPath, 'readme.md'), '');
             // create the other subdirectories
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'collections'));
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'functions'));
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'stacks'));
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'data'));
-            fs_extra_1.ensureDirSync(path_1.join(blueprintsPath, 'snippets'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath, 'collections'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath, 'functions'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath, 'stacks'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath, 'data'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(blueprintsPath, 'snippets'));
             return { error: null, success: true };
         }
         catch (error) {

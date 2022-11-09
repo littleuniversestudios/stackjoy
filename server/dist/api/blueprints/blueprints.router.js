@@ -12,7 +12,7 @@ const collection_router_1 = require("./items/collection/collection.router");
 const function_router_1 = require("./items/function/function.router");
 const data_router_1 = require("./items/data/data.router");
 const stack_router_1 = require("./items/stack/stack.router");
-exports.blueprintsRouter = express_1.Router();
+exports.blueprintsRouter = (0, express_1.Router)();
 /** actions */
 exports.blueprintsRouter.use('/preview', preview_router_1.previewRouter);
 exports.blueprintsRouter.use('/generate', generate_router_1.generateRouter);

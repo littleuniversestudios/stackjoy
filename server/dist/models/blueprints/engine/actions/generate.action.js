@@ -27,8 +27,8 @@ class GenerateAction {
     }
     storeFiles(tree) {
         tree.files.forEach(file => {
-            fs_extra_1.mkdirpSync(file.destinationFolder);
-            fs_1.writeFileSync(file.destination, file.renderedText);
+            (0, fs_extra_1.mkdirpSync)(file.destinationFolder);
+            (0, fs_1.writeFileSync)(file.destination, file.renderedText);
         });
         tree.subFolders.forEach(folder => this.storeFiles(folder));
     }

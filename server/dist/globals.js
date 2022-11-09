@@ -1,7 +1,7 @@
 "use strict";
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initStackjoy = exports.SJ_SERVER_API_URL = exports.logger = exports.APP_PATHS = exports.FIREBASE_SERVICE = exports.AUTH_SERVICE = exports.APP_SERVICE = exports.SJ_SERVER = exports.SYSTEM = void 0;
+exports.setPostInstallStacks = exports.initStackjoy = exports.SJ_SERVER_API_URL = exports.POST_INSTALL_STACKS = exports.logger = exports.APP_PATHS = exports.FIREBASE_SERVICE = exports.AUTH_SERVICE = exports.APP_SERVICE = exports.SJ_SERVER = exports.SYSTEM = void 0;
 const system_1 = require("./shared/lib/system");
 const app_model_1 = require("./models/app/app.model");
 const sj_server_model_1 = require("./models/SJServer/sj.server.model");
@@ -11,19 +11,24 @@ const auth_service_1 = require("./api/app/auth/auth.service");
 const path_1 = require("path");
 const winston = require('winston');
 exports.APP_PATHS = {};
+exports.POST_INSTALL_STACKS = []; // is set in start.ts
 // Need this elsewhere before initStackjoy() is called, so had to pull it out into its own variable
 exports.SJ_SERVER_API_URL = (_a = process.env.STACKJOY_SERVER) !== null && _a !== void 0 ? _a : 'https://api.stackjoy.com';
 function initStackjoy() {
-    exports.SYSTEM = system_1.initSystem('stackjoy');
+    exports.SYSTEM = (0, system_1.initSystem)('stackjoy');
     // console.log('SHOW SYSTEM DATA (STACKJOY_DATA_DIR):', SYSTEM)
     exports.FIREBASE_SERVICE = new firebase_1.FirebaseService();
     exports.AUTH_SERVICE = new auth_service_1.AuthService();
     exports.SJ_SERVER = new sj_server_model_1.SJServerModel(exports.SJ_SERVER_API_URL);
     exports.APP_SERVICE = new app_service_1.AppService();
-    exports.APP_PATHS['assets'] = path_1.join(path_1.dirname(process.argv[1]), './assets');
+    exports.APP_PATHS['assets'] = (0, path_1.join)((0, path_1.dirname)(process.argv[1]), './assets');
     initLogger();
 }
 exports.initStackjoy = initStackjoy;
+function setPostInstallStacks(postInstallStacks) {
+    exports.POST_INSTALL_STACKS = postInstallStacks;
+}
+exports.setPostInstallStacks = setPostInstallStacks;
 /**
  * Set up the file logger. It will create a new file for every day
  * It looks like: .../logs/2021-12-31.error.log

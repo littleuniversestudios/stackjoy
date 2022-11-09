@@ -7,7 +7,7 @@ class BLUUtils {
     static loadFile(path) {
         let fileContents = null;
         try {
-            fileContents = fs_1.readFileSync(path, 'utf-8');
+            fileContents = (0, fs_1.readFileSync)(path, 'utf-8');
         }
         catch (error) {
         }
@@ -16,7 +16,7 @@ class BLUUtils {
     static loadJSONFile(path) {
         let fileContents = null;
         try {
-            fileContents = fs_extra_1.readJSONSync(path);
+            fileContents = (0, fs_extra_1.readJSONSync)(path);
         }
         catch (error) {
         }
@@ -24,7 +24,7 @@ class BLUUtils {
     }
     static saveJSONFile(path, value) {
         try {
-            fs_extra_1.writeJSONSync(path, value);
+            (0, fs_extra_1.writeJSONSync)(path, value);
         }
         catch (e) {
             return { error: e, data: { success: false } };
@@ -33,7 +33,7 @@ class BLUUtils {
     }
     static saveFile(path, value) {
         try {
-            fs_1.writeFileSync(path, value);
+            (0, fs_1.writeFileSync)(path, value);
         }
         catch (e) {
             return { error: e, data: { success: false } };

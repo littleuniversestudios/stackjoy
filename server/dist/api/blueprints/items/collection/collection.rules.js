@@ -10,7 +10,7 @@ const check_1 = require("express-validator/check");
 exports.forLIST = [];
 exports.forGET = [];
 exports.forPOST = [
-    check_1.body('name').exists().withMessage(`Missing value`),
+    (0, check_1.body)('name').exists().withMessage(`Missing value`),
 ];
 exports.forDELETE = [];
 exports.forPUT = [];

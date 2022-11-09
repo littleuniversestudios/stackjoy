@@ -6,6 +6,7 @@ const axios_1 = require("axios");
 const fs_extra_1 = require("fs-extra");
 const globals_1 = require("../../globals");
 const http_proxy_middleware_1 = require("http-proxy-middleware");
+const shared_1 = require("@stackjoy/shared");
 class SJServerModel {
     constructor(url) {
         this.SJ_SERVER = url;
@@ -20,7 +21,7 @@ class SJServerModel {
         return ['-c', header, ...rest];
     }
     static createGit(baseDir) {
-        return simple_git_1.default({
+        return (0, simple_git_1.default)({
             baseDir
         });
     }
@@ -30,7 +31,7 @@ class SJServerModel {
                 const { headers } = await SJServerModel.firebaseTokenRequestConfig();
                 res.locals[SJServerModel.FIREBASE_TOKEN_HEADER_KEY] = headers[SJServerModel.FIREBASE_TOKEN_HEADER_KEY];
                 next();
-            }, http_proxy_middleware_1.createProxyMiddleware({
+            }, (0, http_proxy_middleware_1.createProxyMiddleware)({
                 target,
                 changeOrigin: true,
                 pathRewrite: (path) => {
@@ -108,8 +109,8 @@ class SJServerModel {
             return null;
         const { envId } = resp.data;
         // Clear any old or failed attempts to publish this stack
-        if (fs_extra_1.existsSync(`${baseDir}/.git`))
-            fs_extra_1.removeSync(`${baseDir}/.git`);
+        if ((0, fs_extra_1.existsSync)(`${baseDir}/.git`))
+            (0, fs_extra_1.removeSync)(`${baseDir}/.git`);
         // Initialize the git repo
         const git = SJServerModel.createGit(baseDir);
         await (git.init()
@@ -126,10 +127,10 @@ class SJServerModel {
      * @param repoId
      */
     async downloadRepo(baseDir, repoId) {
-        if (fs_extra_1.existsSync(baseDir)) {
-            fs_extra_1.removeSync(baseDir);
+        if ((0, fs_extra_1.existsSync)(baseDir)) {
+            (0, fs_extra_1.removeSync)(baseDir);
         }
-        fs_extra_1.mkdirpSync(baseDir);
+        (0, fs_extra_1.mkdirpSync)(baseDir);
         const git = SJServerModel.createGit(baseDir);
         try {
             const command = [
@@ -151,10 +152,10 @@ class SJServerModel {
      * @param url
      */
     async downloadSeed(baseDir, url) {
-        if (fs_extra_1.existsSync(baseDir)) {
-            fs_extra_1.removeSync(baseDir);
+        if ((0, fs_extra_1.existsSync)(baseDir)) {
+            (0, fs_extra_1.removeSync)(baseDir);
         }
-        fs_extra_1.mkdirpSync(baseDir);
+        (0, fs_extra_1.mkdirpSync)(baseDir);
         const git = SJServerModel.createGit(baseDir);
         try {
             await git.clone(url, '.');
@@ -238,17 +239,17 @@ class SJServerModel {
         return axios_1.default.get(`${this.SJ_SERVER}/environments/${type}/forUser`, await SJServerModel.firebaseTokenRequestConfig());
     }
     /**
+     * Get an environments metadata
+     * @param id
+     */
+    async getRemoteEnvironment(id) {
+        return axios_1.default.get(`${this.SJ_SERVER}/environments/${id}`, await SJServerModel.firebaseTokenRequestConfig());
+    }
+    /**
      * Get public stacks
      */
     async getPublicStacks() {
         return axios_1.default.get(`${this.SJ_SERVER}/environments/stacks/public`);
-    }
-    /**
-     * Get pending invites for the user
-     * @param type Environment type
-     */
-    async getInvites(type) {
-        return axios_1.default.get(`${this.SJ_SERVER}/environments/${type}/invites`, await SJServerModel.firebaseTokenRequestConfig());
     }
     /**
      * Get a list of user profiles for a specific environment
@@ -366,7 +367,7 @@ class SJServerModel {
     }
 }
 exports.SJServerModel = SJServerModel;
-SJServerModel.STACKJOY_BRANCH = 'stackjoy';
+SJServerModel.STACKJOY_BRANCH = shared_1.Settings.GIT.MAIN_BRANCH;
 SJServerModel.PROXY_PREFIX = '/sj-proxy';
 SJServerModel.FIREBASE_TOKEN_HEADER_KEY = 'Firebase-Auth-Token';
 //# sourceMappingURL=sj.server.model.js.map

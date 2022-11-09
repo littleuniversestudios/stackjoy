@@ -13,15 +13,15 @@ class SystemWorkspaceModel extends environment_model_1.EnvironmentModel {
         this.metadata = metadata;
     }
     static get systemWorkspacePath() {
-        return path_1.join(globals_1.SYSTEM.path.data, SystemWorkspaceModel.systemWorkspaceFolder);
+        return (0, path_1.join)(globals_1.SYSTEM.path.data, SystemWorkspaceModel.systemWorkspaceFolder);
     }
     static doesSystemWorkspaceExist() {
-        return fs_extra_1.existsSync(path_1.join(SystemWorkspaceModel.systemWorkspacePath, 'metadata.json'));
+        return (0, fs_extra_1.existsSync)((0, path_1.join)(SystemWorkspaceModel.systemWorkspacePath, 'metadata.json'));
     }
     static createSystemEnvironment() {
         const systemWorkspaceRelativePath = SystemWorkspaceModel.systemWorkspaceFolder;
         const systemEnvironmentMetadata = environment_model_1.EnvironmentModel.createEnvironment(systemWorkspaceRelativePath, {
-            id: util_1.UUIDShort(),
+            id: (0, util_1.UUIDShort)(),
             codebasePath: null,
             name: 'FREE WORKSPACE',
             type: app_interface_1.App.Environment.Type.Workspace,

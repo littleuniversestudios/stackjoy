@@ -45,7 +45,7 @@ const linux = (name) => {
         }
     };
 };
-exports.initSystem = (name = 'stackjoy') => {
+const initSystem = (name = 'stackjoy') => {
     if (process.platform === 'darwin') {
         return macos(name);
     }
@@ -56,4 +56,5 @@ exports.initSystem = (name = 'stackjoy') => {
         return linux(name);
     }
 };
+exports.initSystem = initSystem;
 //# sourceMappingURL=system.js.map

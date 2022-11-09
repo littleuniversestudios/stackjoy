@@ -15,9 +15,9 @@ class EnvironmentModel {
         this.init();
     }
     init() {
-        this.blueprintsPath = path_1.join(this.metadata.blueprintsPath);
+        this.blueprintsPath = (0, path_1.join)(this.metadata.blueprintsPath);
         this.collectionsPath = this.blueprintsPath;
-        this.logPath = path_1.join(this.metadata.environmentPath, 'log.json');
+        this.logPath = (0, path_1.join)(this.metadata.environmentPath, 'log.json');
     }
     get codebasePath() {
         return this.metadata.codebasePath;
@@ -50,7 +50,7 @@ class EnvironmentModel {
         // todo: there are environment properties that end up in the environment metadata that are only
         // todo: valid for the session and sometimes end up saved. need to rethink how we store permanent info
         // todo: and session only info
-        fs_extra_1.writeJSONSync(path_1.join(this.metadata.environmentPath, 'metadata.json'), savedMetadata);
+        (0, fs_extra_1.writeJSONSync)((0, path_1.join)(this.metadata.environmentPath, 'metadata.json'), savedMetadata);
     }
     /**
      * STATIC MEMBERS
@@ -71,7 +71,7 @@ class EnvironmentModel {
         // the paths in the metadata are relative to the system data path provided.
         // here we join the system data path with the relative paths to create the
         // necessary folders
-        const environmentPath = path_1.join(globals_1.SYSTEM.path.data, environmentRelativePath);
+        const environmentPath = (0, path_1.join)(globals_1.SYSTEM.path.data, environmentRelativePath);
         /**
          * create the blueprints folder structure
          */
@@ -83,26 +83,27 @@ class EnvironmentModel {
             /**
              * store the supporting workspace files
              */
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'metadata.json'), metadata);
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'log.json'), []);
-            fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'state.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(environmentPath, 'metadata.json'), metadata);
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(environmentPath, 'log.json'), []);
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(environmentPath, 'state.json'), {});
         }
         return Object.assign({}, metadata, {
             environmentPath: environmentPath,
-            blueprintsPath: path_1.join(environmentPath, 'blueprints')
+            blueprintsPath: (0, path_1.join)(environmentPath, 'blueprints'),
+            remote: undefined
         });
     }
     static getEnvironmentMetadata(absoluteEnvironmentPath) {
-        if (util_1.isDirectorySync(absoluteEnvironmentPath)) {
-            const environmentMetadata = fs_extra_1.readJsonSync(path_1.join(absoluteEnvironmentPath, 'metadata.json'), { throws: false });
+        if ((0, util_1.isDirectorySync)(absoluteEnvironmentPath)) {
+            const environmentMetadata = (0, fs_extra_1.readJsonSync)((0, path_1.join)(absoluteEnvironmentPath, 'metadata.json'), { throws: false });
             if (environmentMetadata) {
                 environmentMetadata.environmentPath = absoluteEnvironmentPath;
-                environmentMetadata.blueprintsPath = path_1.join(environmentMetadata.environmentPath, 'blueprints');
+                environmentMetadata.blueprintsPath = (0, path_1.join)(environmentMetadata.environmentPath, 'blueprints');
                 return Object.assign({}, this.defaultMetadata(), environmentMetadata);
             }
         }
         else {
-            const envPath = path_1.join(absoluteEnvironmentPath, 'metadata.json');
+            const envPath = (0, path_1.join)(absoluteEnvironmentPath, 'metadata.json');
             console.log('NO METADATA FOUND for environment: ', envPath);
             return this.defaultMetadata();
         }
@@ -142,11 +143,11 @@ class EnvironmentModel {
              * the executable of the process manager...NOT WHAT WE WANT!!!! but those cases should be very rare
              */
             const templateId = blu_template_model_1.BLUTemplateModel.newId();
-            const documentationTemplatePath = path_1.join(globals_1.APP_PATHS.assets, '/templates/example-template');
-            const destination = path_1.join(collection.paths.templates, templateId);
-            if (fs_extra_1.existsSync(documentationTemplatePath)) {
+            const documentationTemplatePath = (0, path_1.join)(globals_1.APP_PATHS.assets, '/templates/example-template');
+            const destination = (0, path_1.join)(collection.paths.templates, templateId);
+            if ((0, fs_extra_1.existsSync)(documentationTemplatePath)) {
                 try {
-                    fs_extra_1.copySync(documentationTemplatePath, destination);
+                    (0, fs_extra_1.copySync)(documentationTemplatePath, destination);
                 }
                 catch (e) {
                     console.log('COULD NOT COPY STACKJOY EXAMPLE TEMPLATE');
@@ -178,11 +179,11 @@ class EnvironmentModel {
                 if (mapping.descendIntoDirectory) {
                     // If directory we recurse into it.
                     // Don't need to do a directory check here b/c it's checked in the method call.
-                    (await this.getTagsFor(path_1.join(path, name))).forEach(v => tags.add(v));
+                    (await this.getTagsFor((0, path_1.join)(path, name))).forEach(v => tags.add(v));
                 }
                 else if (mapping.contentChecks) {
                     // Check contents if desired and only if not a directory.
-                    const content = fs.readFileSync(path_1.join(path, name)).toString();
+                    const content = fs.readFileSync((0, path_1.join)(path, name)).toString();
                     for (let contentMapping of mapping.contentChecks) {
                         if (contentMapping.keyword.test(content))
                             contentMapping.tags.forEach(v => tags.add(v));

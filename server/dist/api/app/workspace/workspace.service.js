@@ -43,6 +43,8 @@ class WorkspaceService extends base_environment_service_1.BaseEnvironmentService
         let stack = new environment_model_1.EnvironmentModel(workspace);
         stack.metadata.localVersion = version;
         stack.metadata.remote = {
+            // TODO fix this...
+            invites: {}, organization: undefined, permissions: {},
             id,
             version: version,
             isClean: true

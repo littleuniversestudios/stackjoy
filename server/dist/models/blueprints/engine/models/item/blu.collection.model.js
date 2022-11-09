@@ -33,16 +33,16 @@ class BLUCollectionModel extends blu_base_model_1.BLUBaseModel {
     }
     setPaths() {
         const parentPath = this.parent.paths.collections;
-        const selfPath = path_1.join(parentPath, this.baseId);
+        const selfPath = (0, path_1.join)(parentPath, this.baseId);
         this.paths = {
             parent: parentPath,
             self: selfPath,
-            templates: path_1.join(selfPath, 'templates'),
-            functions: path_1.join(selfPath, 'functions'),
-            config: path_1.join(selfPath, 'config.json'),
-            links: path_1.join(selfPath, 'links.json'),
-            variables: path_1.join(selfPath, 'variables.json'),
-            readme: path_1.join(selfPath, 'readme.md'),
+            templates: (0, path_1.join)(selfPath, 'templates'),
+            functions: (0, path_1.join)(selfPath, 'functions'),
+            config: (0, path_1.join)(selfPath, 'config.json'),
+            links: (0, path_1.join)(selfPath, 'links.json'),
+            variables: (0, path_1.join)(selfPath, 'variables.json'),
+            readme: (0, path_1.join)(selfPath, 'readme.md'),
         };
         this.assertPaths();
     }
@@ -91,20 +91,20 @@ class BLUCollectionModel extends blu_base_model_1.BLUBaseModel {
         };
     }
     static createCollection(path, name, parent) {
-        const collectionId = util_1.UUIDMedium();
-        const collectionPath = path_1.join(path, collectionId);
+        const collectionId = (0, util_1.UUIDMedium)();
+        const collectionPath = (0, path_1.join)(path, collectionId);
         try {
             // ensure the directory is created
-            fs_extra_1.ensureDirSync(path_1.join(collectionPath));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(collectionPath));
             // create collection files [config.json, readme.md, variables.json, links]
-            fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'config.json'), Object.assign({}, BLUCollectionModel.defaultConfig, { name }));
-            fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'variables.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(collectionPath, 'links.json'), {});
-            fs_1.writeFileSync(path_1.join(collectionPath, 'readme.md'), '');
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(collectionPath, 'config.json'), Object.assign({}, BLUCollectionModel.defaultConfig, { name }));
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(collectionPath, 'variables.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(collectionPath, 'links.json'), {});
+            (0, fs_1.writeFileSync)((0, path_1.join)(collectionPath, 'readme.md'), '');
             // create the other sub directories
-            fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'functions'));
-            fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'templates'));
-            fs_extra_1.ensureDirSync(path_1.join(collectionPath, 'chains'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(collectionPath, 'functions'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(collectionPath, 'templates'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(collectionPath, 'chains'));
             return { error: null, data: new BLUCollectionModel(collectionId, parent) };
         }
         catch (error) {
@@ -112,10 +112,10 @@ class BLUCollectionModel extends blu_base_model_1.BLUBaseModel {
         }
     }
     static copyCollection(workspace, collectionToCopy) {
-        const newCollectionBaseId = util_1.UUIDMedium();
-        const newCollectionPath = path_1.join(workspace.paths.collections, newCollectionBaseId);
+        const newCollectionBaseId = (0, util_1.UUIDMedium)();
+        const newCollectionPath = (0, path_1.join)(workspace.paths.collections, newCollectionBaseId);
         try {
-            fs_extra_1.copySync(collectionToCopy.paths.self, newCollectionPath);
+            (0, fs_extra_1.copySync)(collectionToCopy.paths.self, newCollectionPath);
             const newCollection = new BLUCollectionModel(newCollectionBaseId, workspace);
             newCollection.renameIds(collectionToCopy.id, newCollection.id);
             return { error: null, data: newCollection };

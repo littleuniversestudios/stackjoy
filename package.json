@@ -20,7 +20,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "open": "^7.1.0",
-    "@stackjoy/shared": "0.0.16",
+    "@stackjoy/shared": "0.0.19",
     "axios": "^0.21.1",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",
@@ -28,6 +28,7 @@
     "cors": "^2.8.5",
     "directory-tree": "^2.2.4",
     "dotenv": "^10.0.0",
+    "enquirer": "^2.3.6",
     "express": "^4.16.4",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.15.6",
@@ -40,6 +41,7 @@
     "lodash": "^4.17.20",
     "moo": "^0.5.1",
     "nearley": "^2.19.7",
+    "ora": "^5.4.1",
     "safe-eval": "^0.4.1",
     "simple-git": "^2.38.0",
     "winston": "^3.3.3"

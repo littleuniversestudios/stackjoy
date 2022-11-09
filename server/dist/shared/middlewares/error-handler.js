@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.serverErrorHandler = void 0;
 const globals_1 = require("../../globals");
-exports.serverErrorHandler = (err, req, res, next) => {
+const serverErrorHandler = (err, req, res, next) => {
     var _a, _b, _c, _d;
     let status = (_a = err.status) !== null && _a !== void 0 ? _a : 500;
     let errorBody = {
@@ -13,4 +13,5 @@ exports.serverErrorHandler = (err, req, res, next) => {
     globals_1.logger.error(errorBody);
     res.status(status).json(errorBody);
 };
+exports.serverErrorHandler = serverErrorHandler;
 //# sourceMappingURL=error-handler.js.map

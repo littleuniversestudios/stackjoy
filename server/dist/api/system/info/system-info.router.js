@@ -6,8 +6,8 @@ const systemInfoRules = require("./system-info.rules");
 const route_validation_1 = require("../../../shared/middlewares/route-validation");
 const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const globals_1 = require("../../../globals");
-exports.systemInfoRouter = express_1.Router();
-exports.systemInfoRouter.get('/', route_validation_1.validateRequest(systemInfoRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
+exports.systemInfoRouter = (0, express_1.Router)();
+exports.systemInfoRouter.get('/', (0, route_validation_1.validateRequest)(systemInfoRules.forLIST), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     var _a;
     const system = {
         "SJ_SERVER": globals_1.SJ_SERVER.SJ_SERVER,
@@ -17,7 +17,7 @@ exports.systemInfoRouter.get('/', route_validation_1.validateRequest(systemInfoR
     };
     res.json(system);
 }));
-exports.systemInfoRouter.get('/initial-codebase-path', route_validation_1.validateRequest(systemInfoRules.forLIST), route_handler_1.handleRoute(async (req, res, next) => {
+exports.systemInfoRouter.get('/initial-codebase-path', (0, route_validation_1.validateRequest)(systemInfoRules.forLIST), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     res.json({ "INITIAL_CODEBASE_PATH": globals_1.APP_SERVICE.INITIAL_CODEBASE_PATH });
 }));
 //# sourceMappingURL=system-info.router.js.map

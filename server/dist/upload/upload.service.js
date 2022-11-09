@@ -20,7 +20,7 @@ class UploadService {
                 if (Array.isArray(files)) {
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
-                        const writeResult = this.writeUploadedFile(path_1.join(absolutePath, file.name), file.data, overwrite);
+                        const writeResult = this.writeUploadedFile((0, path_1.join)(absolutePath, file.name), file.data, overwrite);
                         if (writeResult.error) {
                             return writeResult;
                         }
@@ -28,8 +28,8 @@ class UploadService {
                 }
                 else {
                     const file = files;
-                    fs_1.writeFileSync(path_1.join(absolutePath, file.name), file.data);
-                    const writeResult = this.writeUploadedFile(path_1.join(absolutePath, file.name), file.data, overwrite);
+                    (0, fs_1.writeFileSync)((0, path_1.join)(absolutePath, file.name), file.data);
+                    const writeResult = this.writeUploadedFile((0, path_1.join)(absolutePath, file.name), file.data, overwrite);
                     if (writeResult.error) {
                         return writeResult;
                     }
@@ -40,12 +40,12 @@ class UploadService {
     }
     writeUploadedFile(filePath, data, overwrite = false) {
         try {
-            const pathExists = fs_extra_1.pathExistsSync(filePath);
+            const pathExists = (0, fs_extra_1.pathExistsSync)(filePath);
             if (pathExists && !overwrite) {
                 return { error: { status: 400, code: 'overwrite-file-error', message: `File already exists.`, data: { filePath } }, data: { success: false } };
             }
             else {
-                fs_1.writeFileSync(filePath, data);
+                (0, fs_1.writeFileSync)(filePath, data);
                 return { error: null, data: { success: true } };
             }
         }

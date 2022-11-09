@@ -47,7 +47,7 @@ function renderText(originalText, context) {
                 errors = templateAST.errors;
             }
             else {
-                renderedText = escaped_expressions_parse_1.addEscapedExpressions(renderedASTText, escapedExpressions);
+                renderedText = (0, escaped_expressions_parse_1.addEscapedExpressions)(renderedASTText, escapedExpressions);
             }
         }
     }
@@ -55,8 +55,8 @@ function renderText(originalText, context) {
 }
 exports.renderText = renderText;
 function preProcess(originalText) {
-    let strippedText = comments_parse_1.stripComments(originalText);
-    return escaped_expressions_parse_1.stripEscapedExpressions(strippedText);
+    let strippedText = (0, comments_parse_1.stripComments)(originalText);
+    return (0, escaped_expressions_parse_1.stripEscapedExpressions)(strippedText);
 }
 /**
  * 1) Look for first [blu][/blu] blocks
@@ -75,21 +75,21 @@ function extractChunks(text) {
         bluBlockIndex = text.indexOf(blockTag.start.str);
         if (bluBlockIndex !== -1) {
             const textBeforeBluBlock = text.substring(0, bluBlockIndex);
-            chunks.push(...expressions_parse_1.findExpressions(textBeforeBluBlock));
+            chunks.push(...(0, expressions_parse_1.findExpressions)(textBeforeBluBlock));
             const textAfterBluBlock = text.substring(bluBlockIndex);
-            const { error, endIndex } = blu_block_parse_1.findClosingTagIndex(textAfterBluBlock, blockTag);
+            const { error, endIndex } = (0, blu_block_parse_1.findClosingTagIndex)(textAfterBluBlock, blockTag);
             const bluBlockText = textAfterBluBlock.substring(0, endIndex);
             if (error) {
                 chunks.push(new chunk_model_1.BluBlockChunk({ originalText: bluBlockText, error }));
                 bluBlockIndex = -1;
             }
             else {
-                chunks.push(blu_block_parse_1.decomposeBluBlock(bluBlockText));
+                chunks.push((0, blu_block_parse_1.decomposeBluBlock)(bluBlockText));
                 text = textAfterBluBlock.substring(endIndex);
             }
         }
         else {
-            chunks.push(...expressions_parse_1.findExpressions(text));
+            chunks.push(...(0, expressions_parse_1.findExpressions)(text));
         }
     }
     return chunks;

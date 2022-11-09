@@ -130,7 +130,7 @@ class BlueprintsModel {
         const template = this.getTemplate(templateId);
         if (template) {
             try {
-                fs_extra_1.removeSync(template.paths.self);
+                (0, fs_extra_1.removeSync)(template.paths.self);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
@@ -144,7 +144,7 @@ class BlueprintsModel {
     duplicateTemplate(templateId) {
         const template = this.getTemplate(templateId);
         if (template) {
-            const destination = path_1.join(template.parent.paths.templates);
+            const destination = (0, path_1.join)(template.parent.paths.templates);
             const newName = `${template.name}_copy`;
             return blu_template_model_1.BLUTemplateModel.copyTemplate(template, destination, template.parent, newName);
         }
@@ -215,7 +215,7 @@ class BlueprintsModel {
         const bluFunction = this.getFunction(functionId);
         if (bluFunction) {
             try {
-                fs_extra_1.removeSync(bluFunction.paths.self);
+                (0, fs_extra_1.removeSync)(bluFunction.paths.self);
                 return { error: null, data: { success: true } };
             }
             catch (error) {

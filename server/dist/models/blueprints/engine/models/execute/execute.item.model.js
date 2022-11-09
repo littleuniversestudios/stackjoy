@@ -51,7 +51,8 @@ class ExecuteItemModel {
     // raw onSuccess str that hasn't been evaluated
     get onSuccessStr() {
         var _a;
-        return this.isOfType(blu_interface_1.BLU.Item.Type.Template) ? (_a = this.itemSettings.onSuccess) !== null && _a !== void 0 ? _a : '' : '';
+        return this.isOfType(blu_interface_1.BLU.Item.Type.Template) ?
+            (_a = this.itemSettings.onSuccess) !== null && _a !== void 0 ? _a : '' : '';
     }
     isOfType(type) {
         return this.item.type === type;

@@ -43,8 +43,8 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
     }
     createNewFile(newFileName, path = '') {
         try {
-            const filePath = path_1.join(this.paths.files, path, newFileName);
-            fs_1.writeFileSync(filePath, '');
+            const filePath = (0, path_1.join)(this.paths.files, path, newFileName);
+            (0, fs_1.writeFileSync)(filePath, '');
             return { error: null, data: { success: true } };
         }
         catch (error) {
@@ -55,14 +55,14 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
         try {
             const overwriteFiles = [];
             for (let i = 0; i < filePaths.length; i++) {
-                const destinationFile = path_1.join(destinationPath, path_1.basename(filePaths[i]));
-                if (fs_extra_1.existsSync(destinationFile)) {
-                    overwriteFiles.push(path_1.basename(filePaths[i]));
+                const destinationFile = (0, path_1.join)(destinationPath, (0, path_1.basename)(filePaths[i]));
+                if ((0, fs_extra_1.existsSync)(destinationFile)) {
+                    overwriteFiles.push((0, path_1.basename)(filePaths[i]));
                 }
             }
             if (overwriteFiles.length === 0) {
                 filePaths === null || filePaths === void 0 ? void 0 : filePaths.forEach(filePath => {
-                    fs_extra_1.copySync(filePath, path_1.join(destinationPath, path_1.basename(filePath)));
+                    (0, fs_extra_1.copySync)(filePath, (0, path_1.join)(destinationPath, (0, path_1.basename)(filePath)));
                 });
                 return { error: null, data: { success: true } };
             }
@@ -76,8 +76,8 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
     }
     createNewFolder(newFolderName, path = '') {
         try {
-            const filePath = path_1.join(this.paths.files, path, newFolderName);
-            fs_extra_1.ensureDirSync(filePath);
+            const filePath = (0, path_1.join)(this.paths.files, path, newFolderName);
+            (0, fs_extra_1.ensureDirSync)(filePath);
             return { error: null, data: { success: true } };
         }
         catch (error) {
@@ -104,17 +104,17 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
     }
     setPaths() {
         const parentPath = this.parent.paths.templates;
-        const selfPath = path_1.join(parentPath, this.baseId);
+        const selfPath = (0, path_1.join)(parentPath, this.baseId);
         this.paths = {
             parent: parentPath,
             self: selfPath,
-            files: path_1.join(selfPath, 'files'),
-            functions: path_1.join(selfPath, 'functions'),
-            config: path_1.join(selfPath, 'config.json'),
-            links: path_1.join(selfPath, 'links.json'),
-            variables: path_1.join(selfPath, 'variables.json'),
-            readme: path_1.join(selfPath, 'readme.md'),
-            chainedTemplates: path_1.join(selfPath, 'chainedTemplates.json'),
+            files: (0, path_1.join)(selfPath, 'files'),
+            functions: (0, path_1.join)(selfPath, 'functions'),
+            config: (0, path_1.join)(selfPath, 'config.json'),
+            links: (0, path_1.join)(selfPath, 'links.json'),
+            variables: (0, path_1.join)(selfPath, 'variables.json'),
+            readme: (0, path_1.join)(selfPath, 'readme.md'),
+            chainedTemplates: (0, path_1.join)(selfPath, 'chainedTemplates.json'),
         };
         this.assertPaths();
     }
@@ -133,27 +133,27 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
         };
     }
     static newId() {
-        return util_1.UUIDLong();
+        return (0, util_1.UUIDLong)();
     }
     static createTemplate(path, name, parent, files) {
         const templateId = BLUTemplateModel.newId();
-        const templatePath = path_1.join(path, templateId);
+        const templatePath = (0, path_1.join)(path, templateId);
         try {
             // ensure the directory is created
-            fs_extra_1.ensureDirSync(path_1.join(templatePath));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(templatePath));
             // create template files [config.json, readme.md, variables.json]
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'config.json'), Object.assign({}, BLUTemplateModel.defaultConfig, { name }));
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'variables.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'links.json'), {});
-            fs_extra_1.writeJSONSync(path_1.join(templatePath, 'chainedTemplates.json'), []);
-            fs_1.writeFileSync(path_1.join(templatePath, 'readme.md'), '');
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(templatePath, 'config.json'), Object.assign({}, BLUTemplateModel.defaultConfig, { name }));
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(templatePath, 'variables.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(templatePath, 'links.json'), {});
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(templatePath, 'chainedTemplates.json'), []);
+            (0, fs_1.writeFileSync)((0, path_1.join)(templatePath, 'readme.md'), '');
             // create the other sub directories
-            fs_extra_1.ensureDirSync(path_1.join(templatePath, 'functions'));
-            fs_extra_1.ensureDirSync(path_1.join(templatePath, 'snippets'));
-            fs_extra_1.ensureDirSync(path_1.join(templatePath, 'files'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(templatePath, 'functions'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(templatePath, 'snippets'));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(templatePath, 'files'));
             files === null || files === void 0 ? void 0 : files.forEach(file => {
-                const fileDestination = path_1.join(templatePath, 'files', file.destination);
-                fs_extra_1.copySync(file.origin, fileDestination);
+                const fileDestination = (0, path_1.join)(templatePath, 'files', file.destination);
+                (0, fs_extra_1.copySync)(file.origin, fileDestination);
             });
             return { error: null, data: new BLUTemplateModel(templateId, parent) };
         }
@@ -164,7 +164,7 @@ class BLUTemplateModel extends blu_base_model_1.BLUBaseModel {
     static copyTemplate(template, destination, parent, newName) {
         try {
             const newTemplateId = BLUTemplateModel.newId();
-            fs_extra_1.copySync(template.paths.self, path_1.join(destination, `./${newTemplateId}`));
+            (0, fs_extra_1.copySync)(template.paths.self, (0, path_1.join)(destination, `./${newTemplateId}`));
             const newTemplate = new BLUTemplateModel(newTemplateId, parent);
             if (newName) {
                 newTemplate.renameTemplate(newName);

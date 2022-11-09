@@ -19,7 +19,7 @@ class BLUStackModel extends blu_environment_model_1.BLUEnvironmentModel {
     }
     loadMetadata() {
         var _a;
-        this.paths.metadata = path_1.join(this.paths.self, '..', 'metadata.json');
+        this.paths.metadata = (0, path_1.join)(this.paths.self, '..', 'metadata.json');
         this.metadata = (_a = blu_utils_model_1.BLUUtils.loadJSONFile(this.paths.metadata)) !== null && _a !== void 0 ? _a : this.defaultMetadata();
         this.name = this.metadata.name;
     }
@@ -34,7 +34,7 @@ class BLUStackModel extends blu_environment_model_1.BLUEnvironmentModel {
     loadStacks() {
         const excludeFolders = [".git"];
         const stackIDs = file_system_1.BLUFileSystem.getDirectoriesSync(this.paths.stacks, excludeFolders);
-        this.stacks.push(...stackIDs.map(id => new BLUStackModel(path_1.join(this.paths.stacks, id, 'blueprints'), id, this)));
+        this.stacks.push(...stackIDs.map(id => new BLUStackModel((0, path_1.join)(this.paths.stacks, id, 'blueprints'), id, this)));
         this.children.push(...this.stacks);
     }
     loadDataMembers() {

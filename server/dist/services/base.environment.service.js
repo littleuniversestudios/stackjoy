@@ -163,18 +163,6 @@ class BaseEnvironmentService {
         return { error: null, data: response.data };
     }
     /**
-     * Load all workspace invites for the user
-     * @param type Environment type
-     * @param token user auth token
-     */
-    async getInvites(type, token) {
-        const response = await globals_1.SJ_SERVER.getInvites(type);
-        if (response.status !== 200) {
-            return { error: { message: response.statusText }, data: null };
-        }
-        return { error: null, data: response.data };
-    }
-    /**
      * Accept an invite for an environment (either stack or workspace)
      * @param eid Environment ID
      */

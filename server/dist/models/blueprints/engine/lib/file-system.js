@@ -8,11 +8,11 @@ const utils_1 = require("./utils");
 class BLUFileSystem {
 }
 exports.BLUFileSystem = BLUFileSystem;
-BLUFileSystem.dirExistsSync = (path) => fs_1.existsSync(path);
-BLUFileSystem.fileExistsSync = (path) => fs_1.existsSync(path);
+BLUFileSystem.dirExistsSync = (path) => (0, fs_1.existsSync)(path);
+BLUFileSystem.fileExistsSync = (path) => (0, fs_1.existsSync)(path);
 BLUFileSystem.isDirectorySync = path => fse.lstatSync(path).isDirectory();
-BLUFileSystem.getDirectoryFilesSync = (source) => fse.readdirSync(source).filter(n => !BLUFileSystem.isDirectorySync(path_1.join(source, n)));
-BLUFileSystem.getDirectoriesSync = (source, exclude = []) => fse.readdirSync(source).filter(n => !exclude.includes(n) && BLUFileSystem.isDirectorySync(path_1.join(source, n)));
+BLUFileSystem.getDirectoryFilesSync = (source) => fse.readdirSync(source).filter(n => !BLUFileSystem.isDirectorySync((0, path_1.join)(source, n)));
+BLUFileSystem.getDirectoriesSync = (source, exclude = []) => fse.readdirSync(source).filter(n => !exclude.includes(n) && BLUFileSystem.isDirectorySync((0, path_1.join)(source, n)));
 BLUFileSystem.getAllFileNamesSync = (source) => fse.readdirSync(source);
 BLUFileSystem.getLastDirectoryName = (filePath) => filePath.split(path_1.sep).reverse()[0];
 BLUFileSystem.isRelativePath = (path) => path.substring(0, 2) === './';
@@ -25,8 +25,8 @@ BLUFileSystem.fileList = (folderPath) => {
     const listFiles = (rootPath, allFiles = []) => {
         const templateFilenames = BLUFileSystem.getAllFileNamesSync(rootPath);
         templateFilenames.forEach(filename => {
-            const absolutePath = path_1.join(rootPath, filename);
-            const relativePath = path_1.relative(folderPath, rootPath);
+            const absolutePath = (0, path_1.join)(rootPath, filename);
+            const relativePath = (0, path_1.relative)(folderPath, rootPath);
             const id = utils_1.Utils.UUIDShort();
             BLUFileSystem.isDirectorySync(absolutePath) ? listFiles(absolutePath, allFiles) : allFiles.push({ filename, relativePath, absolutePath, id });
         });
@@ -50,8 +50,8 @@ BLUFileSystem.fileTree = (folderPath, ignoreFiles = []) => {
         const filenames = BLUFileSystem.getAllFileNamesSync(rootPath);
         filenames.forEach(filename => {
             if (!ignoreFiles.includes(filename)) {
-                const absolutePath = path_1.join(rootPath, filename);
-                const relativePath = path_1.relative(folderPath, rootPath);
+                const absolutePath = (0, path_1.join)(rootPath, filename);
+                const relativePath = (0, path_1.relative)(folderPath, rootPath);
                 const id = utils_1.Utils.UUIDShort();
                 BLUFileSystem.isDirectorySync(absolutePath) ? tree.subFolders.push(treeStruct(absolutePath)) : tree.files.push({ filename, relativePath, absolutePath, id });
             }

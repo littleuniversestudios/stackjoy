@@ -17,6 +17,17 @@ class BLUBaseModel {
     get id() {
         return (this.type === blu_interface_1.BLU.Item.Type.Stack || this.type === blu_interface_1.BLU.Item.Type.Workspace) ? this.baseId : `${this.parent.id}.${this.baseId}`;
     }
+    /**
+     * After updating to typescript 4+, typescript would not allow to have a property (in this case 'name') in the base class and then
+     * have is as an accessor in the extended class (like we have in blu.collection.model.ts). so now we use _name as a protected property
+     * and 'name' as an accessor in base class and everywhere else.
+     */
+    set name(name) {
+        this._name = name;
+    }
+    get name() {
+        return this._name;
+    }
     get functions() {
         return this._functions.map(f => ({
             id: f.id,
@@ -86,7 +97,7 @@ class BLUBaseModel {
     assertPaths() {
         Object.keys(this.paths).forEach(pathName => {
             const path = this.paths[pathName];
-            path_1.extname(path) ? fs_extra_1.ensureFileSync(path) : fs_extra_1.ensureDirSync(path);
+            (0, path_1.extname)(path) ? (0, fs_extra_1.ensureFileSync)(path) : (0, fs_extra_1.ensureDirSync)(path);
         });
     }
     saveJSONFile(path, value) {

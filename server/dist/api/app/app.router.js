@@ -7,7 +7,7 @@ const workspace_router_1 = require("./workspace/workspace.router");
 const environment_router_1 = require("./environment/environment.router");
 const state_router_1 = require("./state/state.router");
 const auth_router_1 = require("./auth/auth.router");
-exports.appRouter = express_1.Router();
+exports.appRouter = (0, express_1.Router)();
 exports.appRouter.use('/environment', environment_router_1.environmentRouter);
 exports.appRouter.use('/workspace', workspace_router_1.workspaceRouter);
 exports.appRouter.use('/stack', stack_router_1.stackRouter);

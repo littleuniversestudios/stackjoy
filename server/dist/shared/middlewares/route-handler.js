@@ -7,5 +7,6 @@ exports.handleRoute = void 0;
  * If any errors, returns error, does not break the server
  * @param requestHandler
  */
-exports.handleRoute = (requestHandler) => (req, res, next) => Promise.resolve(requestHandler(req, res, next)).catch(next);
+const handleRoute = (requestHandler) => (req, res, next) => Promise.resolve(requestHandler(req, res, next)).catch(next);
+exports.handleRoute = handleRoute;
 //# sourceMappingURL=route-handler.js.map

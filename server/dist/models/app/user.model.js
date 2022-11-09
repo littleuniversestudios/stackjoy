@@ -23,7 +23,7 @@ class UserModel extends models_1.SharedUserModel {
     constructor(user) {
         super(user || { uid: '' });
         this.user = user;
-        this.usersPath = path_1.join(globals_1.SYSTEM.path.data, 'users');
+        this.usersPath = (0, path_1.join)(globals_1.SYSTEM.path.data, 'users');
         this.workspaceList = [];
         this.stackList = [];
         this.maxWorkspaces = 0;
@@ -31,20 +31,20 @@ class UserModel extends models_1.SharedUserModel {
     }
     init() {
         if (!!this.user) {
-            this.relativeWorkspacesPath = path_1.join('users', this.user.uid, 'workspaces');
-            this.relativeStacksPath = path_1.join('users', this.user.uid, 'stacks');
-            this.workspacesPath = path_1.join(this.usersPath, this.user.uid, 'workspaces');
-            this.stacksPath = path_1.join(this.usersPath, this.user.uid, 'stacks');
-            this.statePath = path_1.join(this.usersPath, this.user.uid, 'state');
+            this.relativeWorkspacesPath = (0, path_1.join)('users', this.user.uid, 'workspaces');
+            this.relativeStacksPath = (0, path_1.join)('users', this.user.uid, 'stacks');
+            this.workspacesPath = (0, path_1.join)(this.usersPath, this.user.uid, 'workspaces');
+            this.stacksPath = (0, path_1.join)(this.usersPath, this.user.uid, 'stacks');
+            this.statePath = (0, path_1.join)(this.usersPath, this.user.uid, 'state');
             this.ensureUserDirectories();
             this.setUserPrivileges();
             this.createLists();
         }
     }
     ensureUserDirectories() {
-        fs_extra_1.ensureDirSync(this.workspacesPath);
-        fs_extra_1.ensureDirSync(this.stacksPath);
-        fs_extra_1.ensureDirSync(this.statePath);
+        (0, fs_extra_1.ensureDirSync)(this.workspacesPath);
+        (0, fs_extra_1.ensureDirSync)(this.stacksPath);
+        (0, fs_extra_1.ensureDirSync)(this.statePath);
     }
     /**
      * Set privileges based on the user account status free/paid and level of account
@@ -95,20 +95,20 @@ class UserModel extends models_1.SharedUserModel {
         if (!metadata) {
             return { error: { status: 404, message: `Environment with id: '${id}' not found.`, code: 'ENV_NOT_FOUND' }, data: { success: false } };
         }
-        fs_extra_1.removeSync(metadata.environmentPath);
+        (0, fs_extra_1.removeSync)(metadata.environmentPath);
         this.createLists();
         return { error: null, data: { success: true } };
     }
     getListOfEnvironments(environmentPath) {
         const environments = [];
         // todo: should ignore all hidden folders, not just .DS_Store, fix this
-        const environmentDirs = fs_1.readdirSync(environmentPath).filter(dir => !['.DS_Store'].includes(dir));
-        environmentDirs.forEach(dir => environments.push(environment_model_1.EnvironmentModel.getEnvironmentMetadata(path_1.join(environmentPath, dir))));
+        const environmentDirs = (0, fs_1.readdirSync)(environmentPath).filter(dir => !['.DS_Store'].includes(dir));
+        environmentDirs.forEach(dir => environments.push(environment_model_1.EnvironmentModel.getEnvironmentMetadata((0, path_1.join)(environmentPath, dir))));
         return environments;
     }
     createWorkspace(codebasePath, name, isLocal = true) {
         if (this.canCreateNewWorkspace()) {
-            name = name !== null && name !== void 0 ? name : `${util_1.getLastDirectoryName(codebasePath)}`;
+            name = name !== null && name !== void 0 ? name : `${(0, util_1.getLastDirectoryName)(codebasePath)}`;
             return { error: null, workspace: this.createEnvironment(codebasePath, name, app_interface_1.App.Environment.Type.Workspace, isLocal) };
         }
         else {
@@ -116,11 +116,11 @@ class UserModel extends models_1.SharedUserModel {
         }
     }
     createStack(name, isLocal = true) {
-        const codebasePath = path_1.join(globals_1.SYSTEM.path.temp, name);
+        const codebasePath = (0, path_1.join)(globals_1.SYSTEM.path.temp, name);
         return this.createEnvironment(codebasePath, name, app_interface_1.App.Environment.Type.Stack, isLocal);
     }
-    createEnvironment(codebasePath, name, type, isLocal, id = util_1.UUIDShort()) {
-        const environmentRelativePath = path_1.join(type === app_interface_1.App.Environment.Type.Workspace ? this.relativeWorkspacesPath : this.relativeStacksPath, id);
+    createEnvironment(codebasePath, name, type, isLocal, id = (0, util_1.UUIDShort)()) {
+        const environmentRelativePath = (0, path_1.join)(type === app_interface_1.App.Environment.Type.Workspace ? this.relativeWorkspacesPath : this.relativeStacksPath, id);
         return environment_model_1.EnvironmentModel.createEnvironment(environmentRelativePath, { codebasePath, name, type, isLocal, id });
     }
 }

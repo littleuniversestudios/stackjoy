@@ -9,22 +9,22 @@ const user_model_1 = require("./user.model");
 const system_workspace_model_1 = require("./system.workspace.model");
 class AppModel {
     constructor() {
-        this.usersPath = path_1.join(globals_1.SYSTEM.path.data, 'users');
+        this.usersPath = (0, path_1.join)(globals_1.SYSTEM.path.data, 'users');
         this.systemWorkspaceFolder = 'SYSTEM_WORKSPACE';
-        this.systemWorkspacePath = path_1.join(globals_1.SYSTEM.path.data, this.systemWorkspaceFolder);
-        this.cachePath = path_1.join(globals_1.SYSTEM.path.data, 'cache');
-        this.statePath = path_1.join(globals_1.SYSTEM.path.data, 'state');
-        this.logPath = path_1.join(globals_1.SYSTEM.path.data, 'logs');
+        this.systemWorkspacePath = (0, path_1.join)(globals_1.SYSTEM.path.data, this.systemWorkspaceFolder);
+        this.cachePath = (0, path_1.join)(globals_1.SYSTEM.path.data, 'cache');
+        this.statePath = (0, path_1.join)(globals_1.SYSTEM.path.data, 'state');
+        this.logPath = (0, path_1.join)(globals_1.SYSTEM.path.data, 'logs');
         this.workspaceList = [];
         this.stackList = [];
         this.init();
     }
     init() {
-        fs_extra_1.ensureDirSync(this.usersPath);
-        fs_extra_1.ensureDirSync(system_workspace_model_1.SystemWorkspaceModel.systemWorkspacePath);
-        fs_extra_1.ensureDirSync(this.cachePath);
-        fs_extra_1.ensureDirSync(this.statePath);
-        fs_extra_1.ensureDirSync(this.logPath);
+        (0, fs_extra_1.ensureDirSync)(this.usersPath);
+        (0, fs_extra_1.ensureDirSync)(system_workspace_model_1.SystemWorkspaceModel.systemWorkspacePath);
+        (0, fs_extra_1.ensureDirSync)(this.cachePath);
+        (0, fs_extra_1.ensureDirSync)(this.statePath);
+        (0, fs_extra_1.ensureDirSync)(this.logPath);
         this.ensureSystemWorkspace();
     }
     ensureSystemWorkspace() {
@@ -56,7 +56,7 @@ class AppModel {
     }
     static get logFile() {
         const logFilename = `${new Date().toISOString().split('T')[0]}.error.log`;
-        return process.env.LOGGING_MODE === 'development' ? path_1.join('logs', logFilename) : path_1.join(globals_1.SYSTEM.path.data, 'logs', logFilename);
+        return process.env.LOGGING_MODE === 'development' ? (0, path_1.join)('logs', logFilename) : (0, path_1.join)(globals_1.SYSTEM.path.data, 'logs', logFilename);
     }
     get list() {
         return { workspaces: this.workspaceList, stacks: this.stackList };
@@ -71,12 +71,20 @@ class AppModel {
         const metadata = this.getEnvironmentInfoById(id);
         return metadata ? new environment_model_1.EnvironmentModel(metadata) : null;
     }
+    getEnvironmentInfoByCodebase(codebasePath) {
+        const codebaseList = this.getCodebaseList();
+        const codebaseItem = codebaseList.find(list => list.codebasePath === codebasePath);
+        return codebaseItem === null || codebaseItem === void 0 ? void 0 : codebaseItem.env;
+    }
     /**
+     * DEPRECATED: The old way of finding a codebase was to walk up the path and hopefully find something that matches
+     * Since we now just assign a path that hasn't been found to the System Workspace we do not need to search for it.
      * Walk up the codebase path [f1/f2/f3, f1/f2, f1] until a workspace is found
      * @param codebasePath
      */
-    getEnvironmentInfoByCodebase(codebasePath) {
+    getEnvironmentInfoByCodebaseOld(codebasePath) {
         const codebaseList = this.getCodebaseList();
+        console.log('-->', codebaseList);
         let metadata;
         const codebaseParts = codebasePath.split(path_1.sep);
         while (codebaseParts.length > 0 && !metadata) {
@@ -139,13 +147,18 @@ class AppModel {
      * @param batchUpdate
      */
     updateEnvironmentMetadata(metadata, batchUpdate = false) {
+        var _a, _b, _c;
         const environmentPath = metadata.environmentPath;
         const savedMetadata = Object.assign({}, metadata);
         // no need to store hardcoded absolute paths, system figures those out based on
         // where system.data.path is located at init time
         delete savedMetadata['environmentPath'];
         delete savedMetadata['blueprintsPath'];
-        fs_extra_1.writeJSONSync(path_1.join(environmentPath, 'metadata.json'), savedMetadata);
+        // TODO fix this...
+        (_a = savedMetadata.remote) === null || _a === void 0 ? true : delete _a.invites;
+        (_b = savedMetadata.remote) === null || _b === void 0 ? true : delete _b.organization;
+        (_c = savedMetadata.remote) === null || _c === void 0 ? true : delete _c.permissions;
+        (0, fs_extra_1.writeJSONSync)((0, path_1.join)(environmentPath, 'metadata.json'), savedMetadata);
         if (!batchUpdate)
             this.refresh();
     }
@@ -167,6 +180,8 @@ class AppModel {
         const envId = await globals_1.SJ_SERVER.createRepo(env.blueprintsPath, env.metadata.name, env.metadata.type, orgId);
         env.metadata.isLocal = false;
         env.metadata.remote = {
+            // TODO fix this...
+            invites: {}, organization: undefined, permissions: {},
             id: envId,
             version: 1,
             isClean: true

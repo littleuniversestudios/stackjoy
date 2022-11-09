@@ -21,7 +21,7 @@ function findExpressions(originalText) {
         if (plainText.length > 0) {
             chunks.push(new chunk_model_1.Chunk({ originalText: plainText, sanitizedText: plainText }));
         }
-        const parseResult = parser_1.parseBLU(item.sanitizedText);
+        const parseResult = (0, parser_1.parseBLU)(item.sanitizedText);
         let error = null;
         if (parseResult.error || !parseResult.ast) {
             let unexpectedValue = ((_b = (_a = parseResult.error) === null || _a === void 0 ? void 0 : _a.token) === null || _b === void 0 ? void 0 : _b.value) ? `Unexpected value '${parseResult.error.token.value}'` : '';

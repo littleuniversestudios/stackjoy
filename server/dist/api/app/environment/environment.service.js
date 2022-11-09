@@ -1,16 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnvironmentService = void 0;
+const app_interface_1 = require("../../../shared/interfaces/app.interface");
 const path = require("path");
 const blu_utils_model_1 = require("../../../models/blueprints/engine/models/blu.utils.model");
 const globals_1 = require("../../../globals");
 const shared_1 = require("@stackjoy/shared");
+const environment_utils_1 = require("../../../shared/lib/environment.utils");
 class EnvironmentService {
     async findAll() {
         return { error: null, data: globals_1.APP_SERVICE.APP.list };
     }
-    getCurrentEnvironment(refresh = false) {
-        return globals_1.APP_SERVICE.getCurrentEnvironment(refresh);
+    async getCurrentEnvironment(refresh = false) {
+        var _a;
+        const resp = globals_1.APP_SERVICE.getCurrentEnvironment(refresh);
+        if (resp.error)
+            return resp;
+        const localEnv = resp.data;
+        if (localEnv.remote && ((_a = localEnv.remote) === null || _a === void 0 ? void 0 : _a.id)) {
+            const { status, data } = await globals_1.SJ_SERVER.getRemoteEnvironment(localEnv.remote.id);
+            if (status !== 200)
+                return { error: { status: 500, code: shared_1.HttpError.UNKNOWN, message: 'Unknown error occurred.' }, data: null };
+            environment_utils_1.EnvironmentUtils.combineEnvironment(environment_utils_1.EnvironmentUtils.convertRemoteEnvironment(data, app_interface_1.App.Environment.Type.Workspace), localEnv);
+        }
+        return resp;
     }
     async rename(id, { name }) {
         var _a;
@@ -93,6 +106,12 @@ class EnvironmentService {
         const envMetadata = globals_1.APP_SERVICE.APP.getEnvironmentInfoById(id);
         blu_utils_model_1.BLUUtils.saveJSONFile(path.join(envMetadata.environmentPath, 'state.json'), state);
         return { error: null, data: { success: true } };
+    }
+    getPostInstallStacks() {
+        const postInstallStacks = globals_1.POST_INSTALL_STACKS;
+        // clear the post install stacks when you retrieve them the first time
+        (0, globals_1.setPostInstallStacks)([]);
+        return { error: null, data: postInstallStacks };
     }
 }
 exports.EnvironmentService = EnvironmentService;

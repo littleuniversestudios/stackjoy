@@ -122,7 +122,7 @@ class PreviewAction {
     evaluateVariables(executeItem) {
         executeItem.itemContext.variables.forEach(variable => {
             if (typeof variable.value === "string") {
-                const renderResult = start_parse_1.renderText(variable.value, executeItem.renderContext);
+                const renderResult = (0, start_parse_1.renderText)(variable.value, executeItem.renderContext);
                 variable.value = renderResult.renderedText;
                 if (renderResult.errors) {
                     this.setVariableErrors(executeItem, variable, renderResult.errors);
@@ -186,7 +186,7 @@ class PreviewAction {
         executeItem.errors.push(...templateErrors);
     }
     generateOnSuccess(executeItem) {
-        const renderResult = start_parse_1.renderText(executeItem.onSuccessStr, executeItem.renderContext);
+        const renderResult = (0, start_parse_1.renderText)(executeItem.onSuccessStr, executeItem.renderContext);
         executeItem.onSuccess = renderResult.renderedText;
         if (renderResult.errors) {
             executeItem.errors.push(...renderResult.errors.map(e => ({
@@ -268,8 +268,8 @@ class PreviewAction {
         return allErrors;
     }
     renderContents(executeItem, file, fileContext) {
-        const fileContents = fs_1.readFileSync(file.absolutePath, 'utf-8');
-        const renderResult = start_parse_1.renderText(`${fileContents}`, fileContext);
+        const fileContents = (0, fs_1.readFileSync)(file.absolutePath, 'utf-8');
+        const renderResult = (0, start_parse_1.renderText)(`${fileContents}`, fileContext);
         const errors = [];
         if (renderResult.errors) {
             errors.push(...renderResult.errors.map(e => ({
@@ -290,7 +290,7 @@ class PreviewAction {
         const destinationFolder = path.join(executeItem.renderContext.inputs.destination, file.relativePath);
         const destination = path.join(destinationFolder, filename);
         const errors = [];
-        const fileExists = fs_1.existsSync(destination);
+        const fileExists = (0, fs_1.existsSync)(destination);
         if (fileExists && !forceOverwrite) {
             errors.push({
                 executeContextId: executeItem.execId,
@@ -342,7 +342,7 @@ class PreviewAction {
         if (!!filenames) {
             const { basename, extname } = this.extractFilenameParts(filename);
             const fileContext = { inputs: Object.assign({}, renderContext.inputs, { filename, basename, extname }), functions: renderContext.functions };
-            return start_parse_1.renderText(filenames, fileContext);
+            return (0, start_parse_1.renderText)(filenames, fileContext);
         }
         else {
             return { renderedText: filename, errors: [] };

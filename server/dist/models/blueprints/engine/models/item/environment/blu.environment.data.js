@@ -42,8 +42,8 @@ class BLUEnvironmentData {
         }
     }
     createDataMember(type, contents) {
-        const id = util_1.UUIDLong();
-        const filePath = path_1.join(this.getPathByType(type), `${id}.json`);
+        const id = (0, util_1.UUIDLong)();
+        const filePath = (0, path_1.join)(this.getPathByType(type), `${id}.json`);
         blu_utils_model_1.BLUUtils.saveJSONFile(filePath, contents !== null && contents !== void 0 ? contents : null);
         return { error: null, data: { success: true, dataMember: new DataMember(id, this.parent, type, filePath) } };
     }
@@ -59,7 +59,7 @@ class BLUEnvironmentData {
         if (dataMemberIndex >= 0) {
             const dataMember = allDataMembers[dataMemberIndex];
             try {
-                fs_extra_1.removeSync(dataMember.paths.self);
+                (0, fs_extra_1.removeSync)(dataMember.paths.self);
                 allDataMembers.splice(dataMemberIndex, 1);
                 return { error: null, data: { success: true } };
             }
@@ -81,15 +81,15 @@ class BLUEnvironmentData {
     setPaths() {
         const parentPath = this.parent.paths.functions;
         this.paths = {
-            models: path_1.join(this.parent.paths.data, this.folders.models),
-            inputs: path_1.join(this.parent.paths.data, this.folders.inputs),
-            schema: path_1.join(this.parent.paths.data, this.folders.schema),
+            models: (0, path_1.join)(this.parent.paths.data, this.folders.models),
+            inputs: (0, path_1.join)(this.parent.paths.data, this.folders.inputs),
+            schema: (0, path_1.join)(this.parent.paths.data, this.folders.schema),
             parent: parentPath,
         };
         this.assertPaths();
     }
     assertPaths() {
-        Object.keys(this.folders).forEach(folderName => fs_extra_1.ensureDirSync(this.paths[folderName]));
+        Object.keys(this.folders).forEach(folderName => (0, fs_extra_1.ensureDirSync)(this.paths[folderName]));
     }
     loadDataMembers() {
         BLUEnvironmentData.dataTypes.forEach(dataType => {

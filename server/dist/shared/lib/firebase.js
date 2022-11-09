@@ -28,8 +28,8 @@ class FirebaseService {
     constructor() {
         var _a;
         this.firebaseServer = (_a = process.env.STACKJOY_FIREBASE_SERVER) !== null && _a !== void 0 ? _a : 'prod';
-        this.app = app_1.initializeApp(config[this.firebaseServer]);
-        this.auth = auth_1.getAuth(this.app);
+        this.app = (0, app_1.initializeApp)(config[this.firebaseServer]);
+        this.auth = (0, auth_1.getAuth)(this.app);
         // console.log('', this.auth)
     }
     get info() {
@@ -41,17 +41,17 @@ class FirebaseService {
         };
     }
     async login(email, password) {
-        const credential = await auth_1.signInWithEmailAndPassword(this.auth, email, password);
+        const credential = await (0, auth_1.signInWithEmailAndPassword)(this.auth, email, password);
         this.user = credential.user;
         return this.user.uid;
     }
     async signup(email, password) {
-        const credential = await auth_1.createUserWithEmailAndPassword(this.auth, email, password);
+        const credential = await (0, auth_1.createUserWithEmailAndPassword)(this.auth, email, password);
         this.user = credential.user;
         return this.user.uid;
     }
     async deleteUser() {
-        await auth_1.deleteUser(this.user);
+        await (0, auth_1.deleteUser)(this.user);
         await this.auth.signOut();
     }
     getAuthenticatedUser() {
@@ -71,7 +71,7 @@ class FirebaseService {
         }
     }
     async resetPassword(email) {
-        return auth_1.sendPasswordResetEmail(this.auth, email);
+        return (0, auth_1.sendPasswordResetEmail)(this.auth, email);
     }
 }
 exports.FirebaseService = FirebaseService;

@@ -47,12 +47,12 @@ class BLUFunctionModel {
     }
     setPaths() {
         const parentPath = this.parent.paths.functions;
-        const selfPath = path_1.join(parentPath, this.baseId);
+        const selfPath = (0, path_1.join)(parentPath, this.baseId);
         this.paths = {
             self: selfPath,
             parent: parentPath,
-            file: path_1.join(selfPath, 'function.js'),
-            config: path_1.join(selfPath, 'config.json')
+            file: (0, path_1.join)(selfPath, 'function.js'),
+            config: (0, path_1.join)(selfPath, 'config.json')
         };
     }
     /**
@@ -65,20 +65,20 @@ class BLUFunctionModel {
         };
     }
     static createFunction(parentPath, name, contents, description = '', parent) {
-        const functionId = util_1.UUIDLong();
+        const functionId = (0, util_1.UUIDLong)();
         return BLUFunctionModel.storeFunction(parentPath, functionId, name, contents, description, parent);
     }
     static newId() {
-        return util_1.UUIDLong();
+        return (0, util_1.UUIDLong)();
     }
     static storeFunction(parentPath, functionId, name, contents, description = '', parent) {
-        const functionPath = path_1.join(parentPath, functionId);
+        const functionPath = (0, path_1.join)(parentPath, functionId);
         try {
             // ensure the directory is created
-            fs_extra_1.ensureDirSync(path_1.join(functionPath));
+            (0, fs_extra_1.ensureDirSync)((0, path_1.join)(functionPath));
             // create workspace files [config.json, readme.md, variables.json]
-            fs_extra_1.writeJSONSync(path_1.join(functionPath, 'config.json'), Object.assign({}, BLUFunctionModel.defaultConfig, { name, description }));
-            fs_1.writeFileSync(path_1.join(functionPath, 'function.js'), contents);
+            (0, fs_extra_1.writeJSONSync)((0, path_1.join)(functionPath, 'config.json'), Object.assign({}, BLUFunctionModel.defaultConfig, { name, description }));
+            (0, fs_1.writeFileSync)((0, path_1.join)(functionPath, 'function.js'), contents);
             return { error: null, data: { success: true, function: new BLUFunctionModel(functionId, parent) } };
         }
         catch (error) {

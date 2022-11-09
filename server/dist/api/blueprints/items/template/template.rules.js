@@ -11,11 +11,11 @@ exports.forLIST = [];
 exports.forGET = [];
 exports.forDUPLICATE = [];
 exports.forPOST = [
-    check_1.body('name').exists().withMessage(`Missing value`),
-    check_1.body('collectionId').exists().withMessage(`Missing value`),
-    check_1.body('newCollectionName').optional().withMessage(`Missing value`),
-    check_1.body('files').optional().isArray().withMessage(`Template file paths must be an array`),
-    check_1.body('isSeed').optional().isBoolean().withMessage(`Value must be a boolean`),
+    (0, check_1.body)('name').exists().withMessage(`Missing value`),
+    (0, check_1.body)('collectionId').exists().withMessage(`Missing value`),
+    (0, check_1.body)('newCollectionName').optional().withMessage(`Missing value`),
+    (0, check_1.body)('files').optional().isArray().withMessage(`Template file paths must be an array`),
+    (0, check_1.body)('isSeed').optional().isBoolean().withMessage(`Value must be a boolean`),
 ];
 exports.forDELETE = [];
 exports.forPUT = [];

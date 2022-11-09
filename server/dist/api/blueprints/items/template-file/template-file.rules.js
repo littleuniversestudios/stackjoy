@@ -10,8 +10,8 @@ const check_1 = require("express-validator/check");
 exports.forLIST = [];
 exports.forGET = [];
 exports.forPOST = [
-    check_1.body('absolutePath').exists().withMessage("absolutePath must be present."),
-    check_1.body('overwrite').optional().toBoolean(true).isBoolean().withMessage('Must be boolean value'),
+    (0, check_1.body)('absolutePath').exists().withMessage("absolutePath must be present."),
+    (0, check_1.body)('overwrite').optional().toBoolean(true).isBoolean().withMessage('Must be boolean value'),
 ];
 exports.forDELETE = [];
 exports.forPUT = [];

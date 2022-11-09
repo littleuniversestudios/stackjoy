@@ -30,7 +30,7 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
         else {
             const stack = result.data;
             try {
-                fs_extra_1.removeSync(stack.environmentPath);
+                (0, fs_extra_1.removeSync)(stack.environmentPath);
                 globals_1.APP_SERVICE.APP.refresh();
                 return { error: null, data: { success: true } };
             }
@@ -93,6 +93,8 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
         let stack = new environment_model_1.EnvironmentModel(globals_1.APP_SERVICE.APP.createStack(name, false));
         stack.metadata.localVersion = version;
         stack.metadata.remote = {
+            // TODO fix this...
+            invites: {}, organization: undefined, permissions: {},
             id,
             version: version,
             isClean: true
@@ -152,15 +154,15 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
     async installRemoteStack(id, version, metadata) {
         version = version !== null && version !== void 0 ? version : 1;
         let cacheFolder = `${id}.${version}`;
-        const cachePath = path_1.join(globals_1.APP_SERVICE.APP.cachePath, cacheFolder);
+        const cachePath = (0, path_1.join)(globals_1.APP_SERVICE.APP.cachePath, cacheFolder);
         let result;
         // if the remote stack has not been downloaded before (its not cached), get it from remote server
-        if (!fs_extra_1.existsSync(cachePath)) {
+        if (!(0, fs_extra_1.existsSync)(cachePath)) {
             result = await globals_1.APP_SERVICE.APP.downloadRemoteEnvironment(cachePath, id);
         }
         // clone and store the remote stack into a temp directory
         if (result === null || result === void 0 ? void 0 : result.error) {
-            fs_extra_1.removeSync(cachePath);
+            (0, fs_extra_1.removeSync)(cachePath);
             return result;
         }
         else {
@@ -176,7 +178,7 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
     async installSeedIntoCurrentEnvironment({ url, overwrite = false }) {
         if (!url)
             return { error: { status: 400, code: 'parameters-missing', message: `seed 'url' missing in parameters` }, data: null };
-        const cachePath = path_1.join(globals_1.APP_SERVICE.APP.cachePath, 'downloaded-seed');
+        const cachePath = (0, path_1.join)(globals_1.APP_SERVICE.APP.cachePath, 'downloaded-seed');
         const result = await globals_1.APP_SERVICE.APP.downloadSeed(cachePath, url);
         if (result.error) {
             return result;
@@ -185,7 +187,9 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
             const sourceDirectory = cachePath;
             const destDirectory = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.codebasePath;
             try {
-                fs_extra_1.copySync(sourceDirectory, destDirectory, { overwrite, errorOnExist: true });
+                (0, fs_extra_1.copySync)(sourceDirectory, destDirectory, { overwrite, errorOnExist: true });
+                // if the .git folder gets copied as well remove it
+                (0, fs_extra_1.removeSync)((0, path_1.join)(destDirectory, '.git'));
                 return { error: null, data: { success: true } };
             }
             catch (e) {
@@ -207,15 +211,15 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
         return metadata;
     }
     copyStackIntoCurrentEnvironment(fromBlueprintsPath, metadata) {
-        const newStackId = util_1.UUIDLong();
+        const newStackId = (0, util_1.UUIDLong)();
         const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
-        const newStackPath = path_1.join(blueprints.workspace.paths.stacks, newStackId);
-        const newStackBlueprintsPath = path_1.join(newStackPath, 'blueprints');
-        fs_extra_1.copySync(fromBlueprintsPath, newStackBlueprintsPath);
+        const newStackPath = (0, path_1.join)(blueprints.workspace.paths.stacks, newStackId);
+        const newStackBlueprintsPath = (0, path_1.join)(newStackPath, 'blueprints');
+        (0, fs_extra_1.copySync)(fromBlueprintsPath, newStackBlueprintsPath);
         // if the .git folder gets copied as well remove it
-        fs_extra_1.removeSync(path_1.join(newStackBlueprintsPath, '.git'));
+        (0, fs_extra_1.removeSync)((0, path_1.join)(newStackBlueprintsPath, '.git'));
         // todo: in the future do not copy all hidden files (windows/mac treat them differently though so adjust accordingly)
-        fs_extra_1.writeJSONSync(path_1.join(newStackPath, 'metadata.json'), metadata);
+        (0, fs_extra_1.writeJSONSync)((0, path_1.join)(newStackPath, 'metadata.json'), metadata);
         return { error: null, data: { success: true } };
     }
     /**

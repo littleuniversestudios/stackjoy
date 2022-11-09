@@ -9,7 +9,7 @@ const system_router_1 = require("./system/system.router");
 const express = require("express");
 const globals_1 = require("../globals");
 const sj_server_model_1 = require("../models/SJServer/sj.server.model");
-exports.apiRouter = express_1.Router();
+exports.apiRouter = (0, express_1.Router)();
 // Has to be first so it doesn't parse any body content
 exports.apiRouter.use(sj_server_model_1.SJServerModel.PROXY_PREFIX, ...sj_server_model_1.SJServerModel.proxy(globals_1.SJ_SERVER_API_URL, `/api${sj_server_model_1.SJServerModel.PROXY_PREFIX}`));
 exports.apiRouter.use(express.json({ limit: '50mb' }));
