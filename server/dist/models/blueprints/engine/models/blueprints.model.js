@@ -57,10 +57,10 @@ class BlueprintsModel {
         return this.workspace.createCollection(name);
     }
     renameCollection(id, name) {
-        return this.workspace.renameCollection(id, name);
+        return this.workspace.renameCollection(this.getCollection(id), name);
     }
     deleteCollection(id) {
-        return this.workspace.deleteCollection(id);
+        return this.workspace.deleteCollection(this.getCollection(id));
     }
     addCollection(collection) {
         return this.workspace.addCollection(collection);

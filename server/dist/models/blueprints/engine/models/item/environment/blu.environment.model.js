@@ -118,28 +118,26 @@ class BLUEnvironmentModel extends blu_base_model_1.BLUBaseModel {
             return { error: result.error, data: { success: false, collection: null } };
         }
     }
-    renameCollection(id, name) {
-        const collection = this.getCollection(id);
+    renameCollection(collection, name) {
         if (collection) {
             return collection.renameCollection(name);
         }
         else {
-            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id: '${id}' was not found.` }, data: null };
+            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id: '${collection.id}' was not found.` }, data: null };
         }
     }
-    deleteCollection(id) {
-        const collection = this.getCollection(id);
+    deleteCollection(collection) {
         if (collection) {
             try {
                 (0, fs_extra_1.removeSync)(collection.paths.self);
                 return { error: null, data: { success: true } };
             }
             catch (error) {
-                return { error: { status: 400, code: 'collection-delete-error', message: `Error occurred trying to delete collection with id: '${id}'`, error }, data: { success: false } };
+                return { error: { status: 400, code: 'collection-delete-error', message: `Error occurred trying to delete collection with id: '${collection.id}'`, error }, data: { success: false } };
             }
         }
         else {
-            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id: '${id}' was not found.` }, data: { success: false } };
+            return { error: { status: 400, code: 'collection-not-found', message: `Collection with id: '${collection.id}' was not found.` }, data: { success: false } };
         }
     }
     /**
