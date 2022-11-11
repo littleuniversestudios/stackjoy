@@ -20,7 +20,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "open": "^7.1.0",
-    "@stackjoy/shared": "0.0.20",
+    "@stackjoy/shared": "0.0.21",
     "axios": "^0.21.1",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",
