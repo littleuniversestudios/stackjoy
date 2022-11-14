@@ -31,7 +31,7 @@ class TemplateFileService {
                 }
                 else {
                     (0, fs_1.writeFileSync)(filePath, '');
-                    return { error: null, data: { success: true } };
+                    return { error: null, data: { success: true, absolutePath: filePath, filename: newFileName } };
                 }
             }
             catch (error) {

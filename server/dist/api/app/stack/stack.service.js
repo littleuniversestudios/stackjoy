@@ -187,9 +187,9 @@ class StackService extends base_environment_service_1.BaseEnvironmentService {
             const sourceDirectory = cachePath;
             const destDirectory = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.codebasePath;
             try {
+                // if the .git folder exists remove it
+                (0, fs_extra_1.removeSync)((0, path_1.join)(sourceDirectory, '.git'));
                 (0, fs_extra_1.copySync)(sourceDirectory, destDirectory, { overwrite, errorOnExist: true });
-                // if the .git folder gets copied as well remove it
-                (0, fs_extra_1.removeSync)((0, path_1.join)(destDirectory, '.git'));
                 return { error: null, data: { success: true } };
             }
             catch (e) {
