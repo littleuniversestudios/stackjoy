@@ -10,6 +10,9 @@ You can change the template filenames by changing the filenames property however
 
 > Note: This property applies to ALL the template files of the generator. Currently, there is no 
 > way to apply different filename rules on individual files.
+> 
+
+<img class="sj-image" src="/assets/md/images/generator-config/config-filenames.png" alt="Generator Config Filenames" width="100%"/>
 
 Some default inputs provided by Stackjoy to help with changing the filenames are:
 
