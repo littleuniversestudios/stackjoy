@@ -21,7 +21,7 @@
     "chalk": "^4.1.2",
     "open": "^7.1.0",
     "@stackjoy/shared": "0.0.21",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",

@@ -6,7 +6,7 @@ const workspaceRules = require("./workspace.rules");
 const route_validation_1 = require("../../../shared/middlewares/route-validation");
 const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const workspace_service_1 = require("./workspace.service");
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 exports.workspaceRouter = (0, express_1.Router)();
 const workspaceService = new workspace_service_1.WorkspaceService();
 /*
@@ -28,7 +28,7 @@ exports.workspaceRouter.get('/:envId/userProfiles', (0, route_validation_1.valid
     const result = await workspaceService.getUserProfilesForEnv(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.workspaceRouter.get('/:envId/suggestedStacks', (0, route_validation_1.validateRequest)([(0, check_1.param)('envId').exists().isString()]), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+exports.workspaceRouter.get('/:envId/suggestedStacks', (0, route_validation_1.validateRequest)([(0, express_validator_1.param)('envId').exists().isString()]), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     const result = await workspaceService.getSuggestedStacks(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
@@ -43,7 +43,7 @@ exports.workspaceRouter.post('/:envId/declineInvite', (0, route_validation_1.val
     const result = await workspaceService.declineInvite(req.params.envId);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.workspaceRouter.post('/:envId/updateUserPermission', (0, check_1.param)('envId').isString(), (0, check_1.body)('targetId').isString(), (0, check_1.body)('permission').isNumeric(), (0, route_validation_1.validateRequest)(workspaceRules.forPOST), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+exports.workspaceRouter.post('/:envId/updateUserPermission', (0, express_validator_1.param)('envId').isString(), (0, express_validator_1.body)('targetId').isString(), (0, express_validator_1.body)('permission').isNumeric(), (0, route_validation_1.validateRequest)(workspaceRules.forPOST), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     const result = await workspaceService.updateUserPermission(req.params['envId'], req.body, req.header('Firebase-Auth-Token'));
     result.error ? next(result.error) : res.json(result.data);
 }));

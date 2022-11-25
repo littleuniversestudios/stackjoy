@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.forPUT = exports.forDELETE = exports.forPOST = exports.forGET = exports.forLIST = void 0;
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 /**
  * Rules for validating requests for TemplateFile model
  * Based on express-validator which extends validator.js:
@@ -10,8 +10,8 @@ const check_1 = require("express-validator/check");
 exports.forLIST = [];
 exports.forGET = [];
 exports.forPOST = [
-    (0, check_1.body)('absolutePath').exists().withMessage("absolutePath must be present."),
-    (0, check_1.body)('overwrite').optional().toBoolean(true).isBoolean().withMessage('Must be boolean value'),
+    (0, express_validator_1.body)('absolutePath').exists().withMessage("absolutePath must be present."),
+    (0, express_validator_1.body)('overwrite').optional().toBoolean(true).isBoolean().withMessage('Must be boolean value'),
 ];
 exports.forDELETE = [];
 exports.forPUT = [];

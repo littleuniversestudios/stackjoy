@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.forPUT = exports.forDELETE = exports.forPOST = exports.forDUPLICATE = exports.forGET = exports.forLIST = void 0;
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 /**
  * Rules for validating requests for Template model
  * Based on express-validator which extends validator.js:
@@ -11,9 +11,9 @@ exports.forLIST = [];
 exports.forGET = [];
 exports.forDUPLICATE = [];
 exports.forPOST = [
-    (0, check_1.body)('name').exists().withMessage(`Missing value`),
-    (0, check_1.body)('collectionId').exists().withMessage(`Missing value`),
-    (0, check_1.body)('files').optional().isArray().withMessage(`Template file paths must be an array`),
+    (0, express_validator_1.body)('name').exists().withMessage(`Missing value`),
+    (0, express_validator_1.body)('collectionId').exists().withMessage(`Missing value`),
+    (0, express_validator_1.body)('files').optional().isArray().withMessage(`Template file paths must be an array`),
 ];
 exports.forDELETE = [];
 exports.forPUT = [];

@@ -7,7 +7,7 @@ const route_validation_1 = require("../../../shared/middlewares/route-validation
 const route_handler_1 = require("../../../shared/middlewares/route-handler");
 const stack_service_1 = require("./stack.service");
 const workspaceRules = require("../workspace/workspace.rules");
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 exports.stackRouter = (0, express_1.Router)();
 const stackService = new stack_service_1.StackService();
 /*
@@ -80,15 +80,15 @@ exports.stackRouter.put('/:stackId/add-collection', (0, route_validation_1.valid
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.put('/:envId/description', (0, route_validation_1.validateRequest)([
-    (0, check_1.body)('description').exists().isString(),
-    (0, check_1.param)('envId').exists().isString()
+    (0, express_validator_1.body)('description').exists().isString(),
+    (0, express_validator_1.param)('envId').exists().isString()
 ]), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     const result = await stackService.updateDescription(req.params.envId, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.put('/:remoteId/tags/:tag', (0, route_validation_1.validateRequest)([
-    (0, check_1.param)('remoteId').isString(),
-    (0, check_1.param)('tag').isString()
+    (0, express_validator_1.param)('remoteId').isString(),
+    (0, express_validator_1.param)('tag').isString()
 ]), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     const result = await stackService.addTag(req.params.remoteId, req.params.tag);
     result.error ? next(result.error) : res.json(result.data);
@@ -105,8 +105,8 @@ exports.stackRouter.delete('/purge/:remoteId', (0, route_validation_1.validateRe
     result.error ? next(result.error) : res.json(result.data);
 }));
 exports.stackRouter.delete('/:remoteId/tags/:tag', (0, route_validation_1.validateRequest)([
-    (0, check_1.param)('remoteId').isString(),
-    (0, check_1.param)('tag').isString()
+    (0, express_validator_1.param)('remoteId').isString(),
+    (0, express_validator_1.param)('tag').isString()
 ]), (0, route_handler_1.handleRoute)(async (req, res, next) => {
     const result = await stackService.deleteTag(req.params.remoteId, req.params.tag);
     result.error ? next(result.error) : res.json(result.data);
