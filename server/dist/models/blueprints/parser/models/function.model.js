@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecutableFunction = void 0;
 const changeCase = require("change-case");
 const path = require("path");
-const safeEval = require("safe-eval");
+const safe_eval_1 = require("./safe-eval");
 class ExecutableFunction {
     constructor(funcString) {
         this.funcString = funcString;
@@ -11,7 +11,7 @@ class ExecutableFunction {
     }
     evaluateFunc() {
         try {
-            const func = safeEval(this.funcString, { changeCase, path });
+            const func = (0, safe_eval_1.safeEval)(this.funcString, { changeCase, path });
             if (typeof func === 'function') {
                 this.func = func;
             }
