@@ -33,12 +33,12 @@ exports.dataRouter.get('/inputs/:environmentId', (0, route_validation_1.validate
 /**
  * UPDATE Current Environment Data Members
  */
-exports.dataRouter.put('/models/:id', (0, route_validation_1.validateRequest)(dataRules.forPUT), (0, route_handler_1.handleRoute)(async (req, res, next) => {
-    const result = dataService.updateModelInCurrentEnvironment(req.params.id, req.body);
+exports.dataRouter.put('/models/:parentId/:id', (0, route_validation_1.validateRequest)(dataRules.forPUT), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+    const result = dataService.updateModelInCurrentEnvironment(req.params.parentId, req.params.id, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.dataRouter.put('/inputs/:id', (0, route_validation_1.validateRequest)(dataRules.forPUT), (0, route_handler_1.handleRoute)(async (req, res, next) => {
-    const result = dataService.updateInputInCurrentEnvironment(req.params.id, req.body);
+exports.dataRouter.put('/inputs/:parentId/:id', (0, route_validation_1.validateRequest)(dataRules.forPUT), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+    const result = dataService.updateInputInCurrentEnvironment(req.params.parentId, req.params.id, req.body);
     result.error ? next(result.error) : res.json(result.data);
 }));
 /**
@@ -55,12 +55,12 @@ exports.dataRouter.post('/inputs', (0, route_validation_1.validateRequest)(dataR
 /**
  * DELETE Current Environment Data Members
  */
-exports.dataRouter.delete('/models/:id', (0, route_validation_1.validateRequest)(dataRules.forDELETE), (0, route_handler_1.handleRoute)(async (req, res, next) => {
-    const result = dataService.deleteModelInCurrentEnvironment(req.params.id);
+exports.dataRouter.delete('/models/:parentId/:id', (0, route_validation_1.validateRequest)(dataRules.forDELETE), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+    const result = dataService.deleteModelInCurrentEnvironment(req.params.parentId, req.params.id);
     result.error ? next(result.error) : res.json(result.data);
 }));
-exports.dataRouter.delete('/inputs/:id', (0, route_validation_1.validateRequest)(dataRules.forDELETE), (0, route_handler_1.handleRoute)(async (req, res, next) => {
-    const result = dataService.deleteInputInCurrentEnvironment(req.params.id);
+exports.dataRouter.delete('/inputs/:parentId/:id', (0, route_validation_1.validateRequest)(dataRules.forDELETE), (0, route_handler_1.handleRoute)(async (req, res, next) => {
+    const result = dataService.deleteInputInCurrentEnvironment(req.params.parentId, req.params.id);
     result.error ? next(result.error) : res.json(result.data);
 }));
 //# sourceMappingURL=data.router.js.map

@@ -9,6 +9,7 @@ const fs_extra_1 = require("fs-extra");
 const blu_template_model_1 = require("./item/blu.template.model");
 const path_1 = require("path");
 const blu_function_model_1 = require("./item/parts/blu.function.model");
+const blu_environment_data_1 = require("./item/environment/blu.environment.data");
 class BlueprintsModel {
     constructor(path, workspaceName) {
         this.path = path;
@@ -282,11 +283,38 @@ class BlueprintsModel {
     createDataMember(dataType, contents) {
         return this.workspace.environmentData.createDataMember(dataType, contents);
     }
-    updateDataMember(id, contents, dataType) {
-        this.workspace.environmentData.updateDataMember(id, contents, dataType);
+    updateDataMember(parentId, id, contents, dataType) {
+        const allDataMembers = this.getDataMembersByType(dataType);
+        const dataMemberIndex = allDataMembers.findIndex(i => i.id === id && i.parent.id === parentId);
+        if (dataMemberIndex >= 0) {
+            const dataMember = allDataMembers[dataMemberIndex];
+            return blu_environment_data_1.BLUEnvironmentData.updateDataMember(dataMember, contents);
+        }
+        else {
+            return { error: { status: 400, code: 'data-member-update-error', message: `Could not find data member with parentId: '${parentId}' and id: '${id}'` }, data: { success: false } };
+        }
     }
-    deleteDataMember(id, dataType) {
-        return this.workspace.environmentData.deleteDataMember(id, dataType);
+    deleteDataMember(parentId, id, dataType) {
+        const allDataMembers = this.getDataMembersByType(dataType);
+        const dataMemberIndex = allDataMembers.findIndex(i => i.id === id && i.parent.id === parentId);
+        if (dataMemberIndex >= 0) {
+            const dataMember = allDataMembers[dataMemberIndex];
+            allDataMembers.splice(dataMemberIndex, 1);
+            return blu_environment_data_1.BLUEnvironmentData.deleteDataMember(dataMember);
+        }
+        else {
+            return { error: { status: 400, code: 'data-member-delete-error', message: `Could not find data member with parentId: '${parentId}' and id: '${id}'` }, data: { success: false } };
+        }
+    }
+    getDataMembersByType(dataType) {
+        switch (dataType) {
+            case blu_interface_1.BLU.Data.Type.input:
+                return this.workspace.dataMembers.inputs;
+            case blu_interface_1.BLU.Data.Type.model:
+                return this.workspace.dataMembers.models;
+            case blu_interface_1.BLU.Data.Type.schema:
+                return this.workspace.dataMembers.schema;
+        }
     }
     /**
      * STATIC MEMBERS

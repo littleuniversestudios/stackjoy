@@ -47,28 +47,22 @@ class BLUEnvironmentData {
         blu_utils_model_1.BLUUtils.saveJSONFile(filePath, contents !== null && contents !== void 0 ? contents : null);
         return { error: null, data: { success: true, dataMember: new DataMember(id, this.parent, type, filePath) } };
     }
-    updateDataMember(id, contents, dataType) {
-        const allDataMembers = this.getDataMembersByType(dataType);
-        const dataMember = allDataMembers.find(i => i.id === id);
-        blu_utils_model_1.BLUUtils.saveJSONFile(dataMember.paths.self, contents);
-        return { error: null, data: { success: true } };
+    static updateDataMember(dataMember, contents) {
+        return blu_utils_model_1.BLUUtils.saveJSONFile(dataMember.paths.self, contents);
     }
-    deleteDataMember(id, dataType) {
-        const allDataMembers = this.getDataMembersByType(dataType);
-        const dataMemberIndex = allDataMembers.findIndex(i => i.id === id);
-        if (dataMemberIndex >= 0) {
-            const dataMember = allDataMembers[dataMemberIndex];
-            try {
-                (0, fs_extra_1.removeSync)(dataMember.paths.self);
-                allDataMembers.splice(dataMemberIndex, 1);
-                return { error: null, data: { success: true } };
-            }
-            catch (error) {
-                return { error: { status: 400, code: 'data-member-delete-error', message: `Error occurred trying to delete data member with id: '${id}'`, error }, data: { success: false } };
-            }
+    static deleteDataMember(dataMember) {
+        try {
+            (0, fs_extra_1.removeSync)(dataMember.paths.self);
+            return { error: null, data: { success: true } };
         }
-        else {
-            return { error: { status: 400, code: 'data-member-delete-error', message: `Could not find data member with id: '${id}'` }, data: { success: false } };
+        catch (error) {
+            return {
+                error: {
+                    status: 400, code: 'data-member-delete-error',
+                    message: `Error occurred trying to delete data member with parentId: '${dataMember.parent.id}' and id: '${dataMember.id}'`,
+                    error
+                }, data: { success: false }
+            };
         }
     }
     /**

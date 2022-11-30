@@ -34,14 +34,14 @@ class DataService {
     /**
      * UPDATE Current Environment Data Members
      */
-    updateModelInCurrentEnvironment(id, { contents }) {
+    updateModelInCurrentEnvironment(parentId, id, { contents }) {
         const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
-        blueprints.updateDataMember(id, contents, blu_interface_1.BLU.Data.Type.model);
+        blueprints.updateDataMember(parentId, id, contents, blu_interface_1.BLU.Data.Type.model);
         return { error: null, data: { success: true } };
     }
-    updateInputInCurrentEnvironment(id, { contents }) {
+    updateInputInCurrentEnvironment(parentId, id, { contents }) {
         const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
-        blueprints.updateDataMember(id, contents, blu_interface_1.BLU.Data.Type.input);
+        blueprints.updateDataMember(parentId, id, contents, blu_interface_1.BLU.Data.Type.input);
         return { error: null, data: { success: true } };
     }
     /**
@@ -60,13 +60,13 @@ class DataService {
     /**
      * DELETE Current Environment Data Members
      */
-    deleteModelInCurrentEnvironment(id) {
+    deleteModelInCurrentEnvironment(parentId, id) {
         const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
-        return blueprints.deleteDataMember(id, blu_interface_1.BLU.Data.Type.model);
+        return blueprints.deleteDataMember(parentId, id, blu_interface_1.BLU.Data.Type.model);
     }
-    deleteInputInCurrentEnvironment(id) {
+    deleteInputInCurrentEnvironment(parentId, id) {
         const blueprints = globals_1.APP_SERVICE.CURRENT_ENVIRONMENT.getBlueprints();
-        return blueprints.deleteDataMember(id, blu_interface_1.BLU.Data.Type.input);
+        return blueprints.deleteDataMember(parentId, id, blu_interface_1.BLU.Data.Type.input);
     }
 }
 exports.DataService = DataService;
