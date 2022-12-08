@@ -1,12 +1,14 @@
 {
   "name": "stackjoy",
   "version": "0.4.9",
-  "description": "Rapid Development Platform",
+  "description": "Build Software Faster",
   "main": "./npm-app/dist/index.js",
   "bin": {
     "sj": "./npm-app/dist/index.js"
   },
-  "scripts": {},
+  "scripts": {
+    "postinstall": "node support/postinstall.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/littleuniversestudios/stackjoy.git"
@@ -18,10 +20,9 @@
   "author": "Little Universe Studios Inc.",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "open": "^7.1.0",
     "@stackjoy/shared": "0.0.21",
     "axios": "^0.21.4",
+    "chalk": "^4.1.2",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
@@ -41,6 +42,7 @@
     "lodash": "^4.17.20",
     "moo": "^0.5.1",
     "nearley": "^2.19.7",
+    "open": "^7.1.0",
     "ora": "^5.4.1",
     "simple-git": "^3.15.0",
     "winston": "^3.3.3"
@@ -48,5 +50,5 @@
   "bugs": {
     "url": "https://github.com/littleuniversestudios/stackjoy/issues"
   },
-  "homepage": "https://github.com/littleuniversestudios/stackjoy#readme"
+  "homepage": "https://www.stackjoy.com"
 }
