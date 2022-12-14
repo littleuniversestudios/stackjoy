@@ -20,9 +20,10 @@
   "author": "Little Universe Studios Inc.",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^4.1.2",
+    "open": "^7.1.0",
     "@stackjoy/shared": "0.0.21",
     "axios": "^0.21.4",
-    "chalk": "^4.1.2",
     "change-case": "^2.3.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.4",
@@ -42,7 +43,6 @@
     "lodash": "^4.17.20",
     "moo": "^0.5.1",
     "nearley": "^2.19.7",
-    "open": "^7.1.0",
     "ora": "^5.4.1",
     "simple-git": "^3.15.0",
     "winston": "^3.3.3"
